@@ -1,0 +1,600 @@
+{
+  "name": "cheatsheet for data pipeline v1.1.",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        144,
+        -80
+      ],
+      "id": "0b06f255-2a4e-4707-817b-057b180e4376",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        752,
+        -96
+      ],
+      "id": "ff9faea1-f38d-44d0-a354-c2788735cf74",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        752,
+        80
+      ],
+      "id": "01b936b0-0e16-451c-9dfc-ababfdef21f7",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -96
+      ],
+      "id": "ed55c87e-13ac-43cc-b4bb-dd7345b9a9f2",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "32a7cd36-a7fa-4792-9675-4657e4c99849",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        80
+      ],
+      "id": "f2b31b27-1822-497a-a79e-1de1e427d068",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        752,
+        272
+      ],
+      "id": "6e48b54e-b067-42f4-8cd6-eb628798f066",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        992,
+        256
+      ],
+      "id": "a6e599c5-5107-4d25-a962-0f553012840f",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        -96
+      ],
+      "id": "35988314-696c-4ed0-9ecb-60a32206acd6",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1616,
+        80
+      ],
+      "id": "49b5dc6d-e011-4a84-9d48-b2f50433402d",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1616,
+        -112
+      ],
+      "id": "c0edb6da-76cc-4bf8-b463-377c1e582dbd",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "f9zeSnEkq0ZTa0Iu",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 2. Data Input Ouput",
+        "height": 448,
+        "width": 576,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        48,
+        304
+      ],
+      "typeVersion": 1,
+      "id": "18bfa21f-ea7d-46ee-a11c-ff76aced6967",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        384
+      ],
+      "id": "7ba01e64-f039-418c-b7b7-14922b40dcf5",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "content": "## 3. Data Processing\n### **3.1. Structured**\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n### **3.2 Non Structured**",
+        "height": 944,
+        "width": 752,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        656,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "052a25c9-b495-4091-a013-b30fa3aee862",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        400,
+        384
+      ],
+      "id": "4e833ceb-41fe-43c1-9f2d-bf28aaf7871c",
+      "name": "Execute a SQL query"
+    },
+    {
+      "parameters": {
+        "content": "## 4. Data Output",
+        "height": 608,
+        "width": 448,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1456,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "d97e7f83-d5b4-480f-bcad-f9a57c03dab9",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "operation": "xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        80
+      ],
+      "id": "d849f982-256c-4d04-9bda-9c720e7457a7",
+      "name": "Extract from File",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "database",
+        "databaseId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        576
+      ],
+      "id": "e95b2613-4294-4b72-817a-9cff560f801c",
+      "name": "Get a database"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        144,
+        576
+      ],
+      "id": "a452cd52-af75-4563-86b2-f72c75ab0733",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "f9zeSnEkq0ZTa0Iu",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "blockId": {
+          "__rl": true,
+          "mode": "url",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1616,
+        272
+      ],
+      "id": "bebf7cf8-b9a3-499e-9496-3be8bf9e9161",
+      "name": "Append a block"
+    },
+    {
+      "parameters": {
+        "content": "## 5. Alert",
+        "height": 288,
+        "width": 448,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1456,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "e92f0eec-73dd-449d-be28-12a3b99a7f86",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1536,
+        560
+      ],
+      "id": "a5bdf749-bc8b-436f-8b79-fc2ff6681b95",
+      "name": "Send a message",
+      "webhookId": "30912619-961e-4475-90f0-d274cfe9a27f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FJt9mIYJ6AcKrSjK",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1728,
+        560
+      ],
+      "id": "9d0d0a04-b60e-4d25-9326-7edf06c94177",
+      "name": "Send a message1",
+      "webhookId": "b1706388-3f37-48f2-bd53-82477ca9d3ee",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "g6QAFSYmu0ro3pEi",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 1. Trigger",
+        "height": 432,
+        "width": 560,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "3ec72e49-23a8-4c12-ada4-6d6a0c13a003",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        -80
+      ],
+      "id": "33300454-e743-4805-85e4-523d20a7073d",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "path": "5e8920b2-ac97-4085-803c-4291afcd14f6",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        96
+      ],
+      "id": "4c34a69b-a35a-40d4-a55e-5d8cdefa001e",
+      "name": "Webhook",
+      "webhookId": "5e8920b2-ac97-4085-803c-4291afcd14f6"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        400,
+        96
+      ],
+      "id": "7f547567-735b-4752-a70f-57672de267ff",
+      "name": "On form submission",
+      "webhookId": "424d1f2c-41aa-469d-8720-4f910cbf3683"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "messages": {
+          "values": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [
+        704,
+        560
+      ],
+      "id": "19e1f84a-7f4f-4aba-8211-8f5be4bb07dd",
+      "name": "Message a model"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        992,
+        560
+      ],
+      "id": "4a452204-91bc-4405-85b4-4c5b055ab686",
+      "name": "Generate a video"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1216,
+        560
+      ],
+      "id": "f89b2c5e-730e-41f2-ac15-2d9f3850d87b",
+      "name": "Generate audio"
+    },
+    {
+      "parameters": {
+        "content": "\n\n![sheetcheat_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/n8n_cheatsheet_for_datapipeline_eng.png)",
+        "height": 1200,
+        "width": 1008
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -976,
+        -448
+      ],
+      "typeVersion": 1,
+      "id": "667af0fa-d867-4d0e-8508-fd70935513d0",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "# Cheastsheet for data pipeline v 1.1.\n\n## 🔗 made by  [Jay Jung Lim @ ggplab](https://www.linkedin.com/in/jayjunglim)\n## 🔗 [Link cheatsheet for data piepline](https://docs.google.com/spreadsheets/d/1enboErLA1upWs4NEI7EjbCz9oOJgIVG7BkOU_Ffz990/edit?usp=sharing)\n### Please share for everything you want\n### n8n v 1.108.0",
+        "height": 240,
+        "width": 1840
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        -448
+      ],
+      "typeVersion": 1,
+      "id": "3c900eb6-64a2-4ea9-ae28-008774d76500",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "Filter": {
+      "main": [
+        []
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    },
+    "Get a database": {
+      "main": [
+        []
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Message a model": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "098010b3-c434-4a19-838f-fe769a3d3274",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4e759f37dd3b43f41beab6cc65f207c878771a7a3864b27c56a75c1db99a9621"
+  },
+  "id": "Fg6jpGjPdeeG8vIl",
+  "tags": [
+    {
+      "createdAt": "2025-08-22T06:04:30.348Z",
+      "updatedAt": "2025-08-22T06:04:30.348Z",
+      "id": "MhAxavwzvSmwK6m1",
+      "name": "template"
+    }
+  ]
+}
