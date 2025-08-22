@@ -11,4 +11,14 @@ Exporting results to various destinations
 Perfect for fellow data scientists looking to streamline their workflows with no-code automation!
 Hope this helps others bridge the gap between traditional data science and workflow automation. 🚀
 
+
+
+
+![sheetcheat_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/n8n_cheatsheet_for_datapipeline_eng.png)
+
+![workflwo_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/n8n_cheatsheet_for_datapipeline_eng.png)
+
+
 #n8n #DataScience #Automation #DataPipeline
+
+
