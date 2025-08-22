@@ -1,6 +1,8 @@
 # n8n_template
 ## n8n cheatsheet for data pipeline
 
+![workflwo_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/workflow_for_datapipeline.png)
+
 Hi n8n users
 
 As a data scientist who recently discovered n8n's potential for building automated data pipelines, I created this focused cheat sheet covering the essential nodes specifically for data analysis workflows.
@@ -35,7 +37,6 @@ n8n 데이터 파이프라인 치트시트를 제작했습니다. 이 치트시�
 ![sheetcheat_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/n8n_cheatsheet_for_datapipeline_eng.png)
 
 ![sheetcheat_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/n8n_cheatsheet_for_datapipeline_kor.png)
-![workflwo_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/workflow_for_datapipeline.png)
 
 - ![Google Sheets for Eng](https://docs.google.com/spreadsheets/d/1enboErLA1upWs4NEI7EjbCz9oOJgIVG7BkOU_Ffz990/edit?gid=1162658664#gid=1162658664)
 - ![Google Sheets for Kor](https://docs.google.com/spreadsheets/d/1enboErLA1upWs4NEI7EjbCz9oOJgIVG7BkOU_Ffz990/edit?usp=sharing)
