@@ -18,8 +18,8 @@ Hope this helps others bridge the gap between traditional data science and workf
 
 ![workflwo_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/workflow_for_datapipeline.png)
 
-![Google Sheets for Eng](https://docs.google.com/spreadsheets/d/1enboErLA1upWs4NEI7EjbCz9oOJgIVG7BkOU_Ffz990/edit?gid=1162658664#gid=1162658664)
-![Google Sheets for Kor)[https://docs.google.com/spreadsheets/d/1enboErLA1upWs4NEI7EjbCz9oOJgIVG7BkOU_Ffz990/edit?usp=sharing]
+- ![Google Sheets for Eng](https://docs.google.com/spreadsheets/d/1enboErLA1upWs4NEI7EjbCz9oOJgIVG7BkOU_Ffz990/edit?gid=1162658664#gid=1162658664)
+- ![Google Sheets for Kor](https://docs.google.com/spreadsheets/d/1enboErLA1upWs4NEI7EjbCz9oOJgIVG7BkOU_Ffz990/edit?usp=sharing)
 
 #n8n #DataScience #Automation #DataPipeline
 
