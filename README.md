@@ -7,7 +7,7 @@
 
 ## Directory
 
-- [cheatsheets](./cheatsheets/): 데이터 파이프라인을 위한 치트시트 디렉토리
+- [cheatsheets](./cheatsheet/): 데이터 파이프라인을 위한 치트시트 디렉토리
 - [workflows_kamis](./workflow_FarmData): 농수산물 api(kamis api)를 이용한 장보기를 돕는 AI Agent 디렉토리
 
 ## Summary
