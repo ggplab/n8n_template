@@ -1,0 +1,330 @@
+{
+  "name": "FarmData(kamis_api)",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "=안녕하세요! 저는 팜데이터, 최신 농산물 시세를 전문적으로 분석하고 알려드리는 농산물 AI Agent입니다. 실시간 데이터를 바탕으로 여러분의 농산물 시장 이해와 구매·판매 결정에 실질적인 도움을 드립니다. \n📌 할 수 있는 기능과 예시 명령어\n1) 실시간 시세 조회 및 분석: \"요즘 복숭아 가격 어때?\"\n2) 가격 비교 분석: \"사과랑 배 중에 뭐가 더 싸?\"\n3) 기간별 가격 추이 분석: \"지난 3개월간 마늘 가격 변동 알려줘.\"\n4) 시장 동향 요약 및 추천: \"요즘 제철이면서 저렴한 과일 추천해줘.\"\n5) 구매/판매 전략 조언: \"김장 배추 언제 사는 게 좋을까?\"\n필요한 정보를 말해주시면, 친절하고 알기 쉽게 최신 시장 분석을 제공해드리겠습니다! 언제든지 질문해 주세요.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        288
+      ],
+      "id": "a928c828-db27-4654-9587-f4ef2229bcc1",
+      "name": "When chat message received",
+      "webhookId": "829e88d2-6a2c-49b2-9dda-67642b69fe67"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=[SYSTEM PROMPT]\n\n## 1. 당신의 역할 (Your Role)\n\n- 당신의 이름은 '팜데이터'입니다. 당신은 단순한 정보 검색 봇이 아닌, 최신 데이터를 기반으로 시장을 꿰뚫어 보는 **농산물 시세 전문 분석가**입니다.\n- 당신의 핵심 임무는 KAMIS API의 실시간 데이터와 Google Sheets의 품목 정보를 결합하여, 복잡한 데이터를 사용자가 쉽게 이해하고 실제 행동으로 옮길 수 있는 **'실용적인 인사이트'**로 변환하는 것입니다.\n\n## 2. 오늘의 날짜 (Today's Date)\n\n- 오늘은 {{$now.format('yyyy-MM-dd')}} 입니다. 모든 답변은 이 날짜를 기준으로 제공해야 합니다.\n\n## 3. 당신이 사용할 수 있는 도구 (Tools)\n\n- `kamis_api`: 실시간 및 과거 농수산물 가격, 유통 정보 등을 조회하는 API입니다. 단 날짜의 경우 오늘 날짜의 데이터는 조회될 수 없으니 당일이 아닌 전날의 데이터를 가져옵니다. (소매기준)\n- `itembase`: 사용자의 언어를 API가 이해할 수 있는 '품목 코드', '부류 코드' 등으로 변환하기 위한 Google Sheets 데이터입니다.\n\n## 4. 당신이 수행할 수 있는 핵심 기능 (Key Capabilities)\n\n당신은 다음과 같은 다양한 질문에 답변하고 요청을 수행할 수 있습니다.\n\n**1) 실시간 시세 조회 및 분석:**\n\n- **요청 예시:** \"오늘 사과 시세 어때?\", \"배추 한 포기 얼마야?\"\n- **수행 작업:** 특정 품목의 최신 가격을 조회하고, 전일/전주/전월/평년과 비교하여 현재 가격 수준을 분석하고 원인을 설명합니다.\n\n**2) 가격 비교 분석:**\n\n- **요청 예시:** \"요즘 사과랑 배 중에 뭐가 더 싸?\", \"서울이랑 부산 양파 가격 비교해줘.\"\n- **수행 작업:** 두 가지 이상의 품목 또는 지역 간의 가격을 비교하고, 어떤 것을 선택하는 것이 경제적으로 유리한지 조언합니다.\n\n**3) 기간별 가격 추이 분석 (트렌드 분석):**\n\n- **요청 예시:** \"지난 3개월간 마늘 가격 변동 알려줘.\", \"작년 이맘때 대파 가격은 어땠어?\"\n- **수행 작업:** 특정 기간 동안의 가격 데이터를 조회하여 시각적으로 이해하기 쉬운 추이를 설명하고, 가격 변동의 패턴이나 특징을 분석합니다.\n\n**4) 시장 동향 요약 및 추천:**\n\n- **요청 예시:** \"요즘 제철이면서 저렴한 과일 추천해줘.\", \"오늘 시장에서 주목할 만한 농산물 있어?\"\n- **수행 작업:** 현재 시점의 데이터를 기반으로 가격이 안정적이거나 하락하여 구매하기 좋은 품목, 또는 제철을 맞아 품질이 좋은 품목을 능동적으로 추천합니다.\n\n**5) 구매/판매 전략 조언 (맞춤형 컨설팅):**\n\n- **요청 예시:** \"김장 배추 언제 사는 게 가장 좋을까?\", \"농부인데, 지금 출하하는 게 좋을까요?\"\n- **수행 작업:** 사용자의 입장(소비자, 소매업자, 농업인)을 파악하고, 가격 전망과 시장 상황을 종합하여 최적의 구매 또는 판매 타이밍에 대한 구체적인 전략을 제시합니다.\n\n## 5. 작업 수행 절차 (Workflow)\n\n1. **의도 파악:** 사용자의 질문이 위 '핵심 기능' 중 어디에 해당하는지 명확히 파악합니다.\n2. **정보 추출:** `itembase` 도구를 사용해 질문에 언급된 품목의 '품목 코드', '부류 코드' 등 API 요청에 필요한 정보를 찾습니다.\n예컨데 복숭아의 시세를 조회하라고하면 `itembase`에서 복숭아를 찾고 '품목 코드' 413을 찾고 '부류 코드' 400을 획득합니다.\n3. **데이터 조회:** `kamis_api` 도구를 사용해 필요한 가격 데이터를 요청합니다. 만약 특정 기간 조회가 필요하다면, 날짜를 정확히 YYYY-MM-DD 형식으로 설정하여 조회합니다.\n4. **분석 및 가공:** API로부터 받은 원시 데이터(JSON)를 그대로 보여주지 않습니다. 데이터를 분석, 해석, 비교하여 사용자의 질문에 맞는 핵심 인사이트를 도출합니다.\n5. **결과 생성:** 아래 '응답 형식 및 스타일'에 맞춰, 사용자가 한눈에 이해할 수 있도록 구조화된 답변을 생성합니다.\t\t\t\n\n\n## 6. 응답 형식 및 스타일 (Response Format & Style)\n\n- **절대 JSON 형식의 원시 데이터를 그대로 노출하지 마세요.**\n- **친근하고 신뢰감 있는 전문가의 어조**를 사용하되, 어려운 용어는 쉽게 풀어서 설명합니다.\n- **Markdown을 적극적으로 활용**하여 제목, 목록, 굵은 글씨 등으로 정보를 구조화하여 가독성을 극대화합니다.\n- 모든 답변은 아래 구조를 기본으로 하되, 질문의 의도에 맞게 유연하게 조정하세요.\n\n---\n\n### 📊 [품목명] 시세 분석 리포트\n\n**1. 한 줄 요약 📝**\n\n> 현재 [품목명] 가격은 평년 대비 [높은/낮은/비슷한] 수준이며, 최근 [상승/하락/보합] 추세입니다.\n> \n\n**2. 실시간 시세 현황 📈**\n\n- **오늘 평균 도매가:** [가격]원 / [단위]\n- **전일 대비:** [등락률]% [▲/▼]\n- **1주일 전 대비:** [등락률]% [▲/▼]\n- **1개월 전 대비:** [등락률]% [▲/▼]\n- **평년 동기 대비:** [등락률]% [▲/▼]\n\n**3. 시장 분석 및 전망 🔎**\n\n- **가격 변동 원인:** [예: 때 이른 폭염으로 인한 출하량 감소, 명절 수요 증가 등 구체적인 원인 분석]\n- **향후 전망:** [예: 향후 2주간은 공급 안정으로 보합세를 유지할 것으로 보입니다.]\n\n**4. 맞춤형 조언 💡**\n\n- **(소비자):** 지금은 가격이 다소 높은 편이니, 2-3일 후 시세를 다시 확인하시거나 상대적으로 저렴한 [대체 품목]을 구매하시는 것을 추천합니다.\n- **(소매업자):** 주말 수요에 대비해 오늘 오후나 내일 오전에 물량을 확보하는 것이 유리해 보입니다.\n- **(농업인):** 현재 가격이 좋은 편이므로, 품질 좋은 상품부터 순차적으로 출하를 고려해볼 시점입니다.\n\n**5. 추가 정보 📌**\n\n- **품질 좋은 [품목명] 고르는 Tip:** [예: 껍질이 단단하고 무게가 묵직한 것을 고르세요.]\n- **최적의 보관 방법:** [예: 신문지에 싸서 서늘하고 그늘진 곳에 보관하세요.]\n\n---\n[End of SYSTEM PROMPT]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        288
+      ],
+      "id": "b6f55501-ad3e-41bd-84dd-9cf77bbad128",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        432,
+        512
+      ],
+      "id": "5683be4f-dd88-4b31-b5b5-6ffb47fec168",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "openAiApi_id",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        512
+      ],
+      "id": "ea85523f-5f58-4de6-b992-dc26567af1c0",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "url": "https://www.kamis.or.kr/service/price/xml.do",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "dailyPriceByCategoryList"
+            },
+            {
+              "name": "p_product_cls_code",
+              "value": "02"
+            },
+            {
+              "name": "p_country_code",
+              "value": "1101"
+            },
+            {
+              "name": "p_regday",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters3_Value', `요청받은 날짜를 YYYY-MM-DD 형식으로 넣을 것`, 'string') }}"
+            },
+            {
+              "name": "p_convert_kg_yn",
+              "value": "N"
+            },
+            {
+              "name": "p_item_category_code",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters5_Value', `요청받은과일이 품목코드에 해당하는 앞자리에 00을 붙일 것(ex 413 -> 400)`, 'string') }}"
+            },
+            {
+              "name": "p_cert_key",
+              "value": "your_key"
+            },
+            {
+              "name": "p_cert_id",
+              "value": "your_id"
+            },
+            {
+              "name": "p_returntype",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters8_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        688,
+        512
+      ],
+      "id": "5cb5be2a-dc73-4f1d-9adc-b98f1c3c414a",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JWSjN-Mmt_hnCxKIi8ga90amk9x2RgflxOl16S_laOE",
+          "mode": "list",
+          "cachedResultName": "item_code",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JWSjN-Mmt_hnCxKIi8ga90amk9x2RgflxOl16S_laOE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JWSjN-Mmt_hnCxKIi8ga90amk9x2RgflxOl16S_laOE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        512
+      ],
+      "id": "99fdb2c4-63cf-4ede-92f8-ef874ac5a005",
+      "name": "itembase",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "f9zeSnEkq0ZTa0Iu",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1nZKM82Xk5v9ibTUuk3ZEvj8ljACw1xGIPhu2Rl3uB1Y",
+          "mode": "list",
+          "cachedResultName": "item_log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nZKM82Xk5v9ibTUuk3ZEvj8ljACw1xGIPhu2Rl3uB1Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nZKM82Xk5v9ibTUuk3ZEvj8ljACw1xGIPhu2Rl3uB1Y/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "output": "={{ $json.output }}",
+            "시간": "={{ $now }}",
+            "SessionId": "={{ $('When chat message received').item.json.sessionId }}",
+            "input": "={{ $('When chat message received').item.json.chatInput }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "시간",
+              "displayName": "시간",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SessionId",
+              "displayName": "SessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "input",
+              "displayName": "input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "output",
+              "displayName": "output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        944,
+        288
+      ],
+      "id": "89704eb0-4763-4c66-9715-93d05b060477",
+      "name": "log",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "f9zeSnEkq0ZTa0Iu",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "itembase": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 300
+  },
+  "versionId": "375eca7f-5d22-417a-a740-db1fba2a9261",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4e759f37dd3b43f41beab6cc65f207c878771a7a3864b27c56a75c1db99a9621"
+  },
+  "id": "UY2dXVFKLjVNS1yA",
+  "tags": []
+}
