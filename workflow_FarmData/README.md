@@ -8,9 +8,11 @@
 (**주의**: PoC이기 때문에 언제든지 내려갈 수 있습니다 )
 
 - n8n 화면
+
 ![FarmData_2x.png](./FarmData_2x.gif)
 
 - 실제 접속 화면
+
 ![kamsic_sc.png](./kamis_sc.png)
 
 ## 📋 1. 목차
