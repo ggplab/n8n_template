@@ -3,11 +3,11 @@
 > **농산물 시세 전문 분석가 AI 챗봇**  
 > 실시간 농산물 가격 데이터를 기반으로 한 똑똑한 시장 분석과 맞춤형 구매/판매 조언
 
-![kamsic_workflow.png](./kamis_workflow.png)
-
-[🔗 팜데이터 AI Agent 사용하기](https://ggplot.app.n8n.cloud/webhook/829e88d2-6a2c-49b2-9dda-67642b69fe67/chat)
+[🔗 팜데이터 AI Agent 사용하기 🛜](https://ggplot.app.n8n.cloud/webhook/829e88d2-6a2c-49b2-9dda-67642b69fe67/chat)
 
 (**주의**: PoC이기 때문에 언제든지 내려갈 수 있습니다 )
+
+![kamsic_workflow.png](./kamis_workflow.png)
 ![kamsic_sc.png](./kamis_sc.png)
 
 ## 📋 1. 목차
