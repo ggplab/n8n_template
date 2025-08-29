@@ -7,7 +7,7 @@
 
 (**주의**: PoC이기 때문에 언제든지 내려갈 수 있습니다 )
 
-![kamsic_workflow.png](./kamis_workflow.png)
+![kamsic_workflow.png](./kamis_workflow.gif)
 ![kamsic_sc.png](./kamis_sc.png)
 
 ## 📋 1. 목차
