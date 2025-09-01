@@ -3,9 +3,9 @@
 - [Google Sheets for Eng](https://docs.google.com/spreadsheets/d/1enboErLA1upWs4NEI7EjbCz9oOJgIVG7BkOU_Ffz990/edit?gid=1162658664#gid=1162658664)
 - [Google Sheets for Kor](https://docs.google.com/spreadsheets/d/1enboErLA1upWs4NEI7EjbCz9oOJgIVG7BkOU_Ffz990/edit?usp=sharing)
 
-![workflwo_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/workflow_for_datapipeline.png)
+![workflwo_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/cheatsheet/workflow_for_datapipeline.png)
 
-![sheetcheat_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/n8n_cheatsheet_for_datapipeline_kor.png)
+![sheetcheat_sc](https://raw.githubusercontent.com/ggplab/n8n_template/main/cheatsheet/n8n_cheatsheet_for_datapipeline_kor.png)
 
 ## 소개
 데이터 파이프라인 구축에 유용한 자료를 공유합니다! 
