@@ -23,7 +23,8 @@
 
 
 ### [유즈케이스] FarmData
-[🔗 팜데이터 AI Agent 사용하기](https://ggplot.app.n8n.cloud/webhook/829e88d2-6a2c-49b2-9dda-67642b69fe67/chat)
+[🔗 팜데이터 AI Agent 사용하기](https://primary-production-766d.up.railway.app/webhook/829e88d2-6a2c-49b2-9dda-67642b69fe67/chat)
+
 
 (**주의**: PoC이기 때문에 언제든지 내려갈 수 있습니다 )
 
