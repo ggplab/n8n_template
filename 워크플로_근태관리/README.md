@@ -25,7 +25,7 @@ ___
 ![n8n_슬랙봇 근태기록 자동 정리](https://github.com/user-attachments/assets/b8c3576d-2475-42f8-9571-1555f0b9f9a5)
 
 <img width="350" height="350" alt="Attendance_slack" src="https://github.com/user-attachments/assets/3ba7ac01-260a-4be0-be70-355f1effb957" />
-<img width="280" height="320" alt="스크린샷 2025-11-19 오후 1 49 04" src="https://github.com/user-attachments/assets/eaa88e79-d20b-4b91-9c78-62f2dfc0a693" />
+<img width="280" height="300" alt="스크린샷 2025-11-19 오후 1 49 04" src="https://github.com/user-attachments/assets/eaa88e79-d20b-4b91-9c78-62f2dfc0a693" />
 <img width="300" height="340" alt="스크린샷 2025-11-19 오후 1 51 16" src="https://github.com/user-attachments/assets/a58e042e-bf11-4ee2-9a35-162a51bfbad7" />
 
 
