@@ -35,7 +35,7 @@ ___
    - 각 팀 리더/ 매니저: 팀원의 출퇴근 현황을 파악하고 리소스를 관리합니다.
 
 ### 기술 검토 및 참조문서 
-   - 자동화 툴: n8n 홈페이지 [https://n8n.io/]
+   - 자동화 툴: n8n 공식홈페이지 [https://n8n.io/]
    - 주요 사용 노드 (n8n):
      * Slack(: 특정 채널의 '출근', '퇴근' 키워드를 감지합니다.
      * Set/ Function: 수집된 데이터(사용자 ID, 시간 등)를 Google Sheets 형식에 맞게 가공합니다.  
@@ -43,7 +43,7 @@ ___
      * Google Sheets: 가공된 데이터를 저장된 Google Sheets 문서에 행(row)으로 추가합니다.
    - 연동 API  
       - Slack API (Bot Tokken): 메시지 수신 및 사용자 정보 조회(users.info)
-      - Google Sheets API : 시트에 접근하여 추가, 수정, 삭제하기
+      - Google Sheets API: 시트에 접근하여 추가, 수정, 삭제하기
       - n8n 공식 문서 [https://docs.n8n.io/integrations/]
       - n8n 한글 가이드북 slack api 챕터 [https://wikidocs.net/290920] 
 
