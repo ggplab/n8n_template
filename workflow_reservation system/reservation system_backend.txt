@@ -1,0 +1,441 @@
+/*** 스프레드시트/시트 설정 ***/
+const SPREADSHEET_ID = '1uNTy2x_V4eOz5hEvh9Z0F370I8t6sHVTTkr8K093vmk';
+const SHEET_NAME     = '예약페이지';
+// 예약 상태 컬럼 (I열)
+const STATUS_COL     = 9;  // 1-based index, I
+
+/*** 외부 시스템(Webhook) 설정 ***/
+const N8N         = 'https://n8n.ggplab.xyz/webhook/reserve-notify';       // 예약내용 호출용
+const N8N_CANCEL  = 'https://n8n.ggplab.xyz/webhook/reserve-cancel';       // ✅ 예약 취소 호출용
+
+/*** 공통 유틸 ***/
+// 시간 문자열을 항상 'HH:mm'으로 정규화 (예: '9', '9:0', '9:00' -> '09:00')
+function toHHmm(v) {
+  if (v == null) return '';
+  const s = String(v).trim();
+  if (!s) return '';
+  const parts = s.split(':').map(p => p.trim());
+  let h = parts[0] ?? '';
+  let m = parts[1] ?? '00';
+
+  // '9' 처럼 시만 있는 경우
+  if (/^\d+$/.test(s)) {
+    h = s;
+    m = '00';
+  }
+
+  if (!/^\d+$/.test(h) || !/^\d+$/.test(m)) return s; // 숫자 아님 → 원본 반환
+
+  h = String(Math.max(0, Math.min(23, Number(h)))).padStart(2, '0');
+  m = String(Math.max(0, Math.min(59, Number(m)))).padStart(2, '0');
+
+  return `${h}:${m}`;
+}
+
+// 문자열 트림 유틸
+function t(v) {
+  return (v == null) ? '' : String(v).trim();
+}
+
+/*** 웹앱 ***/
+function doGet(e) {
+  return HtmlService
+    .createTemplateFromFile('index')
+    .evaluate()
+    .setTitle('공실 예약 시스템')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+/*** 시트 핸들러 ***/
+function _getSheet_() {
+  return SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+}
+
+/*** 슬롯 캐시(get/put) ***/
+function _getSlotSetFromCache_() {
+  const cache = CacheService.getScriptCache();
+  const key = `slots:${SPREADSHEET_ID}:${SHEET_NAME}`;
+  const json = cache.get(key);
+  return { set: json ? new Set(JSON.parse(json)) : null, key, cache };
+}
+
+function _putSlotSetToCache_(ctx) {
+  ctx.cache.put(ctx.key, JSON.stringify(Array.from(ctx.set)), 120);
+}
+
+/*** 시트 -> Set (E:F:G) : 시간은 HH:mm으로 정규화
+ *   - STATUS_COL(예약상태)이 있으면 "예약취소" 행은 제외
+ ***/
+function _buildSlotSetFromSheet_() {
+  const sh = _getSheet_();
+  const lastRow = sh.getLastRow();
+  if (lastRow <= 1) return new Set();
+
+  // E,F,G
+  const triples = sh.getRange(2, 5, lastRow - 1, 3).getDisplayValues();
+  const lastCol = sh.getLastColumn();
+  const hasStatus = lastCol >= STATUS_COL;
+
+  // I: 예약상태
+  let statusValues = [];
+  if (hasStatus) {
+    statusValues = sh
+      .getRange(2, STATUS_COL, lastRow - 1, 1)
+      .getDisplayValues()
+      .map(r => t(r[0]));
+  }
+
+  const set = new Set();
+  const excludeStates = ['예약취소', '취소완료'];
+
+  for (let i = 0; i < triples.length; i++) {
+    const room = t(triples[i][0]);
+    const date = t(triples[i][1]);
+    const time = toHHmm(triples[i][2]);
+
+    if (!room || !date || !time) continue;
+
+    // ❗ 특정 상태는 슬롯에서 제외
+    if (hasStatus && excludeStates.includes(statusValues[i])) continue;
+
+    set.add(`${room}|${date}|${time}`);
+  }
+
+  return set;
+}
+
+/*** 전체 예약 조회 (room/date/time)
+ *   - STATUS_COL이 있으면 "예약취소"는 제외
+ ***/
+function getAllReservations() {
+  const sh = _getSheet_();
+  const lastRow = sh.getLastRow();
+  if (lastRow <= 1) return [];
+
+  const lastCol = sh.getLastColumn();
+  const hasStatus = lastCol >= STATUS_COL;
+
+  // E,F,G
+  const triples = sh.getRange(2, 5, lastRow - 1, 3).getDisplayValues();
+
+  // I: 예약상태
+  let statusValues = [];
+  if (hasStatus) {
+    statusValues = sh
+      .getRange(2, STATUS_COL, lastRow - 1, 1)
+      .getDisplayValues()
+      .map(r => t(r[0]));
+  }
+
+  const reservations = [];
+  const excludeStates = ['예약취소', '취소완료'];
+
+  for (let i = 0; i < triples.length; i++) {
+    const room = t(triples[i][0]);
+    const date = t(triples[i][1]);
+    const time = toHHmm(triples[i][2]);
+    const status = hasStatus ? statusValues[i] : '';
+
+    if (!room || !date || !time) continue;
+    if (hasStatus && excludeStates.includes(status)) continue;
+
+    reservations.push({ room, date, time, status });
+  }
+
+  return reservations;
+}
+
+/*** 가용성 체크 (캐시 우선) — 시간 정규화 ***/
+function isTimeSlotAvailable(room, date, time) {
+  const { set, key, cache } = _getSlotSetFromCache_();
+  let slotSet = set;
+
+  if (!slotSet) {
+    slotSet = _buildSlotSetFromSheet_();
+    cache.put(key, JSON.stringify(Array.from(slotSet)), 120);
+  }
+
+  return !slotSet.has(`${t(room)}|${t(date)}|${toHHmm(time)}`);
+}
+
+/*** 예약 생성: 여러 시간(times[]) + 예약내용 저장 — 시간 정규화
+ *   - I열(STATUS_COL)에 "예약대기" 기록
+ ***/
+function makeReservation(form) {
+  const name = (form && form.name) || '';
+  const contact = (form && form.contact) || '';
+  const notes = (form && (form.notes ?? form.note ?? form.memo)) || '';
+  const room = (form && form.room) || '';
+  const date = (form && form.date) || '';
+
+  let times = [];
+  if (Array.isArray(form.times)) {
+    times = form.times.slice();
+  } else if (form.time) {
+    times = [form.time];
+  }
+
+  if (!name || !contact || !room || !date || !times.length) {
+    return { success: false, message: '모든 필드와 최소 1개의 시간을 선택해주세요.' };
+  }
+
+  // 시간 정규화 + 중복 제거 + 정렬
+  times = Array.from(new Set(times.map(toHHmm))).filter(Boolean).sort();
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+
+  try {
+    // 1) 전 슬롯 가용성 재검증
+    const conflicts = [];
+    for (const t0 of times) {
+      if (!isTimeSlotAvailable(room, date, t0)) conflicts.push(t0);
+    }
+
+    if (conflicts.length) {
+      return { success: false, message: `이미 예약된 시간이 있습니다: ${conflicts.join(', ')}` };
+    }
+
+    // 2) 배치 쓰기
+    const sh = _getSheet_();
+    const stamp = new Date();
+
+    const rows = times.map(t0 => ([
+      form.department || '',                                       // A: 부서
+      name,                                                        // B: 이름
+      contact,                                                     // C: 연락처
+      notes,                                                       // D: 예약내용
+      room,                                                        // E: 장소
+      date,                                                        // F: 날짜 (yyyy-MM-dd 권장)
+      t0,                                                          // G: 시간 (HH:mm)
+      Utilities.formatDate(stamp, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss'), // H: 등록일시
+      '예약대기'                                                   // I: 예약상태
+    ]));
+
+    const startRow = sh.getLastRow() + 1;
+    sh.getRange(startRow, 1, rows.length, 9).setValues(rows);      // ✅ 9열까지 쓰기
+
+    notifyN8N({
+      department: form.department || '',
+      name,
+      contact,
+      notes,
+      room,
+      date,
+      times,
+      stamp
+    });
+
+    // 3) 캐시 갱신
+    const cacheCtx = _getSlotSetFromCache_();
+    let slotSet = cacheCtx.set;
+    if (!slotSet) slotSet = _buildSlotSetFromSheet_();
+
+    for (const t0 of times) {
+      slotSet.add(`${room}|${date}|${t0}`);
+    }
+
+    cacheCtx.set = slotSet;
+    _putSlotSetToCache_(cacheCtx);
+
+    return { success: true, message: `${times.length}건 예약이 완료되었습니다.` };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/*** n8n 알림 (예약 생성) ***/
+function notifyN8N(data) {
+  UrlFetchApp.fetch(N8N, {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify({
+      부서: data.department,
+      이름: data.name,
+      연락처: data.contact,
+      예약내용: data.notes,
+      장소: data.room,
+      날짜: data.date,
+      시간들: data.times,
+      등록일시: Utilities.formatDate(data.stamp, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss')
+    }),
+    muteHttpExceptions: true
+  });
+}
+
+/*** ✅ n8n 알림 (예약 취소) ***/
+function notifyCancelN8N(data) {
+  try {
+    UrlFetchApp.fetch(N8N_CANCEL, {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify(data),
+      muteHttpExceptions: true
+    });
+  } catch (e) {
+    Logger.log('notifyCancelN8N error: ' + e);
+  }
+}
+
+/*** ✅ 사용자 최근 1개월 예약 조회 (시간은 "12시" 형태로 반환)
+ *   - 예약상태도 함께 반환 (있으면)
+ ***/
+function getUserReservations(query) {
+  const name = (query && query.name || '').trim();
+  const contact = (query && query.contact || '').trim();
+  if (!name || !contact) return [];
+
+  const sh = _getSheet_();
+  const values = sh.getDataRange().getValues();
+  if (values.length <= 1) return []; // 헤더만 있는 경우
+
+  const tz = Session.getScriptTimeZone();
+  const today = new Date();
+  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const from = new Date(todayOnly);
+  from.setDate(from.getDate() - 30); // 최근 30일
+
+  const lastCol = sh.getLastColumn();
+  const hasStatus = lastCol >= STATUS_COL;
+
+  const results = [];
+
+  for (let r = 1; r < values.length; r++) { // 0행은 헤더
+    const row = values[r];
+    const dept   = row[0]; // A: 부서
+    const n      = row[1]; // B: 이름
+    const c      = row[2]; // C: 연락처
+    const notes  = row[3]; // D: 예약내용
+    const room   = row[4]; // E: 장소
+    const dateV  = row[5]; // F: 날짜
+    const timeV  = row[6]; // G: 시간
+    const status = hasStatus ? t(row[STATUS_COL - 1]) : '';
+    const excludeStates = ['예약취소', '취소완료'];
+
+// ❗ 상태가 취소된 예약은 조회 결과에서 제외
+    if (excludeStates.includes(status)) continue;
+
+
+    if (String(n).trim() !== name || String(c).trim() !== contact) continue;
+
+    // 날짜 처리 (yyyy-MM-dd)
+    let dateObj = null;
+    let dateStr = '';
+
+    if (dateV instanceof Date) {
+      dateObj = new Date(dateV.getFullYear(), dateV.getMonth(), dateV.getDate());
+      dateStr = Utilities.formatDate(dateV, tz, 'yyyy-MM-dd');
+    } else {
+      const s = t(dateV);
+      dateStr = s;
+      const parts = s.split('-');
+      if (parts.length === 3) {
+        dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      }
+    }
+
+    if (!dateObj) continue;
+    if (dateObj < from) continue; // 30일 이전이면 제외
+
+    // 시간 처리 ("12시" 형태)
+    let timeStr = '';
+    if (timeV instanceof Date) {
+      const hh = Utilities.formatDate(timeV, tz, 'H'); // 0~23
+      timeStr = hh + '시';
+    } else {
+      const norm = toHHmm(timeV); // "HH:mm"
+      if (norm) {
+        const hh = Number(norm.split(':')[0]);
+        timeStr = hh + '시';
+      } else {
+        timeStr = t(timeV);
+      }
+    }
+
+    results.push({
+      row: r + 1,              // 실제 시트 행 번호 (1-based)
+      department: dept,
+      name: n,
+      contact: c,
+      notes: notes || '',
+      room: String(room),
+      date: dateStr,
+      time: timeStr,
+      status: status           // 필요하면 프론트에서 표시
+    });
+  }
+
+  return results;
+}
+
+/*** ✅ 예약 취소
+ *  - 예약페이지 시트에 행은 그대로 두고
+ *  - STATUS_COL(예약상태)을 "예약취소"로 변경
+ *  - 캐시 갱신
+ *  - n8n으로 취소 payload 전송
+ */
+function cancelReservation(row) {
+  row = Number(row);
+  if (!row || row < 2) {  // 1행은 헤더라고 가정
+    throw new Error('취소할 수 없는 행 번호입니다.');
+  }
+
+  const sh = _getSheet_();  // 예약페이지 시트
+  const lastRow = sh.getLastRow();
+  if (row > lastRow) {
+    throw new Error('이미 삭제되었거나 존재하지 않는 예약입니다.');
+  }
+
+  const lastCol   = sh.getLastColumn();
+  const rowValues = sh.getRange(row, 1, 1, lastCol).getValues()[0]; // [A,B,C,...]
+
+  const tz      = Session.getScriptTimeZone();
+  const room    = t(rowValues[4]);                     // E: 장소
+  const dateRaw = rowValues[5];                        // F: 날짜
+  const timeRaw = rowValues[6];                        // G: 시간
+
+  const dateStr = (dateRaw instanceof Date)
+    ? Utilities.formatDate(dateRaw, tz, 'yyyy-MM-dd')
+    : t(dateRaw);
+  const timeStr = toHHmm(timeRaw);                     // "HH:mm" 로 정규화
+
+  const cancelledAt = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd HH:mm:ss');
+
+  // 1) 예약상태 열을 "예약취소"로 변경
+  if (lastCol >= STATUS_COL) {
+    sh.getRange(row, STATUS_COL).setValue('예약취소');
+  }
+
+  // 2) n8n으로 보낼 payload 준비
+  const payload = {
+    action:    'cancel',
+    row:       row,
+    부서:      rowValues[0],   // A
+    이름:      rowValues[1],   // B
+    연락처:    rowValues[2],   // C
+    예약내용:  rowValues[3],   // D
+    장소:      room,           // E
+    날짜:      dateStr,        // F
+    시간:      timeStr,        // G
+    등록일시:  rowValues[7],   // H
+    취소일시:  cancelledAt,    // (시트에는 안 넣고 payload로만 전송)
+    예약상태:  '예약취소'
+  };
+
+    // 3) n8n 취소 웹훅 호출
+  notifyCancelN8N(payload);
+
+  // 4) 캐시를 시트 기준으로 재구성 (예약취소 반영)
+  const cacheCtx = _getSlotSetFromCache_();
+  cacheCtx.set = _buildSlotSetFromSheet_();
+  _putSlotSetToCache_(cacheCtx);
+
+  // 행 삭제는 하지 않음
+  return { success: true };
+}
+
+
+/*** HTML include ***/
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}

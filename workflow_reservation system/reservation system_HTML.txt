@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>공실 예약 시스템</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    :root{
+      --blue-900:#0D47A1; --blue-700:#1976D2; --blue-500:#42A5F5; --blue-100:#E3F2FD;
+      --chip-bg:#F5FAFF; --chip-border:#CFE8FF; --text:#0D47A1; --ok:#1E88E5;
+    }
+    *{box-sizing:border-box}
+    body{
+      background:linear-gradient(180deg,#E6F2FF 0%,#F7FBFF 100%);
+      color:var(--text); margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;
+    }
+    .appbar{
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(135deg,#2196F3 0%,#64B5F6 60%,#90CAF9 100%);
+      color:#fff; padding:16px 18px; box-shadow:0 6px 20px rgba(0,0,0,.08);
+      border-bottom-left-radius:16px; border-bottom-right-radius:16px;
+    }
+    .appbar h1{ margin:0; font-size:20px; font-weight:700; letter-spacing:.2px; }
+    .screen{ max-width:920px; margin:16px auto; padding:0 12px; }
+    .card-ui{ border:none; border-radius:18px; background:#fff; box-shadow:0 10px 30px rgba(13,71,161,.08); }
+    .card-ui .card-header{
+      border:0; border-top-left-radius:18px; border-top-right-radius:18px;
+      background:linear-gradient(135deg,#BBDEFB 0%,#E3F2FD 100%); color:var(--blue-900); font-weight:700;
+    }
+    .label{ font-weight:600; font-size:14px; margin-bottom:6px; color:var(--blue-900); }
+    .form-control,.form-select{ background:#fff; border-radius:12px; border:1px solid #D9E8FF; }
+    .hint{ font-size:12px; color:#5b87c8 }
+    .chips-wrap{ display:flex; flex-wrap:wrap; gap:8px; }
+    .chip{
+      padding:10px 14px; border-radius:999px; border:1px solid var(--chip-border);
+      background:var(--chip-bg); color:var(--blue-900); font-weight:600; font-size:14px; cursor:pointer;
+      transition:transform .06s ease, box-shadow .12s ease, background .2s ease; user-select:none;
+    }
+    .chip:hover{ transform:translateY(-1px); box-shadow:0 4px 10px rgba(25,118,210,.12); }
+    .chip.active{
+      background:linear-gradient(135deg,#42A5F5 0%,#1E88E5 100%); color:#fff; border-color:transparent;
+      box-shadow:0 6px 18px rgba(30,136,229,.22);
+    }
+    .chip.disabled{ background:#F2F6FB; color:#9EB7D9; border-color:#E3ECF9; cursor:not-allowed; text-decoration:line-through; }
+    .btn-primary{
+      background:linear-gradient(135deg,#42A5F5 0%,#1E88E5 100%); border:none; border-radius:14px; padding:.9rem 1.1rem;
+      font-weight:700; box-shadow:0 10px 24px rgba(30,136,229,.24);
+    }
+    .btn-primary:disabled{ background:#B9D9FF; box-shadow:none; }
+    .btn-outline-primary{ border-radius:14px; font-weight:700; color:var(--blue-700); border-color:#90CAF9; }
+    .btn-outline-primary:hover{ background:#E3F2FD; }
+    .success-badge{ display:inline-block; padding:8px 12px; border-radius:999px; background:#E8F4FF; color:#1976D2; font-weight:700; font-size:13px; border:1px solid #CFE8FF; }
+    .footnote{ font-size:12px; color:#6C8EC4; text-align:center; margin:18px 0 40px; }
+    @media (min-width: 992px){ .grid-2{ display:grid; grid-template-columns: 1.1fr .9fr; gap:20px; } }
+  </style>
+</head>
+<body>
+  <header class="appbar">
+    <h1>공실 예약 시스템</h1>
+  </header>
+
+  <main class="screen">
+    <!-- 예약 폼 -->
+    <section id="formCard" class="card-ui mb-4">
+      <div class="card-header p-3 px-4">공실 예약</div>
+      <div class="card-body p-4">
+        <div class="grid-2">
+          <div>
+            <div class="mb-3">
+              <div class="label">부서</div>
+              <input id="department" type="text" class="form-control" placeholder="예) 인사팀" />
+            </div>
+            <div class="mb-3">
+              <div class="label">이름</div>
+              <input id="name" type="text" class="form-control" placeholder="예약자 이름" />
+            </div>
+            <div class="mb-3">
+              <div class="label">이메일(슬랙)</div>
+              <input id="contact" type="text" class="form-control" placeholder="예) abcd1234@gmail.com" />
+            </div>
+            <div class="mb-3">
+              <div class="label">예약 내용</div>
+              <textarea id="notes" name="notes" class="form-control" rows="3"
+                        placeholder="용도, 참석 인원, 특이사항 등 (선택)"></textarea>
+            </div>
+            <div class="mb-3">
+              <div class="label">장소</div>
+              <select id="room" class="form-select">
+                <option value="">-- 선택하세요 --</option>
+                <option>101</option>
+                <option>102</option>
+                <option>103</option>
+                <option>104</option>
+                <option>105</option>
+                <option>201</option>
+                <option>202</option>
+                <option>203</option>
+                <option>204</option>
+                <option>205</option>
+              </select>
+            </div>
+            <div class="mb-1">
+              <div class="label">날짜</div>
+              <input id="date" type="date" class="form-control" />
+              <div class="hint mt-1">오늘부터 한 달 범위 내에서 선택 가능</div>
+            </div>
+          </div>
+
+          <!-- 시간 칩 (다중 선택) -->
+          <div>
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="label m-0">예약 가능 시간 (여러 개 선택 가능)</div>
+              <span class="hint">09:00 ~ 23:00</span>
+            </div>
+            <div id="chipsContainer" class="chips-wrap"></div>
+            <div class="hint mt-2" id="selectedSummary"></div>
+          </div>
+        </div>
+
+        <div class="d-grid mt-4">
+          <button id="submitBtn" class="btn btn-primary btn-lg" disabled>예약하기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 예약 완료 화면 -->
+    <section id="resultCard" class="card-ui text-center p-4" style="display:none;">
+      <div class="mb-2"><span class="success-badge">예약 완료</span></div>
+      <h4 id="resultMessage" class="mt-2 mb-2"></h4>
+      <p id="resultDetails" class="mb-4" style="white-space:pre-line;"></p>
+      <button id="newBtn" class="btn btn-outline-primary">새 예약하기</button>
+    </section>
+
+    <!-- ✅ 예약 확인 / 취소 카드 -->
+    <section id="lookupCard" class="card-ui mb-4">
+      <div class="card-header p-3 px-4">예약 확인 및 취소</div>
+      <div class="card-body p-4">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <div class="label">이름</div>
+            <input id="lookupName" type="text" class="form-control" placeholder="예약자 이름" />
+          </div>
+          <div class="col-md-4">
+            <div class="label">이메일(슬랙)</div>
+            <input id="lookupContact" type="text" class="form-control" placeholder="예) abcd1234@gmail.com" />
+          </div>
+          <div class="col-md-4 d-grid">
+            <button id="lookupBtn" class="btn btn-outline-primary">예약조회</button>
+          </div>
+        </div>
+        <hr class="my-3" />
+        <div id="lookupResult" class="table-responsive small"></div>
+      </div>
+    </section>
+
+    <div class="footnote">© 지지플랩</div>
+  </main>
+
+  <script>
+    /* ===== 기본 상태 ===== */
+    const allTimes = Array.from({ length: 15 }, (_, i) => String(9 + i).padStart(2, "0") + ":00"); // 09~23
+    let reservationCache = [];
+    let selectedTimes = new Set(); // 다중 선택 보관
+
+    const chipsContainer = document.getElementById("chipsContainer");
+    const summaryEl = document.getElementById("selectedSummary");
+
+    /* ===== 날짜 범위 ===== */
+    (function setDateRange() {
+      const today = new Date();
+      const min = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+      const maxDate = new Date(today); maxDate.setMonth(maxDate.getMonth()+1);
+      const max = `${maxDate.getFullYear()}-${String(maxDate.getMonth()+1).padStart(2,"0")}-${String(maxDate.getDate()).padStart(2,"0")}`;
+      const dateInput = document.getElementById("date");
+      dateInput.setAttribute("min", min);
+      dateInput.setAttribute("max", max);
+    })();
+
+    /* ===== 이벤트 ===== */
+    ["department","name","contact"].forEach(id=>{
+      document.getElementById(id).addEventListener("input", checkFormValidity);
+    });
+    document.getElementById("room").addEventListener("change", ()=>{ loadTimes(); checkFormValidity(); });
+    document.getElementById("date").addEventListener("change", ()=>{ loadTimes(); checkFormValidity(); });
+
+    /* ===== 칩 렌더링 (다중 선택) ===== */
+    function renderChips(bookedSet = new Set()){
+      chipsContainer.innerHTML = "";
+      selectedTimes.clear();
+      updateSelectedSummary();
+
+      allTimes.forEach(t=>{
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip";
+        btn.textContent = t;
+        btn.dataset.value = t;
+
+        if (bookedSet.has(t)) {
+          btn.classList.add("disabled");
+        }
+
+        btn.addEventListener("click", ()=>{
+          if (btn.classList.contains("disabled")) return;
+          const v = btn.dataset.value;
+          if (btn.classList.contains("active")) {
+            btn.classList.remove("active");
+            selectedTimes.delete(v);
+          } else {
+            btn.classList.add("active");
+            selectedTimes.add(v);
+          }
+          updateSelectedSummary();
+          checkFormValidity();
+        });
+
+        chipsContainer.appendChild(btn);
+      });
+    }
+
+    function updateSelectedSummary(){
+      if (selectedTimes.size === 0) {
+        summaryEl.textContent = "선택된 시간이 없습니다.";
+      } else {
+        const arr = Array.from(selectedTimes).sort();
+        summaryEl.textContent = `선택된 시간: ${arr.join(", ")}`;
+      }
+    }
+
+    /* ===== 예약불가 반영 ===== */
+    function loadTimes(){
+      const room = document.getElementById("room").value;
+      const date = document.getElementById("date").value;
+      if (!room || !date){ chipsContainer.innerHTML=""; selectedTimes.clear(); updateSelectedSummary(); return; }
+
+      const booked = reservationCache
+        .filter(r => r.room === room && r.date === date)
+        .map(r => r.time);
+      renderChips(new Set(booked));
+    }
+
+    /* ===== 유효성 ===== */
+    function checkFormValidity(){
+      const department = document.getElementById("department").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const contact = document.getElementById("contact").value.trim();
+      const room = document.getElementById("room").value;
+      const date = document.getElementById("date").value;
+      const isValid = department && name && contact && room && date && selectedTimes.size > 0;
+      document.getElementById("submitBtn").disabled = !isValid;
+    }
+
+    /* ===== 제출 (times 배열 + notes 함께 전송) ===== */
+    document.getElementById("submitBtn").addEventListener("click", ()=>{
+      const form = {
+        department: document.getElementById("department").value.trim(),
+        name:       document.getElementById("name").value.trim(),
+        contact:    document.getElementById("contact").value.trim(),
+        notes:      document.getElementById("notes").value.trim(),
+        room:       document.getElementById("room").value,
+        date:       document.getElementById("date").value,
+        times:      Array.from(selectedTimes).sort()
+      };
+
+      google.script.run
+        .withSuccessHandler(onReservationResult)
+        .withFailureHandler(()=>alert("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요."))
+        .makeReservation(form);
+    });
+
+    function onReservationResult(res){
+      if (!res || !res.success) { alert(res?.message || "예약에 실패했습니다."); return; }
+
+      // 완료 화면 전환
+      document.getElementById("formCard").style.display = "none";
+      document.getElementById("resultCard").style.display = "block";
+
+      // 메시지/상세
+      document.getElementById("resultMessage").textContent = res.message;
+      document.getElementById("resultDetails").textContent =
+`장소   : ${document.getElementById("room").value}
+날짜   : ${document.getElementById("date").value}
+시간   : ${Array.from(selectedTimes).sort().join(", ")}
+내용   : ${document.getElementById("notes").value.trim() || "-"}`;
+
+      // 최신 예약 캐시 갱신
+      google.script.run
+        .withSuccessHandler(data => { reservationCache = data || []; })
+        .withFailureHandler(() => { alert("예약 데이터 갱신에 실패했습니다."); })
+        .getAllReservations();
+    }
+
+    // 새 예약하기
+    document.getElementById("newBtn").addEventListener("click", ()=>{
+      ["department","name","contact","notes"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("room").value = "";
+      document.getElementById("date").value = "";
+      selectedTimes.clear();
+      chipsContainer.innerHTML = "";
+      updateSelectedSummary();
+      document.getElementById("formCard").style.display = "block";
+      document.getElementById("resultCard").style.display = "none";
+      checkFormValidity();
+    });
+
+    /* ===== 예약 조회 버튼 이벤트 ===== */
+    document.getElementById("lookupBtn").addEventListener("click", () => {
+      const name = document.getElementById("lookupName").value.trim();
+      const contact = document.getElementById("lookupContact").value.trim();
+      if (!name || !contact) {
+        alert("이름과 연락처를 모두 입력해주세요.");
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(renderLookupResult)
+        .withFailureHandler(() => alert("예약 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."))
+        .getUserReservations({ name, contact });
+    });
+
+    /* ===== 조회 결과 렌더링 + 취소 ===== */
+    function renderLookupResult(list) {
+      const container = document.getElementById("lookupResult");
+      if (!list || list.length === 0) {
+        container.innerHTML = '<p class="hint mb-0">최근 1개월 이내 예약 내역이 없습니다.</p>';
+        return;
+      }
+
+      let html = `
+<table class="table table-sm align-middle mb-0">
+  <thead class="table-light">
+    <tr>
+      <th>날짜</th>
+      <th>시간</th>
+      <th>장소</th>
+      <th>내용</th>
+      <th style="width:90px;">취소</th>
+    </tr>
+  </thead>
+  <tbody>
+`;
+      list.forEach(item => {
+        const safeNotes = item.notes || "-";
+        html += `
+    <tr data-row="${item.row}">
+      <td>${item.date}</td>
+      <td>${item.time}</td>
+      <td>${item.room}</td>
+      <td>${safeNotes}</td>
+      <td>
+        <button type="button"
+                class="btn btn-sm btn-outline-danger cancel-btn"
+                data-row="${item.row}">
+          취소
+        </button>
+      </td>
+    </tr>`;
+      });
+      html += "</tbody></table>";
+      container.innerHTML = html;
+
+      // 취소 버튼 이벤트 연결
+      container.querySelectorAll(".cancel-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const row = btn.dataset.row;
+          const tr = btn.closest("tr");
+          const date = tr.children[0].textContent;
+          const time = tr.children[1].textContent;
+          const room = tr.children[2].textContent;
+
+          if (!confirm(`${date} ${time}, ${room} 예약을 취소하시겠습니까?`)) return;
+
+          google.script.run
+            .withSuccessHandler(() => {
+              alert("예약이 취소되었습니다.");
+              // 테이블에서 해당 행 제거
+              tr.remove();
+              if (!container.querySelector("tbody tr")) {
+                container.innerHTML = '<p class="hint mb-0">최근 1개월 이내 예약 내역이 없습니다.</p>';
+              }
+              // 예약 캐시도 갱신해서 시간 칩 반영
+              google.script.run
+                .withSuccessHandler(data => { reservationCache = data || []; })
+                .withFailureHandler(()=>{})
+                .getAllReservations();
+            })
+            .withFailureHandler(() => {
+              alert("예약 취소에 실패했습니다. 다시 시도해주세요.");
+            })
+            .cancelReservation(row);
+        });
+      });
+    }
+
+    // 초기 로드: 전체 예약 불러오기
+    document.addEventListener("DOMContentLoaded", ()=>{
+      google.script.run
+        .withSuccessHandler(data => { reservationCache = data || []; })
+        .withFailureHandler(()=>alert("예약 데이터를 불러올 수 없습니다."))
+        .getAllReservations();
+    });
+  </script>
+</body>
+</html>
