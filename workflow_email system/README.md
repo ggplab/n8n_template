@@ -12,18 +12,21 @@ Gmail 안읽은 이메일을 자동으로 분석하고, 일정을 캘린더에 �
 
 ### n8n 워크플로우 구조
 
+<img width="1235" height="710" alt="n8n_workflow" src="https://github.com/user-attachments/assets/74724e2a-4036-4fd1-b2d2-5264eea4b3df" />
 
 
 ### 실제 결과물
 
 **Google Sheets 자동 기록**
 
+<img width="1272" height="420" alt="google sheets" src="https://github.com/user-attachments/assets/a4ae5cc8-ba64-4fd4-bdbd-78579810db43" />
 
 
 **Google Calendar 자동 등록**
 
+<img width="410" height="330" alt="calendar" src="https://github.com/user-attachments/assets/d3b50e0d-a581-4cf8-8ec4-58dcb63df2f3" />
 
-
+<img width="508" height="214" alt="calendar2" src="https://github.com/user-attachments/assets/ca320b85-7a8c-4ba1-a4f4-c2c8c2db67a8" />
 
 
 ---
