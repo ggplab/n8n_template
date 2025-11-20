@@ -24,9 +24,9 @@ ___
 
 ![n8n_Slack_Attendance_Bot](https://github.com/user-attachments/assets/d5263c59-f7d3-4aea-9689-93db5d07fea4)
 
-<img width="1189" height="947" alt="Attendance_slack" src="https://github.com/user-attachments/assets/7e4ce1c8-bc28-4791-a821-cd92cdddb20f" />
+<img width="350" height="400" alt="Attendance_slack" src="https://github.com/user-attachments/assets/7e4ce1c8-bc28-4791-a821-cd92cdddb20f" />
 
-<img width="693" height="618" alt="Attendance_Sheet" src="https://github.com/user-attachments/assets/2af8fc78-01f8-4250-8016-b321d53de67b" />
+<img width="350" height="400" alt="Attendance_Sheet" src="https://github.com/user-attachments/assets/2af8fc78-01f8-4250-8016-b321d53de67b" />
 
 
 
