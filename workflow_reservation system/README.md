@@ -102,7 +102,3 @@
         - const N8N         = '예약등록 트리거 웹훅 url’
         - const N8N_CANCEL  = '예약취소 트리거 웹훅 url'
 7. 배포를 통해 앱 배포
-
-파일
-
-https://github.com/bitsoo97/personal_Portfolio/tree/main/Reservation%20System(%EA%B3%B5%EC%8B%A4%EC%98%88%EC%95%BD%20%EC%8B%9C%EC%8A%A4%ED%85%9C)
