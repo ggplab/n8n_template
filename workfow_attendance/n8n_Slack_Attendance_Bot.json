@@ -63,7 +63,7 @@
         "operation": "replies",
         "channelId": {
           "__rl": true,
-          "value": "Slack Channel ID",
+          "value": "C09S7DBUPND",
           "mode": "list",
           "cachedResultName": "5_출퇴근기록"
         },
@@ -82,8 +82,8 @@
       "alwaysOutputData": true,
       "credentials": {
         "slackApi": {
-          "id": "slackApi",
-          "name": "Slack API Credential 이름"
+          "id": "DZqnGA19NOY6Mv6p",
+          "name": "소정_n8n_슬랙봇"
         }
       }
     },
@@ -107,7 +107,7 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "Google Sheet ID",
+          "value": "1xQYG995Z2sr8L5Vn4rYmhS4jxOnc_SZYjhP2BP1p4TE",
           "mode": "list",
           "cachedResultName": "[지지플랩] 근태내역",
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xQYG995Z2sr8L5Vn4rYmhS4jxOnc_SZYjhP2BP1p4TE/edit?usp=drivesdk"
@@ -200,8 +200,8 @@
       "name": "Append row in sheet1",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "google api",
-          "name": "Google Sheets Credential 이름"
+          "id": "QLDucekUa7nEFVy5",
+          "name": "소정_n8n_구글시트"
         }
       }
     },
@@ -210,7 +210,7 @@
         "operation": "getPermalink",
         "channelId": {
           "__rl": true,
-          "value": "Slack Channel ID",
+          "value": "C09S7DBUPND",
           "mode": "list",
           "cachedResultName": "5_출퇴근기록"
         },
@@ -227,8 +227,8 @@
       "webhookId": "37618eb3-fc07-41a0-b7bb-086fe0f3d0f4",
       "credentials": {
         "slackApi": {
-          "id": "slackApi",
-          "name": "Slack API Credential 이름"
+          "id": "DZqnGA19NOY6Mv6p",
+          "name": "소정_n8n_슬랙봇"
         }
       }
     },
@@ -249,7 +249,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = [];\nconst EXCLUDED_USER_ID = 'Manager's Slack User ID'; // 제외할 관리자 ID를 변수로 선언\n\n// 입력된 모든 항목(Slack 메시지)을 반복합니다.\nfor (const item of $input.all()) {\n  const user = item.json.user; // 메시지 작성자 ID\n  const text = item.json.text; // 메시지 내용\n\n  // 1. 슬랙봇이 아니어야 합니다.\n  const isNotBot = user !== 'USLACKBOT'; \n  \n  // 2. 관리자 ID (Manager's Slack User ID)가 아니어야 합니다.\n  const isNotAdmin = user !== EXCLUDED_USER_ID; \n\n  // 3. 텍스트에 '출근' 또는 '퇴근'이 포함되어야 합니다.\n  const isCheckInOut = text && (text.includes('출근') || text.includes('퇴근'));\n  \n  // 세 조건 (봇이 아님 && 관리자가 아님 && 출퇴근 키워드 포함)이 모두 참일 경우에만 출력합니다.\n  if (isNotBot && isNotAdmin && isCheckInOut) {\n    items.push(item);\n  }\n}\n\nreturn items;"
+        "jsCode": "const items = [];\nconst EXCLUDED_USER_ID = 'U09PV8GNYDV'; // 제외할 관리자 ID를 변수로 선언\n\n// 입력된 모든 항목(Slack 메시지)을 반복합니다.\nfor (const item of $input.all()) {\n  const user = item.json.user; // 메시지 작성자 ID\n  const text = item.json.text; // 메시지 내용\n\n  // 1. 슬랙봇이 아니어야 합니다.\n  const isNotBot = user !== 'USLACKBOT'; \n  \n  // 2. 관리자 ID (U09PV8GNYDV)가 아니어야 합니다.\n  const isNotAdmin = user !== EXCLUDED_USER_ID; \n\n  // 3. 텍스트에 '출근' 또는 '퇴근'이 포함되어야 합니다.\n  const isCheckInOut = text && (text.includes('출근') || text.includes('퇴근'));\n  \n  // 세 조건 (봇이 아님 && 관리자가 아님 && 출퇴근 키워드 포함)이 모두 참일 경우에만 출력합니다.\n  if (isNotBot && isNotAdmin && isCheckInOut) {\n    items.push(item);\n  }\n}\n\nreturn items;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -280,8 +280,8 @@
       "webhookId": "bcfbc727-3c5c-4164-9140-6355ab0309e0",
       "credentials": {
         "slackApi": {
-          "id": "slackApi",
-          "name": "Slack API Credential 이름"
+          "id": "DZqnGA19NOY6Mv6p",
+          "name": "소정_n8n_슬랙봇"
         }
       }
     },
@@ -292,7 +292,7 @@
         ],
         "channelId": {
           "__rl": true,
-          "value": "Slack Channel ID",
+          "value": "C09S7DBUPND",
           "mode": "list",
           "cachedResultName": "5_출퇴근기록"
         },
@@ -309,8 +309,8 @@
       "webhookId": "588c964c-0ceb-4201-8062-2b46d11afd32",
       "credentials": {
         "slackApi": {
-          "id": "slackApi",
-          "name": "Slack API Credential 이름"
+          "id": "DZqnGA19NOY6Mv6p",
+          "name": "소정_n8n_슬랙봇"
         }
       }
     },
