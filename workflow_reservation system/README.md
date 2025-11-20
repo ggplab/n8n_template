@@ -8,13 +8,14 @@
 
 - **n8n화면**
 
-![image.png](image.png)
+<img width="1459" height="730" alt="image" src="https://github.com/user-attachments/assets/ad5bccad-21f2-4588-9e22-799f617ad9a8" />
+
 
 - **예약화면**
 
-![image.png](image%201.png)
+<img width="1896" height="915" alt="image 1" src="https://github.com/user-attachments/assets/93f49205-894d-4032-b739-0ef2fdbd1b37" />
 
-![image.png](image%202.png)
+<img width="1063" height="256" alt="image 2" src="https://github.com/user-attachments/assets/7f00df71-d1e8-46de-ade1-0e3b19786845" />
 
 ## 📃 목차
 
