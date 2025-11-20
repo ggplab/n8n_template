@@ -1,0 +1,848 @@
+{
+  "name": "📧 이메일 자동 분류 시스템 (Sender Filter)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "bc805125-feeb-48db-97a5-f3d0a12d5565",
+      "name": "차단된 발신자 - 무시2",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        96
+      ],
+      "notes": "블랙리스트 발신자는 처리하지 않고 종료"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 20,
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "id": "15070c55-a471-46ef-ae07-a1ee8661b776",
+      "name": "2. 안읽은 이메일 가져오기",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -2640,
+        -64
+      ],
+      "webhookId": "REPLACE_WITH_WEBHOOK_ID",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// (1) Execute Once 끄고, 이 코드만 남겨두기\nconst item = $input.item.json;\n\n// OpenAI 응답 텍스트 추출\nconst response =\n  item.message?.content ??\n  (item.choices?.[0]?.message?.content ?? '');\n\nif (!response) {\n  return {\n    json: {\n      ...item,                     // 혹시라도 들어온 필드는 유지\n      category: '분류 실패',\n      priority: '보통',\n      summary: 'OpenAI 응답이 비어 있습니다.',\n      has_schedule: false,\n      schedule_info: '',\n      action_required: '',\n      days_until: null,\n      processed_at: new Date().toISOString(),\n      error: 'No content from OpenAI',\n    },\n  };\n}\n\ntry {\n  let jsonStr = response;\n  if (jsonStr.includes('```json')) {\n    jsonStr = jsonStr.split('```json')[1].split('```')[0];\n  } else if (jsonStr.includes('```')) {\n    jsonStr = jsonStr.split('```')[1].split('```')[0];\n  }\n\n  const analysis = JSON.parse(jsonStr.trim());\n\n  return {\n    json: {\n      // ① 원래 들어온 모든 필드 먼저 유지\n      ...item,\n\n      // ② 특히 emailId는 혹시 id로만 와도 커버\n      emailId: item.emailId ?? item.id,\n\n      // ③ 발신자 정보\n      senderType: item.senderType,\n      isVIP: item.senderType === 'VIP',\n\n      // ④ AI 분석 결과\n      category: analysis.category,\n      priority: analysis.priority,\n      summary: analysis.summary,\n      has_schedule: analysis.has_schedule,\n      schedule_info: analysis.schedule_info || '',\n      action_required: analysis.action_required || '',\n      days_until: analysis.days_until ?? null,\n\n      processed_at: new Date().toISOString(),\n    },\n  };\n} catch (error) {\n  return {\n    json: {\n      ...item,\n      emailId: item.emailId ?? item.id ?? null,\n      senderType: item.senderType,\n      isVIP: false,\n      category: '분류 실패',\n      priority: '보통',\n      summary: '분석 중 오류 발생: ' + error.message,\n      has_schedule: false,\n      schedule_info: '',\n      action_required: '',\n      days_until: null,\n      processed_at: new Date().toISOString(),\n      error: error.message,\n    },\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2112,
+        -64
+      ],
+      "id": "8d665ad8-8c2f-45d5-9f30-2ff458200180",
+      "name": "3. 이메일 데이터 추출"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 🆕 Sender Filter - 발신자 검증 로직\n\nconst item = $input.item;\n\n// fromEmail 이 없을 수도 있으니 방어 코드\nconst rawFromEmail = item.json.fromEmail || item.json.from || '';\nconst fromEmail = rawFromEmail.toString().toLowerCase();\nconst from = item.json.from || '';\n\n\n// VIP 리스트 - 최우선 처리\nconst vipList = [\n  \"boss@company.com\",\n  \"ceo@company.com\",\n  \"important@client.com\"\n];\n\n// 화이트리스트 - 신뢰할 수 있는 도메인/이메일\nconst whitelist = [\n  \"@yourcompany.com\",      // 회사 도메인\n  \"@partner.com\",          // 파트너사\n  \"@client.com\"            // 고객사\n];\n\n// 블랙리스트 - 차단할 도메인/이메일\nconst blacklist = [\n  \"@spam.com\",\n  \"noreply@marketing\",\n  \"@promotional\",\n  \"@ads.\",\n  \"newsletter@\"\n];\n\n// 도메인 → 카테고리 힌트 매핑\nconst domainCategoryMap = {\n  \"@yourcompany.com\": \"업무\",\n  \"@marketing.com\": \"광고\",\n  \"calendar.google.com\": \"미팅\",\n  \"noreply@system\": \"공지\"\n};\n\n// 만약 fromEmail 자체가 비어 있으면 그냥 \"보통 메일\" 처리\nif (!fromEmail) {\n  return {\n    json: {\n      ...item.json,\n      isValid: true,\n      senderType: \"알 수 없음\",\n      priorityBoost: false,\n      categoryHint: null,\n      note: \"fromEmail 이 비어 있음\"\n    }\n  };\n}\n\n// ================== 아래는 기존 로직 그대로 ==================\n\n// 1. VIP 체크\nconst isVIP = vipList.some(vip => fromEmail.includes(vip.toLowerCase()));\n\nif (isVIP) {\n  return {\n    json: {\n      ...item.json,\n      isValid: true,\n      senderType: \"VIP\",\n      priorityBoost: true,\n      categoryHint: \"업무\"\n    }\n  };\n}\n\n// 2. 블랙리스트 체크\nconst isBlocked = blacklist.some(blocked =>\n  fromEmail.includes(blocked.toLowerCase())\n);\n\nif (isBlocked) {\n  return {\n    json: {\n      ...item.json,\n      isValid: false,\n      senderType: \"차단됨\",\n      reason: \"블랙리스트\"\n    }\n  };\n}\n\n// 3. 화이트리스트 체크\nconst isWhitelisted = whitelist.some(allowed =>\n  fromEmail.includes(allowed.toLowerCase())\n);\n\n// 4. 카테고리 힌트 찾기\nlet categoryHint = null;\nfor (const [domain, category] of Object.entries(domainCategoryMap)) {\n  if (fromEmail.includes(domain.toLowerCase())) {\n    categoryHint = category;\n    break;\n  }\n}\n\n// 최종 결과\nreturn {\n  json: {\n    ...item.json,\n    isValid: true,  // 기본적으로 모든 이메일 처리 (블랙리스트 제외)\n    senderType: isWhitelisted ? \"화이트리스트\" : \"일반\",\n    priorityBoost: false,\n    categoryHint: categoryHint\n  }\n};\n"
+      },
+      "id": "c6f7c7ec-e0af-4a38-90f6-df51793ef7ad",
+      "name": "4. Sender Filter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1744,
+        -64
+      ],
+      "notes": "발신자 검증: VIP, 화이트리스트, 블랙리스트 체크"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isValid }}",
+              "value2": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "892e3966-1610-48c7-96c1-8ff13c4a416b",
+      "name": "5. 발신자 유효성 확인",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1552,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=너는 이메일 비서야. 아래 이메일을 읽고 JSON 하나를 만들어줘.\n\n**중요: 반드시 아래 형식의 순수 JSON만 반환해.**\n**절대 ```json 같은 코드 블록이나 설명 문장을 붙이지 마.**\n\n오늘 날짜: {{ $json.today }}\n\n필드 정의:\n\n- category: \"공지\" | \"업무\" | \"광고\" | \"스팸\" | \"파일전송\" | \"자동알림\" 중 하나\n- priority: \"높음\" | \"보통\" | \"낮음\" 중 하나\n- summary: 한국어로 1~3문장으로 핵심 내용 요약 (반드시 실제 내용 기반)\n- has_schedule: 날짜와 시간(또는 최소한 날짜)이 명확히 숫자로 표현된 경우에만 true\n- schedule_info: 사람이 읽기 좋은 한국어 일정 설명 (일정 있을 때만)\n- schedule_start: ISO8601 형식 시작 시각 (한국 시간 KST, UTC+9)\n- schedule_end: ISO8601 형식 종료 시각 (없으면 null)\n- action_required: 수신자가 해야 할 행동 (없으면 빈 문자열)\n- days_until: 오늘 기준으로 일정까지 남은 날짜 수 (일정 없으면 null)\n\n---\n\n**Category 분류 규칙**\n\n1. **자동알림**:\n   - 발신자: \"notify@\", \"noreply@\", \"no-reply@\", \"automation@\"\n   - 내용: 시스템 자동 발송\n\n2. **광고**:\n   - 발신자: \"marketing@\", \"promo@\", \"newsletter@\", \"master@\"\n   - 내용: \"할인\", \"프로모션\", \"세일\", \"특가\", \"이벤트\"\n\n3. **스팸**:\n   - 내용이 거의 없거나 의미 없는 텍스트\n\n4. **파일전송**:\n   - 첨부파일이 있고 본문이 간단\n\n5. **공지**:\n   - 회사/단체의 공식 공지사항\n   - \"공지\", \"안내\", \"알림\"\n\n6. **업무**:\n   - 위 카테고리에 해당하지 않는 일반 업무 메일\n\n**판단 우선순위**: 자동알림 > 스팸 > 광고 > 파일전송 > 공지 > 업무\n\n---\n\n**날짜/시간 인식 규칙 (매우 중요!)**\n\n### 1. 단일 날짜/시간\n```\n예시: \"12월 8일 오후 2시\"\n→ schedule_start: \"2025-12-08T14:00:00+09:00\"\n→ schedule_end: null\n```\n\n### 2. 기간 (시작~종료) ⭐⭐⭐\n```\n예시 1: \"11월 18일 ~ 11월 24일\"\n→ schedule_start: \"2025-11-18T09:00:00+09:00\" (시작일 09:00)\n→ schedule_end: \"2025-11-24T23:59:59+09:00\" (종료일 23:59)\n\n예시 2: \"11월 18일부터 24일까지\"\n→ schedule_start: \"2025-11-18T09:00:00+09:00\"\n→ schedule_end: \"2025-11-24T23:59:59+09:00\"\n\n예시 3: \"9월 21일 17:00부터 면접 종시 기간\"\n→ schedule_start: \"2025-09-21T17:00:00+09:00\"\n→ schedule_end: null (종료 시각 불명확)\n```\n\n### 3. 특정 시간대\n```\n예시: \"11월 23일 9:00-10:00\"\n→ schedule_start: \"2025-11-23T09:00:00+09:00\"\n→ schedule_end: \"2025-11-23T10:00:00+09:00\"\n```\n\n### 4. 마감일\n```\n예시: \"11월 30일까지 제출\"\n→ schedule_start: \"2025-11-30T23:59:59+09:00\" (마감 시각)\n→ schedule_end: null\n```\n\n### 5. 연도 추론 규칙\n- 오늘이 2025년 11월 19일인 경우:\n  * \"1월 1일\" → 2026-01-01 (미래 날짜)\n  * \"12월 8일\" → 2025-12-08 (올해)\n  * \"11월 18일\" → 2025-11-18 (올해)\n\n### 6. 시간 기본값\n- 시간 명시 없으면: 09:00 (오전 9시)\n- 마감일/종료일: 23:59:59\n- \"오후 2시\" = 14:00\n- \"오전 9시\" = 09:00\n\n### 7. 인식 불가능한 경우\n```\n❌ \"다음 주\", \"조만간\", \"추후\"\n❌ \"30일 이내\", \"15일 이내\"\n→ has_schedule: false\n→ schedule_start: null\n```\n\n---\n\n**파일 첨부 이메일 처리**\n\n첨부파일 정보: {{ $json.hasAttachments ? '있음 (' + $json.attachmentCount + '개)' : '없음' }}\n첨부파일 목록: {{ $json.attachmentNames }}\n\n**규칙**:\n- 첨부파일 있고 본문이 간단하면 category = \"파일전송\"\n- 중요 파일(.xlsx, .pdf, .doc)이면 priority = \"높음\"\n- summary에 파일 정보 포함\n\n---\n\n**Priority 규칙**\n\n1. **높음**:\n   - \"긴급\", \"urgent\", \"ASAP\", \"급함\"\n   - 일정이 3일 이내\n   - 중요 파일 첨부\n   - \"회신 바랍니다\", \"확인 부탁\"\n\n2. **보통**:\n   - 일반 업무 메일\n   - 일정이 3~14일\n\n3. **낮음**:\n   - 자동알림\n   - 광고\n   - 일정 없음\n\n---\n\n**JSON 예시**\n\n**예시 1 - 단일 일정**:\n```json\n{\n  \"category\": \"공지\",\n  \"priority\": \"높음\",\n  \"summary\": \"새해 첫 만남 초대, 1월 1일 오전 11시\",\n  \"has_schedule\": true,\n  \"schedule_info\": \"2026년 1월 1일 오전 11시 명성교회\",\n  \"schedule_start\": \"2026-01-01T11:00:00+09:00\",\n  \"schedule_end\": null,\n  \"action_required\": \"참석 여부 회신\",\n  \"days_until\": 43\n}\n```\n\n**예시 2 - 기간 일정** ⭐:\n```json\n{\n  \"category\": \"업무\",\n  \"priority\": \"보통\",\n  \"summary\": \"11월 18일부터 24일까지 업데이트 일정\",\n  \"has_schedule\": true,\n  \"schedule_info\": \"11월 18일 ~ 11월 24일\",\n  \"schedule_start\": \"2025-11-18T09:00:00+09:00\",\n  \"schedule_end\": \"2025-11-24T23:59:59+09:00\",\n  \"action_required\": \"일정 확인\",\n  \"days_until\": -1\n}\n```\n\n**예시 3 - 마감일**:\n```json\n{\n  \"category\": \"업무\",\n  \"priority\": \"높음\",\n  \"summary\": \"입찰 서류 제출, 11월 30일까지\",\n  \"has_schedule\": true,\n  \"schedule_info\": \"11월 30일까지 제출\",\n  \"schedule_start\": \"2025-11-30T23:59:59+09:00\",\n  \"schedule_end\": null,\n  \"action_required\": \"기한 내 제출 완료\",\n  \"days_until\": 11\n}\n```\n\n**예시 4 - 광고 (일정 없음)**:\n```json\n{\n  \"category\": \"광고\",\n  \"priority\": \"낮음\",\n  \"summary\": \"대신증권 투자정보 및 추천종목 안내\",\n  \"has_schedule\": false,\n  \"schedule_info\": \"\",\n  \"schedule_start\": null,\n  \"schedule_end\": null,\n  \"action_required\": \"\",\n  \"days_until\": null\n}\n```\n\n---\n\n**중요 주의사항**\n\n1. **기간 형식 반드시 인식**:\n   - \"A부터 B까지\", \"A ~ B\", \"A - B\"\n   - schedule_start: A의 시작 시각\n   - schedule_end: B의 종료 시각\n\n2. **ISO8601 형식 엄수**:\n   - 형식: `YYYY-MM-DDTHH:mm:ss+09:00`\n   - 예: `2025-12-08T14:00:00+09:00`\n   - 반드시 `+09:00` 포함 (한국 시간대)\n\n3. **null vs 빈 문자열**:\n   - schedule_start/end: null (ISO8601 아니면 null)\n   - schedule_info: \"\" (일정 없으면 빈 문자열)\n   - action_required: \"\" (없으면 빈 문자열)\n\n4. **has_schedule 판단**:\n   - schedule_start가 null이 아니면 → true\n   - schedule_start가 null이면 → false\n\n5. **발신자 주소로 category 1차 판단**:\n   - master@, marketing@ → 광고\n   - notify@, noreply@ → 자동알림\n\n6. **summary는 항상 실제 내용 기반**:\n   - ❌ \"이메일 본문에 내용이 없어...\"\n   - ✅ 제목이나 발신자 기반 요약",
+              "role": "system"
+            },
+            {
+              "content": "=오늘 날짜: {{ $json.today }}\n\n제목: {{ $json.subject }}\n발신자: {{ $json.from }}\n발신자 타입: {{ $json.senderType }}\n날짜: {{ $json.date }}\n첨부파일: {{ $json.hasAttachments ? '있음 (' + $json.attachmentCount + '개)' : '없음' }}\n첨부파일 목록: {{ $json.attachmentNames }}\n\n내용:\n아래는 이메일의 실제 본문이다:\n{{ $json.cleanBody }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "081f6436-420f-4b9d-a3d9-ab0f9c4766c8",
+      "name": "6. OpenAI로 이메일 분석",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.5,
+      "position": [
+        -1024,
+        -64
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 7. JSON 파싱 및 통합\n\n// 👉 여기 이름을 네 Sender Filter 노드 이름이랑 똑같이 맞춰줘\nconst email = $node[\"4. Sender Filter\"].json;\n\n// OpenAI 응답에서 content 가져오기\nconst response =\n  $json.message?.content ??\n  ($json.choices?.[0]?.message?.content ?? '');\n\nif (!response) {\n  return {\n    json: {\n      ...email,\n      category: '분류 실패',\n      priority: '보통',\n      summary: 'OpenAI 응답이 비어 있습니다.',\n      has_schedule: false,\n      schedule_info: '',\n      schedule_start: null,\n      schedule_end: null,\n      action_required: '',\n      days_until: null,\n      processed_at: new Date().toISOString(),\n      error: 'No content from OpenAI',\n    },\n  };\n}\n\nfunction formatSender(email) {\n  const fe = email.fromEmail ?? email.from;\n  if (!fe) return '';\n\n  // 문자열이면 그대로 사용\n  if (typeof fe === 'string') return fe;\n\n  // Gmail 형식: { value: [{ address, name }], text, ... }\n  if (Array.isArray(fe.value) && fe.value[0]) {\n    const v = fe.value[0];\n    if (v.name && v.address) return `${v.name} <${v.address}>`;\n    return v.address || v.name || '';\n  }\n\n  if (fe.text) return fe.text;\n  if (fe.address) return fe.address;\n\n  return String(fe);\n}\n\nfunction formatDate(value) {\n  const d = new Date(value);\n  if (isNaN(d)) return value;\n  const pad = (n) => String(n).padStart(2, '0');\n  const yyyy = d.getFullYear();\n  const mm = pad(d.getMonth() + 1);\n  const dd = pad(d.getDate());\n  const hh = pad(d.getHours());\n  const mi = pad(d.getMinutes());\n  return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;\n}\n\ntry {\n  const analysis = JSON.parse(response.trim());\n\n  return {\n    json: {\n      // 원본 이메일 정보\n      ...email,\n\n      // 시트용 기본 필드\n      emailId: email.emailId ?? email.id,\n      date: formatDate(email.date),\n      sender: formatSender(email),\n      subject: email.subject,\n\n      // 발신자 정보\n      senderType: email.senderType,\n      isVIP: email.senderType === 'VIP',\n\n      // OpenAI 분석 결과\n      category: analysis.category,\n      priority: analysis.priority,\n      summary: analysis.summary,\n      has_schedule: analysis.has_schedule,\n      schedule_info: analysis.schedule_info || '',\n      schedule_start: analysis.schedule_start || null,\n      schedule_end: analysis.schedule_end || null,\n      action_required: analysis.action_required || '',\n      days_until: analysis.days_until ?? null,\n\n      processed_at: new Date().toISOString(),\n    },\n  };\n} catch (error) {\n  return {\n    json: {\n      ...email,\n      emailId: email.emailId ?? email.id ?? null,\n      date: formatDate(email.date),\n      sender: formatSender(email),\n      subject: email.subject,\n      senderType: email.senderType,\n      isVIP: false,\n      category: '분류 실패',\n      priority: '보통',\n      summary: '분석 중 오류 발생: ' + error.message,\n      has_schedule: false,\n      schedule_info: '',\n      schedule_start: null,\n      schedule_end: null,\n      action_required: '',\n      days_until: null,\n      processed_at: new Date().toISOString(),\n      error: error.message,\n    },\n  };\n}\n"
+      },
+      "id": "f9e6aaa7-22df-4e26-9eff-e03c28b20f6a",
+      "name": "7. JSON 파싱 및 통합",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "이메일 자동화 (샘플)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "email-log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date": "={{ $json.date }}",
+            "sender": "={{ $json.from }}",
+            "subject": "={{ $json.subject }}",
+            "category": "={{ $json.category }}",
+            "priority": "={{ $json.priority }}",
+            "summary": "={{ $json.summary }}",
+            "has_schedule": "={{ $json.has_schedule }}",
+            "schedule_info": "={{ $json.schedule_info }}",
+            "sender_type": "={{ $json.senderType }}",
+            "action_required": "={{ $json.action_required }}",
+            "days_until": "={{ $json.days_until }}",
+            "processed_at": "={{ $json.processed_at }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sender",
+              "displayName": "sender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "has_schedule",
+              "displayName": "has_schedule",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "schedule_info",
+              "displayName": "schedule_info",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sender_type",
+              "displayName": "sender_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "action_required",
+              "displayName": "action_required",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "days_until",
+              "displayName": "days_until",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "processed_at",
+              "displayName": "processed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d191e6cf-b962-40a0-8b85-176009a9355d",
+      "name": "8. Google Sheets에 기록",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -240,
+        -80
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "your-email@example.com",
+          "mode": "list",
+          "cachedResultName": "your-email@example.com"
+        },
+        "start": "={{ $json.schedule_start }}",
+        "end": "={{ $json.schedule_end || $json.schedule_start }}",
+        "additionalFields": {
+          "description": "=발신자: {{ $json.from }}\n카테고리: {{ $json.category }}\n우선순위: {{ $json.priority }}\n\n{{ $json.summary }}\n\n필요 액션: {{ $json.action_required }}",
+          "summary": "=[이메일] {{ $json.subject }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        912,
+        -96
+      ],
+      "id": "a7087fc9-eb27-46aa-a25e-0683f3ca2210",
+      "name": "8.6 Google Calendar 등록",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "id": "9f4e649b-b47a-4842-a894-21978bfc3a67",
+      "name": "1. 매 1시간마다 실행",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2944,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "978fd25f-de09-4101-b5bb-27ce8173cf5a",
+              "leftValue": "={{ $json.has_schedule }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        -80
+      ],
+      "id": "8f35f9cb-666b-4cff-af68-c08146f64a17",
+      "name": "8.56 캘린더 등록 여부 확인"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// ===== schedule_start 강제 생성 노드 =====\n// schedule_info에서 날짜를 추출하여 schedule_start 생성\n\nconst item = $input.item.json;\n\nconsole.log(\"===== schedule_start 생성 시작 =====\");\nconsole.log(\"has_schedule:\", item.has_schedule);\nconsole.log(\"schedule_info:\", item.schedule_info);\nconsole.log(\"기존 schedule_start:\", item.schedule_start);\n\n// 이미 schedule_start가 있으면 그대로 사용\nif (item.schedule_start && item.schedule_start !== null && item.schedule_start !== \"null\") {\n  console.log(\"✓ 기존 schedule_start 사용:\", item.schedule_start);\n  return { json: item };\n}\n\n// schedule_info가 없으면 스킵\nif (!item.schedule_info || item.schedule_info === \"\") {\n  console.log(\"✗ schedule_info 없음, 스킱\");\n  return { json: item };\n}\n\nconst scheduleInfo = item.schedule_info;\nconst now = new Date();\nconst currentYear = now.getFullYear();\nconst currentMonth = now.getMonth() + 1;\n\nlet startDate = null;\nlet endDate = null;\n\n// ===== 패턴 1: \"2026년 1월 1일 오전 11시\" =====\nconst pattern1 = /(\\d{4})년\\s*(\\d{1,2})월\\s*(\\d{1,2})일(?:\\s*(오전|오후)\\s*(\\d{1,2})시)?/;\nconst match1 = scheduleInfo.match(pattern1);\nif (match1) {\n  const year = parseInt(match1[1]);\n  const month = parseInt(match1[2]);\n  const day = parseInt(match1[3]);\n  const ampm = match1[4]; // \"오전\" 또는 \"오후\"\n  let hour = match1[5] ? parseInt(match1[5]) : 9; // 기본 9시\n  \n  // 오후이고 12시가 아니면 +12\n  if (ampm === \"오후\" && hour !== 12) {\n    hour += 12;\n  } else if (ampm === \"오전\" && hour === 12) {\n    hour = 0;\n  }\n  \n  startDate = new Date(year, month - 1, day, hour, 0, 0);\n  console.log(\"✓ 패턴 1 매칭:\", startDate);\n}\n\n// ===== 패턴 2: \"11월 18일\" (연도 없음) =====\nif (!startDate) {\n  const pattern2 = /(\\d{1,2})월\\s*(\\d{1,2})일(?:\\s*(오전|오후)\\s*(\\d{1,2})시)?/;\n  const match2 = scheduleInfo.match(pattern2);\n  if (match2) {\n    const month = parseInt(match2[1]);\n    const day = parseInt(match2[2]);\n    const ampm = match2[3];\n    let hour = match2[4] ? parseInt(match2[4]) : 9;\n    \n    if (ampm === \"오후\" && hour !== 12) {\n      hour += 12;\n    } else if (ampm === \"오전\" && hour === 12) {\n      hour = 0;\n    }\n    \n    // 연도 추론: 과거 날짜면 내년\n    let year = currentYear;\n    const testDate = new Date(year, month - 1, day);\n    if (testDate < now && currentMonth > month) {\n      year = currentYear + 1;\n    }\n    \n    startDate = new Date(year, month - 1, day, hour, 0, 0);\n    console.log(\"✓ 패턴 2 매칭:\", startDate);\n  }\n}\n\n// ===== 패턴 3: \"11월 18일 ~ 11월 24일\" (기간) =====\nif (!startDate) {\n  const pattern3 = /(\\d{1,2})월\\s*(\\d{1,2})일\\s*[~\\-부터]\\s*(\\d{1,2})월?\\s*(\\d{1,2})일/;\n  const match3 = scheduleInfo.match(pattern3);\n  if (match3) {\n    const startMonth = parseInt(match3[1]);\n    const startDay = parseInt(match3[2]);\n    const endMonth = match3[3] ? parseInt(match3[3]) : startMonth;\n    const endDay = parseInt(match3[4]);\n    \n    let year = currentYear;\n    const testDate = new Date(year, startMonth - 1, startDay);\n    if (testDate < now && currentMonth > startMonth) {\n      year = currentYear + 1;\n    }\n    \n    startDate = new Date(year, startMonth - 1, startDay, 9, 0, 0);\n    endDate = new Date(year, endMonth - 1, endDay, 23, 59, 59);\n    console.log(\"✓ 패턴 3 매칭 (기간):\", startDate, \"~\", endDate);\n  }\n}\n\n// ===== 패턴 4: \"2025년 11월 18일부터 24일까지\" =====\nif (!startDate) {\n  const pattern4 = /(\\d{4})년\\s*(\\d{1,2})월\\s*(\\d{1,2})일부터\\s*(\\d{1,2})일까지/;\n  const match4 = scheduleInfo.match(pattern4);\n  if (match4) {\n    const year = parseInt(match4[1]);\n    const month = parseInt(match4[2]);\n    const startDay = parseInt(match4[3]);\n    const endDay = parseInt(match4[4]);\n    \n    startDate = new Date(year, month - 1, startDay, 9, 0, 0);\n    endDate = new Date(year, month - 1, endDay, 23, 59, 59);\n    console.log(\"✓ 패턴 4 매칭 (기간):\", startDate, \"~\", endDate);\n  }\n}\n\n// ===== 패턴 5: \"12월 8일 월요일 오후 2시\" =====\nif (!startDate) {\n  const pattern5 = /(\\d{1,2})월\\s*(\\d{1,2})일\\s*\\w*\\s*(오전|오후)\\s*(\\d{1,2})시/;\n  const match5 = scheduleInfo.match(pattern5);\n  if (match5) {\n    const month = parseInt(match5[1]);\n    const day = parseInt(match5[2]);\n    const ampm = match5[3];\n    let hour = parseInt(match5[4]);\n    \n    if (ampm === \"오후\" && hour !== 12) {\n      hour += 12;\n    } else if (ampm === \"오전\" && hour === 12) {\n      hour = 0;\n    }\n    \n    let year = currentYear;\n    const testDate = new Date(year, month - 1, day);\n    if (testDate < now && currentMonth > month) {\n      year = currentYear + 1;\n    }\n    \n    startDate = new Date(year, month - 1, day, hour, 0, 0);\n    console.log(\"✓ 패턴 5 매칭:\", startDate);\n  }\n}\n\n// ===== ISO8601 형식 변환 (한국 시간대 KST) =====\nlet schedule_start_iso = null;\nlet schedule_end_iso = null;\n\nif (startDate && !isNaN(startDate.getTime())) {\n  const year = startDate.getFullYear();\n  const month = String(startDate.getMonth() + 1).padStart(2, '0');\n  const day = String(startDate.getDate()).padStart(2, '0');\n  const hour = String(startDate.getHours()).padStart(2, '0');\n  const minute = String(startDate.getMinutes()).padStart(2, '0');\n  const second = String(startDate.getSeconds()).padStart(2, '0');\n  \n  schedule_start_iso = `${year}-${month}-${day}T${hour}:${minute}:${second}+09:00`;\n  \n  console.log(\"✓ schedule_start 생성 완료:\", schedule_start_iso);\n}\n\nif (endDate && !isNaN(endDate.getTime())) {\n  const year = endDate.getFullYear();\n  const month = String(endDate.getMonth() + 1).padStart(2, '0');\n  const day = String(endDate.getDate()).padStart(2, '0');\n  const hour = String(endDate.getHours()).padStart(2, '0');\n  const minute = String(endDate.getMinutes()).padStart(2, '0');\n  const second = String(endDate.getSeconds()).padStart(2, '0');\n  \n  schedule_end_iso = `${year}-${month}-${day}T${hour}:${minute}:${second}+09:00`;\n  \n  console.log(\"✓ schedule_end 생성 완료:\", schedule_end_iso);\n}\n\nconsole.log(\"============================\");\n\n// ===== 최종 반환 =====\nreturn {\n  json: {\n    ...item,\n    schedule_start: schedule_start_iso || item.schedule_start,\n    schedule_end: schedule_end_iso || item.schedule_end\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -80
+      ],
+      "id": "ce895490-6891-461f-b9ff-837500a5880b",
+      "name": "8.55 정확한 날짜 백업"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// ===== 이메일 전처리 노드 (Gmail API 응답 구조 최적화) =====\n\nconst item = $input.item.json;\n\nconsole.log(\"===== 수정중 노드 디버그 (v2) =====\");\nconsole.log(\"전체 item keys:\", Object.keys(item));\nconsole.log(\"html 존재:\", !!item.html);\nconsole.log(\"text 존재:\", !!item.text);\nconsole.log(\"textPlain 존재:\", !!item.textPlain);\nconsole.log(\"payload 존재:\", !!item.payload);\n\n// ===== 1. 본문 추출 (6가지 소스) =====\nlet bodyText = \"\";\n\n// 소스 1: Gmail API의 text 필드 (가장 우선)\nif (item.text && item.text.trim().length > 0) {\n  bodyText = item.text.trim();\n  console.log(\"✓ Source 1: item.text (\" + bodyText.length + \" chars)\");\n}\n\n// 소스 2: textPlain 필드\nif (!bodyText && item.textPlain && item.textPlain.trim().length > 0) {\n  bodyText = item.textPlain.trim();\n  console.log(\"✓ Source 2: item.textPlain (\" + bodyText.length + \" chars)\");\n}\n\n// 소스 3: html 필드 (HTML 태그 제거)\nif (!bodyText && item.html && item.html.trim().length > 0) {\n  // 간단한 HTML 태그 제거\n  bodyText = item.html\n    .replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '')\n    .replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '')\n    .replace(/<[^>]+>/g, ' ')\n    .replace(/&nbsp;/g, ' ')\n    .replace(/&lt;/g, '<')\n    .replace(/&gt;/g, '>')\n    .replace(/&amp;/g, '&')\n    .replace(/\\s+/g, ' ')\n    .trim();\n  console.log(\"✓ Source 3: item.html (HTML 태그 제거, \" + bodyText.length + \" chars)\");\n}\n\n// 소스 4: payload.parts (Gmail API Full format)\nif (!bodyText && item.payload && item.payload.parts) {\n  for (const part of item.payload.parts) {\n    if (part.mimeType === \"text/plain\" && part.body && part.body.data) {\n      try {\n        bodyText = Buffer.from(part.body.data, 'base64').toString('utf-8').trim();\n        console.log(\"✓ Source 4: payload.parts text/plain (\" + bodyText.length + \" chars)\");\n        break;\n      } catch (e) {\n        console.log(\"✗ Source 4 decode error:\", e.message);\n      }\n    }\n  }\n}\n\n// 소스 5: payload.parts (text/html)\nif (!bodyText && item.payload && item.payload.parts) {\n  for (const part of item.payload.parts) {\n    if (part.mimeType === \"text/html\" && part.body && part.body.data) {\n      try {\n        const htmlContent = Buffer.from(part.body.data, 'base64').toString('utf-8');\n        bodyText = htmlContent\n          .replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '')\n          .replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '')\n          .replace(/<[^>]+>/g, ' ')\n          .replace(/&nbsp;/g, ' ')\n          .replace(/&lt;/g, '<')\n          .replace(/&gt;/g, '>')\n          .replace(/&amp;/g, '&')\n          .replace(/\\s+/g, ' ')\n          .trim();\n        console.log(\"✓ Source 5: payload.parts text/html (HTML 제거, \" + bodyText.length + \" chars)\");\n        break;\n      } catch (e) {\n        console.log(\"✗ Source 5 decode error:\", e.message);\n      }\n    }\n  }\n}\n\n// 소스 6: payload.body.data (직접 본문)\nif (!bodyText && item.payload && item.payload.body && item.payload.body.data) {\n  try {\n    bodyText = Buffer.from(item.payload.body.data, 'base64').toString('utf-8').trim();\n    console.log(\"✓ Source 6: payload.body.data (\" + bodyText.length + \" chars)\");\n  } catch (e) {\n    console.log(\"✗ Source 6 decode error:\", e.message);\n  }\n}\n\n// 최종 정리\nlet cleanText = bodyText.substring(0, 3000); // OpenAI 토큰 절약\nconsole.log(\"최종 cleanBody length:\", cleanText.length);\nconsole.log(\"cleanText preview:\", cleanText.substring(0, 100));\n\n// ===== 2. 오늘 날짜 생성 =====\nconst now = new Date();\nconst days = ['일', '월', '화', '수', '목', '금', '토'];\nconst year = now.getFullYear();\nconst month = now.getMonth() + 1;\nconst date = now.getDate();\nconst day = days[now.getDay()];\nconst today = `${year}년 ${month}월 ${date}일 (${day}요일)`;\n\n// ===== 3. 첨부파일 정보 =====\nlet hasAttachments = false;\nlet attachmentCount = 0;\nlet attachmentNames = [];\n\n// Gmail API payload.parts에서 첨부파일 찾기\nif (item.payload && item.payload.parts) {\n  for (const part of item.payload.parts) {\n    if (part.filename && part.filename.length > 0) {\n      hasAttachments = true;\n      attachmentCount++;\n      attachmentNames.push(part.filename);\n    }\n  }\n}\n\nconst attachmentNamesStr = attachmentNames.length > 0 \n  ? attachmentNames.join(\", \") \n  : \"없음\";\n\nconsole.log(\"hasAttachments:\", hasAttachments);\nconsole.log(\"attachmentCount:\", attachmentCount);\nconsole.log(\"attachmentNames:\", attachmentNamesStr);\n\n// ===== 4. 발신자 타입 분류 =====\nconst fromEmail = (item.from?.value?.[0]?.address || item.from || \"\").toLowerCase();\n\nlet senderType = \"일반\";\nif (fromEmail.includes(\"notify@\") || \n    fromEmail.includes(\"noreply@\") || \n    fromEmail.includes(\"no-reply@\") ||\n    fromEmail.includes(\"automation@\")) {\n  senderType = \"자동알림\";\n} else if (fromEmail.includes(\"marketing@\") || \n           fromEmail.includes(\"promo@\") ||\n           fromEmail.includes(\"newsletter@\")) {\n  senderType = \"광고\";\n}\n\nconsole.log(\"발신자:\", fromEmail);\nconsole.log(\"발신자 타입:\", senderType);\nconsole.log(\"============================\");\n\n// ===== 5. 최종 반환 =====\nreturn {\n  json: {\n    ...item,\n    cleanBody: cleanText,\n    today: today,\n    hasAttachments: hasAttachments,\n    attachmentCount: attachmentCount,\n    attachmentNames: attachmentNamesStr,\n    senderType: senderType\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2320,
+        -64
+      ],
+      "id": "9922d548-375c-47a3-8cbe-a5932373a316",
+      "name": "2.5 이메일 전처리 노드"
+    },
+    {
+      "parameters": {
+        "content": "## Schedule Trigger\n매일 오전 8시 자동 실행",
+        "height": 304,
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2992,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "9d103c0c-b932-43fe-a95c-f74d20805934",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 안읽은 이메일 가져오기\n\nGmail에서 읽지 않은 이메일 수집\n",
+        "height": 304,
+        "width": 288,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2688,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "1e473327-4e58-4dbd-ad75-58ff5e346e0d",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 이메일 전처리 (Code)\n\n이메일 본문 추출 및 정제\nHTML 태그 제거, 3000자 제한\n첨부파일 정보 추출",
+        "height": 304,
+        "width": 368,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2336,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "d686ba98-a100-4f5d-9fd5-a66759373eea",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Sender Filter (발신자 필터)\n\n발신자 주소로 분류:\n\nVIP: 중요 발신자 (항상 처리)\nWhitelist: 허용 목록\nBlacklist: 차단 목록 (스킵)\n\n→ API 비용 30% 절감",
+        "height": 304,
+        "width": 336,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1936,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "131fcd96-4409-4a2e-baba-e9ce78d6c44d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 분석 제외 필터\n\n블랙리스트 이메일 OpenAI 분석 제외",
+        "height": 304,
+        "width": 272,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1584,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "47a7244a-9de2-47b8-be3c-d37eefb82616",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Google Sheets 기록\n\n모든 이메일 정보를 스프레드시트에 저장\n(날짜, 발신자, 제목, 카테고리, 우선순위, 요약 등)",
+        "height": 304,
+        "width": 336,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        32,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "c1791d3c-1fe1-4795-beec-f7e8704be391",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## JSON 파싱\n\nOpenAI 응답을 구조화된 데이터로 변환",
+        "height": 272,
+        "width": 272,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -736,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "f296215c-2f62-4eb8-a2eb-a1791b0e4b5b",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## OpenAI 분석\n\nGPT-4o-mini로 이메일 자동 분석:\n\n카테고리 (공지/업무/광고/자동알림)\n우선순위 (높음/보통/낮음)\n핵심 요약\n일정 정보 추출\n필요한 행동",
+        "height": 288,
+        "width": 448,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1232,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "50172511-238c-4bac-8fad-a378b4329f81",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## schedule_start 생성 (Code)\n\n일정 텍스트를 정확한 날짜/시간으로 변환:\n\n\"11월 18일\" → 2025-11-18T09:00:00+09:00\n\"12월 8일 오후 2시\" → 2025-12-08T14:00:00+09:00\n\n→ 정확한 캘린더 등록",
+        "height": 320,
+        "width": 416,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -432,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "ee47e87f-d6c9-47f2-95e2-ada40e17178e",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "## 캘린더 등록 여부 확인 (IF)\n\n기능: 일정이 있는 이메일만 Calendar로 분기\n\nTRUE → Google Calendar 등록\nFALSE → 읽음 처리로 이동",
+        "height": 288,
+        "width": 352,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        400,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "7a2429cc-55c7-42c5-b39d-04d6a9353055",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "## Google Calendar 등록\n\n기능: 일정이 있는 이메일을 캘린더 이벤트로 생성\nCalendar 등록 성공 여부를 Sheets에 업데이트",
+        "height": 272,
+        "width": 352,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        784,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "315b5c49-3f0b-46af-b736-98658761fd47",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $node[\"2. 안읽은 이메일 가져오기\"].json[\"id\"] }}"
+      },
+      "id": "f3f613d8-30e6-49d9-b6aa-27e0224bdeec",
+      "name": "9 이메일 읽음 표시",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1440,
+        224
+      ],
+      "webhookId": "REPLACE_WITH_WEBHOOK_ID",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $node[\"2. 안읽은 이메일 가져오기\"].json[\"id\"] }}"
+      },
+      "id": "13f04623-16d2-40de-be10-e520af763a20",
+      "name": "9. 이메일 읽음",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1408,
+        -96
+      ],
+      "webhookId": "REPLACE_WITH_WEBHOOK_ID",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "content": "## 이메일 읽음 표시\n\n기능: 처리 완료된 이메일을 읽음으로 처리\n설정: Add Label: UNREAD 제거\n용도: 중복 처리 방지\n\n",
+        "height": 272,
+        "width": 400,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1168,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "f09150e5-64be-4e77-88f3-d4a90a22e635",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 8.55 날짜찾기 (v2 - 개선 버전)\n\nconst item = $input.item.json;\n\n// ISO 문자열인지 검사하는 함수\nfunction isValidISO(str) {\n  if (!str || typeof str !== 'string') return false;\n  const d = new Date(str);\n  return !isNaN(d.getTime());\n}\n\n// KST(+09:00) 형식으로 변환\nfunction toKSTString(d) {\n  const pad = (n) => String(n).padStart(2, '0');\n  const yyyy = d.getFullYear();\n  const mm = pad(d.getMonth() + 1);\n  const dd = pad(d.getDate());\n  const hh = pad(d.getHours());\n  const mi = pad(d.getMinutes());\n  const ss = pad(d.getSeconds());\n  return `${yyyy}-${mm}-${dd}T${hh}:${mi}:${ss}+09:00`;\n}\n\nconsole.log('===== 날짜찾기 디버그 =====');\nconsole.log('schedule_start:', item.schedule_start);\nconsole.log('schedule_end:', item.schedule_end);\nconsole.log('has_schedule:', item.has_schedule);\n\n// 1️⃣ schedule_start가 있으면 처리 (end는 선택사항)\nif (isValidISO(item.schedule_start)) {\n  const startDate = new Date(item.schedule_start);\n  \n  // 종료 시간이 있고 유효하면 사용, 없으면 +1시간\n  let endDate;\n  if (item.schedule_end && isValidISO(item.schedule_end)) {\n    endDate = new Date(item.schedule_end);\n    // 시작보다 빠르면 안 되므로 체크\n    if (endDate <= startDate) {\n      endDate = new Date(startDate.getTime() + 60 * 60 * 1000);\n      console.log('⚠️ 종료 시간이 시작보다 빠름, +1시간으로 보정');\n    }\n  } else {\n    endDate = new Date(startDate.getTime() + 60 * 60 * 1000);\n    console.log('✅ 종료 시간 없음, +1시간으로 자동 설정');\n  }\n  \n  console.log('✅ 캘린더 등록:', toKSTString(startDate), '~', toKSTString(endDate));\n  \n  return {\n    json: {\n      ...item,\n      calendarStart: toKSTString(startDate),\n      calendarEnd: toKSTString(endDate),\n      dateSource: 'OpenAI_parsed'\n    },\n  };\n}\n\n// 2️⃣ schedule_start가 없으면 캘린더 등록 안 함\nconsole.log('⚠️ schedule_start 없음 - 캘린더 등록 건너뜀');\n\nreturn {\n  json: {\n    ...item,\n    calendarStart: null,\n    calendarEnd: null,\n    dateSource: 'no_schedule_skip'\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        -80
+      ],
+      "id": "babcb755-ed30-4a26-8a1f-d1062f59e313",
+      "name": "8.5 날짜찾기"
+    },
+    {
+      "parameters": {
+        "content": "## 이메일 읽음 표시\n\n기능: 처리 완료된 이메일을 읽음으로 처리\n설정: Add Label: UNREAD 제거\n용도: 중복 처리 방지\n\n",
+        "height": 272,
+        "width": 400,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1168,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "0b8bd81d-e00b-4a73-bbbe-6b90aa0ba99d",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "## 전체 워크플로우\n\nGmail 안읽은 이메일 수집 → 발신자 필터링 → AI 분석 → 일정 추출 → Calendar/Sheets 저장 → 읽음 처리\n\n## 📊 주요 효과\n\n⏱️ 시간 절약: 이메일 수동 분류 불필요\n📅 일정 관리: 자동 캘린더 등록\n💰 비용 절감: 발신자 필터링으로 API 비용 30% 감소\n📈 정확도: AI + 코드 조합으로 일정 인식 정확도 극대화",
+        "height": 320,
+        "width": 688,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1152,
+        -640
+      ],
+      "typeVersion": 1,
+      "id": "df1d8cb8-8b58-4c0b-85c2-8022aea8f2f7",
+      "name": "Sticky Note11"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "2. 안읽은 이메일 가져오기": {
+      "main": [
+        [
+          {
+            "node": "2.5 이메일 전처리 노드",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. 이메일 데이터 추출": {
+      "main": [
+        [
+          {
+            "node": "4. Sender Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Sender Filter": {
+      "main": [
+        [
+          {
+            "node": "5. 발신자 유효성 확인",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. 발신자 유효성 확인": {
+      "main": [
+        [
+          {
+            "node": "6. OpenAI로 이메일 분석",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "차단된 발신자 - 무시2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. OpenAI로 이메일 분석": {
+      "main": [
+        [
+          {
+            "node": "7. JSON 파싱 및 통합",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7. JSON 파싱 및 통합": {
+      "main": [
+        [
+          {
+            "node": "8. Google Sheets에 기록",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8. Google Sheets에 기록": {
+      "main": [
+        [
+          {
+            "node": "8.5 날짜찾기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8.6 Google Calendar 등록": {
+      "main": [
+        [
+          {
+            "node": "9. 이메일 읽음",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. 매 1시간마다 실행": {
+      "main": [
+        [
+          {
+            "node": "2. 안읽은 이메일 가져오기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8.56 캘린더 등록 여부 확인": {
+      "main": [
+        [
+          {
+            "node": "8.6 Google Calendar 등록",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "9 이메일 읽음 표시",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8.55 정확한 날짜 백업": {
+      "main": [
+        [
+          {
+            "node": "8.56 캘린더 등록 여부 확인",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2.5 이메일 전처리 노드": {
+      "main": [
+        [
+          {
+            "node": "3. 이메일 데이터 추출",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8.5 날짜찾기": {
+      "main": [
+        [
+          {
+            "node": "8.55 정확한 날짜 백업",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "REDACTED_VERSION_ID",
+  "meta": {
+    "instanceId": "REDACTED_INSTANCE_ID"
+  },
+  "id": "AxMU1eINViHg6MZI",
+  "tags": []
+}
