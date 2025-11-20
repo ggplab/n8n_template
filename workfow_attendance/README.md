@@ -26,8 +26,9 @@ ___
 
 <img width="1189" height="947" alt="Attendance_slack" src="https://github.com/user-attachments/assets/7e4ce1c8-bc28-4791-a821-cd92cdddb20f" />
 
+<img width="693" height="618" alt="Attendance_Sheet" src="https://github.com/user-attachments/assets/2af8fc78-01f8-4250-8016-b321d53de67b" />
 
-<img width="789" height="412" alt="Slack_Attendance_Bot" src="https://github.com/user-attachments/assets/dc2f949b-af51-45b3-8ed1-7c24925f0ba2" />
+
 
 
 
