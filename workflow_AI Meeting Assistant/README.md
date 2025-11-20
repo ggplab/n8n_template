@@ -9,11 +9,9 @@
 
 
 
-- 실제 결과물 화면: <div align="center">
-  <img src="https://github.com/ggplab/n8n_template/blob/main/workflow_AI%20Meeting%20Assistant/screenshot/AI%20Meeting%20Assistant_Result_Slack.png?raw=true" alt="Slack 요약 결과 화면" width="300px"/>
-  
-  <img src="https://github.com/ggplab/n8n_template/blob/main/workflow_AI%20Meeting%20Assistant/screenshot/AI%20Meeting%20Assistant_Result_Obsidian.png?raw=true" alt="Obsidian 요약 결과 화면" width="300px"/>
-</div>
+- 실제 결과물 화면: | Slack 결과 | Obsidian 결과 |
+| :---: | :---: |
+| <img src="https://github.com/ggplab/n8n_template/blob/main/workflow_AI%20Meeting%20Assistant/screenshot/AI%20Meeting%20Assistant_Result_Slack.png?raw=true" alt="Slack 요약 결과 화면" width="350"/> | <img src="https://github.com/ggplab/n8n_template/blob/main/workflow_AI%20Meeting%20Assistant/screenshot/AI%20Meeting%20Assistant_Result_Obsidian.png?raw=true" alt="Obsidian 요약 결과 화면" width="350"/> |
 
 
 ## 📋 1. 목차
