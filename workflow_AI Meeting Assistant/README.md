@@ -7,7 +7,7 @@
 > 
 - n8n 화면
 
-![image.png](attachment:05aa25b3-1dad-4af7-9c7e-f95b08b4bf24:image.png)
+![이미지 설명](./workflow_AI Meeting Assistant/screenshot/AI Meeting Assistant_Workflow.png)
 
 - 실제 결과물 화면
 
