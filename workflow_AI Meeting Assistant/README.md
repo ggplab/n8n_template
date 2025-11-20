@@ -6,7 +6,8 @@
 실시간 음성 기록을 기반으로 한 똑똑한 회의 구조 분석과 담당자별 행동 계획 자동 추출
 > 
 - n8n 화면
-![AI 회의 요약 워크플로우 다이어그램](./workflow_AI Meeting Assistant/screenshot/AI Meeting Assistant_Workflow.png)
+
+ ![AI 회의 요약 워크플로우 다이어그램](./workflow_AI Meeting Assistant/screenshot/AI Meeting Assistant_Workflow.png)
 
 
 - 실제 결과물 화면
