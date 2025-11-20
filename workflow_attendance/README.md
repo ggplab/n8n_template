@@ -28,7 +28,7 @@ ___
 <img width="350" height="400" alt="Attendance_slack" src="https://github.com/user-attachments/assets/735eaf08-12fb-425f-a125-b5afe980d761" />
 
 
-<img width="350" height="400" alt="Attendance_GoogleSheet" src="https://github.com/user-attachments/assets/4ea49b54-724e-4898-a97b-eaaf60d54180" />
+<img width="700" height="400" alt="Attendance_GoogleSheet" src="https://github.com/user-attachments/assets/4ea49b54-724e-4898-a97b-eaaf60d54180" />
 
 
 
