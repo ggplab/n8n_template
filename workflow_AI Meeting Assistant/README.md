@@ -5,8 +5,7 @@
 > **AI 회의록 구조화 전문 에이전트**
 실시간 음성 기록을 기반으로 한 똑똑한 회의 구조 분석과 담당자별 행동 계획 자동 추출
 > 
-- n8n 화면
-
+- n8n 화면: ![AI 회의 요약 워크플로우 다이어그램](https://github.com/ggplab/n8n_template/blob/main/workflow_AI%20Meeting%20Assistant/screenshot/AI%20Meeting%20Assistant_Workflow.png)
 
 
 
