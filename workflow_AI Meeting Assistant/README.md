@@ -9,8 +9,8 @@
 
 
 
-- 실제 결과물 화면
-
+- 실제 결과물 화면: ![AI 회의 요약 결과물 화면1](https://github.com/ggplab/n8n_template/blob/main/workflow_AI%20Meeting%20Assistant/screenshot/AI%20Meeting%20Assistant_Result_Slack.png)
+![AI 회의 요약 결과물 화면2](https://github.com/ggplab/n8n_template/blob/main/workflow_AI%20Meeting%20Assistant/screenshot/AI%20Meeting%20Assistant_Result_Obsidian.png)
 
 
 ## 📋 1. 목차
