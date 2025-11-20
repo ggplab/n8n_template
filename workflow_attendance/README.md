@@ -22,12 +22,11 @@ ___
 
    ### 결과 (Result)
 
-![n8n_Slack_Attendance_Bot](https://github.com/user-attachments/assets/d5263c59-f7d3-4aea-9689-93db5d07fea4)
+![n8n_Slack_Attendance_Bot](https://github.com/user-attachments/assets/b9d64510-2e97-4d5e-a8f4-12d95aa7e733)
 
-<img width="350" height="400" alt="Attendance_slack" src="https://github.com/user-attachments/assets/7e4ce1c8-bc28-4791-a821-cd92cdddb20f" />
+<img width="350" height="400" alt="Attendance_slack" src="https://github.com/user-attachments/assets/735eaf08-12fb-425f-a125-b5afe980d761" />
 
-<img width="350" height="400" alt="Attendance_Sheet" src="https://github.com/user-attachments/assets/2af8fc78-01f8-4250-8016-b321d53de67b" />
-
+<img width="350" height="400" alt="Attendance_GoogleSheet" src="https://github.com/user-attachments/assets/4ea49b54-724e-4898-a97b-eaaf60d54180" />
 
 
 
