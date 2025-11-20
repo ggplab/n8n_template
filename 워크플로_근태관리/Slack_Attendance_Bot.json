@@ -82,7 +82,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "slackApi": {
-          "id": "DZqnGA19NOY6Mv6p",
+          "id": "slackApi",
           "name": "소정_n8n_슬랙봇"
         }
       }
@@ -200,7 +200,7 @@
       "name": "Append row in sheet1",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "QLDucekUa7nEFVy5",
+          "id": "google api",
           "name": "소정_n8n_구글시트"
         }
       }
@@ -227,7 +227,7 @@
       "webhookId": "37618eb3-fc07-41a0-b7bb-086fe0f3d0f4",
       "credentials": {
         "slackApi": {
-          "id": "DZqnGA19NOY6Mv6p",
+          "id": "slackApi",
           "name": "소정_n8n_슬랙봇"
         }
       }
@@ -280,7 +280,7 @@
       "webhookId": "bcfbc727-3c5c-4164-9140-6355ab0309e0",
       "credentials": {
         "slackApi": {
-          "id": "DZqnGA19NOY6Mv6p",
+          "id": "slackApi",
           "name": "소정_n8n_슬랙봇"
         }
       }
@@ -309,7 +309,7 @@
       "webhookId": "588c964c-0ceb-4201-8062-2b46d11afd32",
       "credentials": {
         "slackApi": {
-          "id": "DZqnGA19NOY6Mv6p",
+          "id": "slackApi",
           "name": "소정_n8n_슬랙봇"
         }
       }
