@@ -7,13 +7,11 @@
 > 
 - n8n 화면
 
-![이미지 설명](./workflow_AI Meeting Assistant/screenshot/AI Meeting Assistant_Workflow.png)
+
 
 - 실제 결과물 화면
 
-![image.png](attachment:9778d14d-8d12-45c4-812a-730925fd6bf8:image.png)
 
-![image.png](attachment:bfa0f1b5-ba1b-4f31-b423-5c1967ef159c:image.png)
 
 ## 📋 1. 목차
 
