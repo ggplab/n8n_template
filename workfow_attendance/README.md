@@ -22,13 +22,13 @@ ___
 
    ### 결과 (Result)
 
-![n8n_슬랙봇 근태기록 자동 정리](https://github.com/user-attachments/assets/b8c3576d-2475-42f8-9571-1555f0b9f9a5)
+![n8n_Slack_Attendance_Bot](https://github.com/user-attachments/assets/d5263c59-f7d3-4aea-9689-93db5d07fea4)
 
-<img width="350" height="350" alt="Attendance_slack" src="https://github.com/user-attachments/assets/3ba7ac01-260a-4be0-be70-355f1effb957" />
+<img width="1189" height="947" alt="Attendance_slack" src="https://github.com/user-attachments/assets/7e4ce1c8-bc28-4791-a821-cd92cdddb20f" />
 
-<img width="280" height="300" src="https://github.com/user-attachments/assets/eaa88e79-d20b-4b91-9c78-62f2dfc0a693" />
 
-<img width="300" height="350" src="https://github.com/user-attachments/assets/a58e042e-bf11-4ee2-9a35-162a51bfbad7" />
+<img width="789" height="412" alt="Slack_Attendance_Bot" src="https://github.com/user-attachments/assets/dc2f949b-af51-45b3-8ed1-7c24925f0ba2" />
+
 
 
 ### 예상 사용자/ 부서
