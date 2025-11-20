@@ -1,5 +1,3 @@
-# 제목 없음
-
 # 📧 AI Email Automation System
 
 > **AI 기반 이메일 자동 분류 및 일정 관리 시스템**
