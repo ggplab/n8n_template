@@ -160,7 +160,13 @@ Google Calendar 등록 / 이메일 읽음 처리
 
 **기능**: 워크플로우 자동 실행
 
-**설정**: 매일 08:00 KST
+**설정**: 
+
+- 매일 아침 8*시에 하려고 할 때!
+- Trigger Interval : Days 로 설정*
+- Days Between Triggers : 1 (며칠 마다 실행할건지)
+- Trigger at Hour : 8am(하고 싶은 시간)
+- Trigger at Minute : 0 (하고싶은 분)
 
 **용도**: 매일 아침 이메일 자동 처리
 
