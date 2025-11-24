@@ -33,7 +33,8 @@
 
 
 ## 기여자
-> Organized by 임정(지지플랩)
+```Organized by 임정(지지플랩)```
+
 - 임정 @ 지지플랩, [✉️ Linkedin](https://www.linkedin.com/in/jayjunglim/), [📝 블로그](https://snowgot.tistory.com)
 
 - 윤소정
