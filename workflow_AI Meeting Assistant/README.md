@@ -162,16 +162,18 @@
         
         
 <details>
-  <summary>워크플로우 상세 설명</summary>
-    - **Google Drive Trigger & Download**: Google Drive에 새로운 녹음 파일이 업로드되는 것을 감지하고, 해당 **대용량 파일**을 n8n의 메모리로 다운로드합니다.
-    - **CloudConvert**: **OpenAI Whisper의 25MB 제한**을 우회하기 위해, 다운로드된 오디오 파일의 음질을 **손실 없이 압축**하여 파일 크기를 줄입니다.
-    - **Transcribe a recording (OpenAI Whisper)**: 압축된 오디오를 듣고, 내용의 **원시 텍스트(Raw Transcript)**로 변환합니다.
-    - **AI Agent 1 (Correction)**: **Proofreader** 역할로, Whisper가 생성한 원시 텍스트의 맞춤법, 문법, 그리고 **팀원 이름 등의 고유명사 오류를 수정**하여 텍스트를 정제합니다.
-    - **Convert to File 2 & Upload file 2**: (백업 경로) 정제된 원본 텍스트를 `.txt` 파일로 만들어 **Google Drive에 안전하게 백업**합니다.
-    - **AI Agent 2 (Summarization)**: **구조 분석가** 역할로, 정제된 텍스트를 기반으로 **Executive Summary, 담당자별 액션 아이템, 타임라인 표** 등 최종 아카이빙 포맷(Markdown)으로 요약하고 구조화합니다.
-    - **Convert to File 3 & Upload file 3**: 최종적으로 구조화된 요약본을 `.md` 파일로 변환하여 **Obsidian 또는 Google Drive에 영구 보관/아카이빙**합니다.
-    - **AI Agent 3 (Slack Converter)**: **포맷 변환기** 역할로, 옵시디언용으로 만든 복잡한 마크다운(표, #헤더)을 **Slack에서 깨지지 않고 보기 쉬운 리스트 형식(mrkdwn)**으로 변환합니다.
-    - **Send a message**: 최종적으로 가독성이 최적화된 **액션 아이템 및 요약 메시지**를 팀 협업 채널인 Slack으로 즉시 발송합니다.
+  <summary>워크플로우 상세 과정</summary>
+  <ul>
+    <li><strong>Google Drive Trigger & Download</strong>: Google Drive에 새로운 녹음 파일이 업로드되는 것을 감지하고, 해당 <strong>대용량 파일</strong>을 n8n의 메모리로 다운로드합니다.</li>
+    <li><strong>CloudConvert</strong>: <strong>OpenAI Whisper의 25MB 제한</strong>을 우회하기 위해, 다운로드된 오디오 파일의 음질을 <strong>손실 없이 압축</strong>하여 파일 크기를 줄입니다.</li>
+    <li><strong>Transcribe a recording (OpenAI Whisper)</strong>: 압축된 오디오를 듣고, 내용의 <strong>원시 텍스트(Raw Transcript)</strong>로 변환합니다.</li>
+    <li><strong>AI Agent 1 (Correction)</strong>: <strong>Proofreader</strong> 역할로, Whisper가 생성한 원시 텍스트의 맞춤법, 문법, 그리고 <strong>팀원 이름 등의 고유명사 오류를 수정</strong>하여 텍스트를 정제합니다.</li>
+    <li><strong>Convert to File 2 & Upload file 2</strong>: (백업 경로) 정제된 원본 텍스트를 <code>.txt</code> 파일로 만들어 <strong>Google Drive에 안전하게 백업</strong>합니다.</li>
+    <li><strong>AI Agent 2 (Summarization)</strong>: <strong>구조 분석가</strong> 역할로, 정제된 텍스트를 기반으로 <strong>Executive Summary, 담당자별 액션 아이템, 타임라인 표</strong> 등 최종 아카이빙 포맷(Markdown)으로 요약하고 구조화합니다.</li>
+    <li><strong>Convert to File 3 & Upload file 3</strong>: 최종적으로 구조화된 요약본을 <code>.md</code> 파일로 변환하여 <strong>Obsidian 또는 Google Drive에 영구 보관/아카이빙</strong>합니다.</li>
+    <li><strong>AI Agent 3 (Slack Converter)</strong>: <strong>포맷 변환기</strong> 역할로, 옵시디언용으로 만든 복잡한 마크다운(표, #헤더)을 <strong>Slack에서 깨지지 않고 보기 쉬운 리스트 형식(mrkdwn)</strong>으로 변환합니다.</li>
+    <li><strong>Send a message</strong>: 최종적으로 가독성이 최적화된 <strong>액션 아이템 및 요약 메시지</strong>를 팀 협업 채널인 Slack으로 즉시 발송합니다.</li>
+  </ul>
 </details>
 
 
