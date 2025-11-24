@@ -158,10 +158,11 @@
         [입력 데이터]
         {{ $('AI Agent2').item.json.output }}
         ```
-        </details>
+</details>
         
         
-- 워크플로우 상세 설명
+<details>
+  <summary>워크플로우 상세 설명</summary>
     - **Google Drive Trigger & Download**: Google Drive에 새로운 녹음 파일이 업로드되는 것을 감지하고, 해당 **대용량 파일**을 n8n의 메모리로 다운로드합니다.
     - **CloudConvert**: **OpenAI Whisper의 25MB 제한**을 우회하기 위해, 다운로드된 오디오 파일의 음질을 **손실 없이 압축**하여 파일 크기를 줄입니다.
     - **Transcribe a recording (OpenAI Whisper)**: 압축된 오디오를 듣고, 내용의 **원시 텍스트(Raw Transcript)**로 변환합니다.
@@ -171,6 +172,8 @@
     - **Convert to File 3 & Upload file 3**: 최종적으로 구조화된 요약본을 `.md` 파일로 변환하여 **Obsidian 또는 Google Drive에 영구 보관/아카이빙**합니다.
     - **AI Agent 3 (Slack Converter)**: **포맷 변환기** 역할로, 옵시디언용으로 만든 복잡한 마크다운(표, #헤더)을 **Slack에서 깨지지 않고 보기 쉬운 리스트 형식(mrkdwn)**으로 변환합니다.
     - **Send a message**: 최종적으로 가독성이 최적화된 **액션 아이템 및 요약 메시지**를 팀 협업 채널인 Slack으로 즉시 발송합니다.
+</details>
+
 
 ## 💵 5. 사용 비용
 
