@@ -1,6 +1,8 @@
 # n8n playbook
 **실무에서 바로 사용할 수 있는 n8n 워크플로우와 치트시트 모음**  
 
+#n8n #DataPipeline #Automation #NoCode #DataAnalysis
+
 ## Summary
 
 - [01-cheatsheets](./01-cheatsheet/): 데이터 파이프라인을 위한 치트시트 디렉토리
@@ -31,8 +33,8 @@
 
 
 ## 기여자
-
-- made by 지지플랏(임정) @ 지지플랩, [✉️ Linkedin](https://www.linkedin.com/in/jayjunglim/), [📝 블로그](https://snowgot.tistory.com)
+> Organized by 임정(지지플랩)
+- 임정 @ 지지플랩, [✉️ Linkedin](https://www.linkedin.com/in/jayjunglim/), [📝 블로그](https://snowgot.tistory.com)
 
 - 윤소정
 
@@ -43,4 +45,3 @@
 - 김차병
 
 
-#n8n #DataPipeline #Automation #NoCode #DataAnalysis
