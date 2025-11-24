@@ -66,7 +66,8 @@
 </details>
 
     
-- 프롬프트 예시
+<details>
+  <summary>프롬프트 예시</summary>
     - AI Agent1: 문맥 교정
         
         ```python
@@ -157,6 +158,8 @@
         [입력 데이터]
         {{ $('AI Agent2').item.json.output }}
         ```
+        </details>
+        
         
 - 워크플로우 상세 설명
     - **Google Drive Trigger & Download**: Google Drive에 새로운 녹음 파일이 업로드되는 것을 감지하고, 해당 **대용량 파일**을 n8n의 메모리로 다운로드합니다.
