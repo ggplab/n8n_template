@@ -9,11 +9,11 @@
 
 - n8n 화면
 
-![FarmData_2x.png](./FarmData_2x.gif)
+![FarmData_2x.png](./screenshots/FarmData_2x.gif)
 
 - 실제 접속 화면
 
-![kamsic_sc.png](./kamis_sc.png)
+![kamsic_sc.png](./screenshots/kamis_sc.png)
 
 ## 📋 1. 목차
 - 개요
