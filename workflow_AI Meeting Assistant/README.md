@@ -56,13 +56,16 @@
 
 <details>
   <summary>필요한 API 연결</summary>
-    - Google Drive API 발급 및 Credential 연결
-    - CloudConvert API 발급 및 Credential 연결
-    - OPENAI API 발급 및 Credential 연결
-    - Gemini API 발급 및 Credential 연결
-    - Slack API 발급 및 Credential 연결
-    - Slack Bot 발급 및 Credential 연결
+  <ul>
+    <li>Google Drive API 발급 및 Credential 연결</li>
+    <li>CloudConvert API 발급 및 Credential 연결</li>
+    <li>OPENAI API 발급 및 Credential 연결</li>
+    <li>Gemini API 발급 및 Credential 연결</li>
+    <li>Slack API 발급 및 Credential 연결</li>
+    <li>Slack Bot 발급 및 Credential 연결</li>
 </details>
+
+    
 - 프롬프트 예시
     - AI Agent1: 문맥 교정
         
