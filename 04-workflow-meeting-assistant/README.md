@@ -83,7 +83,7 @@
 
 
 <details>
-  <summary><strong>프롬프트 예시</strong></summary>
+  <summary>프롬프트 예시</summary>
   <br>
   <ul>
     <li>
@@ -105,8 +105,8 @@
 {{ $json.text }}
 
       </details>
-    </li>
-    <li>
+  </li>
+  <li>
       <details>
         <summary><strong>AI Agent2: 회의 내용 파악 및 요약</strong></summary>
         <br>
@@ -153,7 +153,7 @@
 [입력 데이터]
 {{ $('AI Agent1').item.json.output }}
 
-      </details>
+  </details>
     </li>
     <li>
       <details>
@@ -184,10 +184,10 @@
 [입력 데이터]
 {{ $('AI Agent2').item.json.output }}
 
-      </details>
-    </li>
+  </details>
+  </li>
   </ul>
-</details>
+  </details>
 
 
 ## 💵 5. 사용 비용
