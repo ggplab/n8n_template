@@ -15,6 +15,8 @@
   <img src="https://github.com/ggplab/n8n_template/blob/main/workflow_AI%20Meeting%20Assistant/screenshot/AI%20Meeting%20Assistant_Result_Obsidian.png?raw=true" alt="Obsidian 요약 결과 화면" width="400px"/>
 </div>
 
+
+
 ## 📋 1. 목차
 
 
@@ -24,6 +26,8 @@
 - 사용 방법
 - 사용 비용
 - 참고 문헌
+
+
 
 ## 🎯 2. 문제 정의
 
@@ -40,6 +44,8 @@
 
 반복적이고 비효율적인 작업을 제거함으로써 구성원들은 핵심 업무에 더 집중할 수 있으며, 회의 종료 직후 음성 데이터를 정확하게 분석합니다. **발언자별 핵심 발언, 마감 기한이 명확한 액션 아이템, 시간대별 타임라인**을 자동으로 구조화하고, Obsidian 및 Slack에 최적화된 포맷으로 즉시 전달하여 팀의 효율성과 행동력을 극대화합니다.
 
+
+
 ## 📌 3. 예상 사용자/부서
 
 
@@ -50,6 +56,8 @@
 - **마케터 / 기획자**: 아이데이션(idea+action) 회의나 기획 회의의 핵심 내용을 빠르게 정리
 - **팀 리더 및 임원**: 주요 회의의 결정 사항을 신속하게 파악
 - **모든 사무직 종사자**: 단순 회의록 작성 업무에서 해방
+
+
 
 ## 💬 4. 사용 방법
 
@@ -190,7 +198,37 @@
   </details>
 
 
-## 💵 5. 사용 비용
+
+## 🚧 5. Troubleshooting: 대용량 오디오 파일 (25MB 제한) 문제 해결
+
+
+
+**1. 문제 발생 (Problem Statement)**
+
+OpenAI Whisper API는 처리할 수 있는 파일 크기를 **최대 25MB**로 제한
+
+이로 인해 30분 이상의 긴 회의 녹음 파일이 이 제한을 초과하여 **'413 Request Entity Too Large'** 에러와 함께 워크플로우가 중단됩니다.
+
+**2. 진단 및 해결 전략 (Diagnosis & Solution Strategy)**
+
+음성 인식(STT)은 고음질 오디오(음악용)를 필요로 하지 않습니다. 오디오의 **비트레이트(Bitrate)**를 낮추면 청취 품질의 손실 없이 파일 용량을 획기적으로 줄여 API 제한을 통과할 수 있습니다.
+
+**전략:** CloudConvert 노드를 활용하여 파일을 **전송 전에 압축**하는 파이프라인을 구축합니다.
+
+**3. n8n 구현 상세 (CloudConvert Compression)**
+
+| **워크플로우 위치** | **Google Drive (Download) ➔ CloudConvert ➔ Transcribe** |
+| --- | --- |
+| **노드 이름** | **CloudConvert** |
+| **작업 내용** | **`Convert File`** |
+| **Output Format** | `mp3` (용량 효율이 좋음) |
+| **핵심 설정: Audio Bitrate** | `32` 또는 `48` kbit/s 입력 |
+| **달성 효과** | 파일 크기가 약 1/4~1/3로 감소하여 (예: 1시간 파일 → 약 14MB) **25MB 제한을 우회**하고 안정적으로 STT를 수행 |
+| **비고** | CloudConvert 노드의 `Additional Options`에 `Audio Bitrate`를 설정 |
+
+
+
+## 💵 6. 사용 비용
 
 
 
@@ -201,7 +239,9 @@
 | **Slack API** | free |
 | **CloudConvert API** | free for 10 times per day |
 
-## 🗃️ 6. 참고 문헌
+
+
+## 🗃️ 7. 참고 문헌
 
 
 
