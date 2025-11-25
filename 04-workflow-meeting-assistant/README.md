@@ -104,7 +104,7 @@
 [음성 인식 텍스트]
 {{ $json.text }}
 
-      </details>
+  </details>
   </li>
   <li>
       <details>
