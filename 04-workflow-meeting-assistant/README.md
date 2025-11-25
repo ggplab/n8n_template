@@ -94,7 +94,6 @@
   <summary>프롬프트 예시</summary>
   <br>
   <ul>
-    <li>
       <details>
         <summary><strong>AI Agent1: 문맥 교정</strong></summary>
         <br>
@@ -113,8 +112,6 @@
 {{ $json.text }}
 
   </details>
-  </li>
-  <li>
       <details>
         <summary><strong>AI Agent2: 회의 내용 파악 및 요약</strong></summary>
         <br>
@@ -162,8 +159,6 @@
 {{ $('AI Agent1').item.json.output }}
 
   </details>
-    </li>
-    <li>
       <details>
         <summary><strong>AI Agent3: Slack에 맞게 형식 변환</strong></summary>
         <br>
@@ -193,7 +188,6 @@
 {{ $('AI Agent2').item.json.output }}
 
   </details>
-  </li>
   </ul>
   </details>
 
