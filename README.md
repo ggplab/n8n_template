@@ -8,6 +8,7 @@
 - [01-cheatsheets](./01-cheatsheet/): 데이터 파이프라인을 위한 치트시트 디렉토리
 - [02-workflow-farm-data](./02-workflow-farm-data/): 농수산물 api(kamis api)를 이용한 장보기를 돕는 AI Agent
 - [03-workflow-attendance](./03-workflow-attendance/): Slack 기반의 근태(출퇴근) 데이터 관리를 자동화하는 프로세스
+- [03-] <- 소정 1>
 - [04-] <- 효원 1>
 - [05-] <- 동완 1>
 - [06-] <- 차병 1>
