@@ -13,16 +13,16 @@
 
 ## 📑 목차
 
-1. [문제 정의](https://claude.ai/chat/84ec3d7f-1f94-4d1b-a29c-bb92f94570ef#-%EB%AC%B8%EC%A0%9C-%EC%A0%95%EC%9D%98)
-2. [솔루션 개요](https://claude.ai/chat/84ec3d7f-1f94-4d1b-a29c-bb92f94570ef#-%EC%86%94%EB%A3%A8%EC%85%98-%EA%B0%9C%EC%9A%94)
-3. [핵심 차별점](https://claude.ai/chat/84ec3d7f-1f94-4d1b-a29c-bb92f94570ef#-%ED%95%B5%EC%8B%AC-%EC%B0%A8%EB%B3%84%EC%A0%90)
-4. [기술 스택](https://claude.ai/chat/84ec3d7f-1f94-4d1b-a29c-bb92f94570ef#-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D)
-5. [시스템 구조](https://claude.ai/chat/84ec3d7f-1f94-4d1b-a29c-bb92f94570ef#-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EA%B5%AC%EC%A1%B0)
-6. [설치 및 설정](https://claude.ai/chat/84ec3d7f-1f94-4d1b-a29c-bb92f94570ef#-%EC%84%A4%EC%B9%98-%EB%B0%8F-%EC%84%A4%EC%A0%95)
-7. [사용 방법](https://claude.ai/chat/84ec3d7f-1f94-4d1b-a29c-bb92f94570ef#-%EC%82%AC%EC%9A%A9-%EB%B0%A9%EB%B2%95)
-8. [예상 비용](https://claude.ai/chat/84ec3d7f-1f94-4d1b-a29c-bb92f94570ef#-%EC%98%88%EC%83%81-%EB%B9%84%EC%9A%A9)
-9. [트러블슈팅](https://claude.ai/chat/84ec3d7f-1f94-4d1b-a29c-bb92f94570ef#-%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85)
-10. [참고 문헌](https://claude.ai/chat/84ec3d7f-1f94-4d1b-a29c-bb92f94570ef#-%EC%B0%B8%EA%B3%A0-%EB%AC%B8%ED%97%8C)
+1. [문제 정의]
+2. [솔루션 개요]
+3. [핵심 차별점]
+4. [기술 스택]
+5. [시스템 구조]
+6. [설치 및 설정]
+7. [사용 방법]
+8. [예상 비용]
+9. [트러블슈팅]
+10. [참고 문헌]
 
 ---
 
