@@ -11,7 +11,7 @@
 - [03-] <- 소정 1>
 - [04-] <- 효원 1>
 - [05-] <- 동완 1>
-- [06-workflow-reservation system-data](./06-workflow-reservation%20system-data/): 예약 웹앱을 이용한 예약 알림 시스템템
+- [06-workflow-reservation system-data](./06-workflow-reservation%20system-data/): 예약 웹앱을 이용한 예약 알림 시스템
 - [07-] <- 소정 2>
 - [08-] <- 효원 2>
 - [09-] <- 동완 2>
