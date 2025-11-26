@@ -135,7 +135,8 @@
         
 3. 우측 하단의 '저장' 버튼을 누르고 매크로 이름을 (예: `가계부 전송`) 지정합니다.
   </details>
-
+  </ul>
+  </details>
 
 <details>
   <summary>프롬프트 예시</summary>
