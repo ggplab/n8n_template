@@ -326,4 +326,140 @@ docker-compose restart
 └── 📄 NODE_COMMENTS.md               ← 노드별 상세 설명
 ```
 
+
+## 📖 사용 방법
+
+### 1️⃣ 폴더 구조 생성
+
+```
+C:\Users\YOUR_USERNAME\Desktop\
+├── N8N\                    ← Docker Compose 설정 파일 위치
+├── test\
+│   ├── Downloads\          ← 파일이 들어올 폴더
+│   └── Documents\          ← 정리된 파일이 저장될 폴더
+└── n8n_data\               ← n8n 데이터 저장 (자동 생성됨)
+```
+
+### 2️⃣ Docker Compose 설정
+
+**`C:\Users\YOUR_USERNAME\Desktop\N8N\docker-compose.yml` 파일 생성:**
+
+```yaml
+version: '3.8'
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - NODE_FUNCTION_ALLOW_BUILTIN=fs,path
+      - NODE_FUNCTION_ALLOW_EXTERNAL=
+    volumes:
+      - C:/Users/YOUR_USERNAME/Desktop/test:/data/test
+      - C:/Users/YOUR_USERNAME/Desktop/n8n_data:/home/node/.n8n
+```
+
+⚠️ **중요:** `YOUR_USERNAME`을 실제 Windows 사용자 이름으로 변경!
+
+**PowerShell에서 실행:**
+
+```powershell
+# N8N 폴더로 이동
+cd C:\Users\YOUR_USERNAME\Desktop\N8N
+
+# Docker Compose로 n8n 시작
+docker-compose up -d
+```
+
+**브라우저에서 접속:** `http://localhost:5678`
+
+### 3️⃣ n8n 워크플로우 Import
+
+1. n8n 웹 인터페이스 접속
+2. **Workflows** → **Import from File**
+3. `file_organizer_github.json` 파일 선택
+4. Import 완료
+
+### 4️⃣ Credential 연결
+
+### OpenAI API 설정
+
+1. [OpenAI Platform](https://platform.openai.com/api-keys)에서 API Key 발급
+2. `5. OpenAI 파일 분석` 노드 클릭
+3. **Credential** → **Create New**
+4. API Key 입력 후 저장
+
+### Google Sheets API 설정
+
+1. [Google Cloud Console](https://console.cloud.google.com/) 접속
+2. 새 프로젝트 생성 → **Google Sheets API** 활성화
+3. **OAuth 2.0 Client ID** 생성
+4. n8n에서 `8. Google Sheets 로그` 노드 클릭
+5. **Credential** → **Create New** → OAuth2 인증
+
+**Google Sheets 구조 (첫 번째 행):**
+
+| timestamp | original_path | filename | extension | file_type | category | target_folder | confidence | reasoning | moved | action |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
 ---
+
+### 5️⃣ 경로 설정 (중요!)
+
+**3곳의 경로를 일치시켜야 합니다:**
+
+| 위치 | 경로 |
+| --- | --- |
+| **Docker Compose** | `C:/Users/YOUR_USERNAME/Desktop/test:/data/test` |
+| **노드 2 (폴더 스캔)** | `const downloadsPath = '/data/test/Downloads';` |
+| **노드 4 (기존 폴더 조회)** | `const documentsPath = '/data/test/Documents';` |
+| **노드 7 (파일 이동)** | `const baseDir = '/data/test/Documents';` |
+
+### 6️⃣ 저장 및 활성화
+
+1. 워크플로우 우측 상단 **Save** 클릭
+2. **Active** 토글 켜기 ✅
+3. 자동 실행 시작!
+
+### 7️⃣ 실행 확인
+
+**Downloads 폴더에 파일 추가** → **5분 대기** → **Documents 폴더에서 정리된 파일 확인**
+
+**수동 실행:** n8n에서 **Execute Workflow** 버튼 클릭
+
+---
+
+### 🔄 Docker Compose 관리
+
+```powershell
+# N8N 폴더로 이동 (항상 먼저!)
+cd C:\Users\YOUR_USERNAME\Desktop\N8N
+
+# 시작
+docker-compose up -d
+
+# 중지
+docker-compose down
+
+# 재시작
+docker-compose restart
+
+# 로그 보기
+docker-compose logs -f n8n
+
+```
+
+---
+
+### 🎯 AI 분류 예시
+
+| 파일명 | AI 분류 결과 |
+| --- | --- |
+| `2024_계약서_최종본.pdf` | Documents/계약서/ |
+| `meeting_notes_20241124.txt` | Documents/회의록/ |
+| `invoice_202411.xlsx` | Documents/재무/영수증/ |
+| `screenshot_bug.png` | Documents/스크린샷/ |
+| `machine_learning_paper.pdf` | Documents/논문/ |
