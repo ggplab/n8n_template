@@ -39,7 +39,7 @@
 
 - 윤소정
 
-- 이효원
+- 이효원 [✉️ Linkedin](https://www.linkedin.com/in/hyowonlee1807/), [📝 블로그](https://dlgydnjs718.tistory.com/)
 
 - 강동완
 
