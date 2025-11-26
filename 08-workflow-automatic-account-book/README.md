@@ -12,8 +12,8 @@
 
 - 실제 결과물 화면
 
-<img src="https://github.com/ggplab/n8n-playbook/blob/main/08-workflow-automatic-account-book/screenshot/%EC%9E%90%EB%8F%99%20%EA%B0%80%EA%B3%84%EB%B6%80(1).png  width="200" height="400"/>
-<img src="https://github.com/ggplab/n8n-playbook/blob/main/08-workflow-automatic-account-book/screenshot/%EC%9E%90%EB%8F%99%20%EA%B0%80%EA%B3%84%EB%B6%80(2).png  width="200" height="400"/>
+![image](https://github.com/ggplab/n8n-playbook/blob/main/08-workflow-automatic-account-book/screenshot/%EC%9E%90%EB%8F%99%20%EA%B0%80%EA%B3%84%EB%B6%80(1).png)
+![image](https://github.com/ggplab/n8n-playbook/blob/main/08-workflow-automatic-account-book/screenshot/%EC%9E%90%EB%8F%99%20%EA%B0%80%EA%B3%84%EB%B6%80(2).png)
 
 ## 📋 1. 목차
 
