@@ -9,7 +9,6 @@
 ### 실제 결과물
 **Google Sheets 자동 기록**
 <img width="500" height="480" alt="google sheets" src="https://github.com/user-attachments/assets/4df1c4a0-228a-49e1-a5d0-3e3a9186df6f" />
-
 **Google Sheets 자동 기록**
 <img width="500" height="480" alt="documents" src="https://github.com/user-attachments/assets/92cd74c9-7dc7-4a8b-8c67-23db5ab250cb" />
 
