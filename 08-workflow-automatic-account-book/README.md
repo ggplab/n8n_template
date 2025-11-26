@@ -17,6 +17,7 @@
   
   <img src="https://github.com/ggplab/n8n-playbook/blob/main/08-workflow-automatic-account-book/screenshot/%EC%9E%90%EB%8F%99%20%EA%B0%80%EA%B3%84%EB%B6%80(2).png?raw=true" alt="자동 가계부 화면 2" width="350px"/>
 </div>
+
 ## 📋 1. 목차
 
 
