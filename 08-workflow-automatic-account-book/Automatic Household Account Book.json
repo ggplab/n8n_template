@@ -1,0 +1,422 @@
+{
+  "name": "Automatic Household Account Book",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "193Oc55SyDzh9BC0S-qAcecFKoAvboDk1U_VRVfhT3mg",
+          "mode": "list",
+          "cachedResultName": "자동 가계부",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/193Oc55SyDzh9BC0S-qAcecFKoAvboDk1U_VRVfhT3mg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1258867330,
+          "mode": "list",
+          "cachedResultName": "SMS_Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/193Oc55SyDzh9BC0S-qAcecFKoAvboDk1U_VRVfhT3mg/edit#gid=1258867330"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "headers",
+              "displayName": "headers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "params",
+              "displayName": "params",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "webhookUrl",
+              "displayName": "webhookUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "executionMode",
+              "displayName": "executionMode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4f5e1a7f-2a4c-4439-9834-d511db970ee1",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "dbt6bFAnSVfkNKpf",
+          "name": "효원 계정"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b2a1b816-c8cc-4bf4-8c87-114945fc3a27",
+              "name": "body",
+              "value": "={{ $json.body }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "b2e6f64f-dd08-43bd-a8cf-511238055a8d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "budget",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        0
+      ],
+      "id": "dbb3f5c3-8fdf-4fd2-a710-c0c99aa9d1a1",
+      "name": "Webhook1",
+      "webhookId": "771ee284-770e-4df0-b37d-1d20fe13f0af"
+    },
+    {
+      "parameters": {
+        "content": "## AI Agent with Gemini\nLLM(거대언어모델)을 활용한 비정형 결제 데이터의 파싱(Parsing) 및 카테고리 자동 분류 모델링\n\n추출 데이터: 가맹점 이름, 결제 날짜, 결제 금액, 카드사 이름, 지출 카테고리",
+        "height": 528,
+        "width": 336,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        400,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "61a0d781-fe69-477d-92ea-f1430c3a4853",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "2ab6e7f9-f73b-80f7-a7b5-e5ccf4c67695",
+          "mode": "list",
+          "cachedResultName": "가계부",
+          "cachedResultUrl": "https://www.notion.so/2ab6e7f9f73b80f7a7b5e5ccf4c67695"
+        },
+        "title": "={{ $json.merchant }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "date|date",
+              "includeTime": false,
+              "date": "={{ $json.date }}",
+              "timezone": "Asia/Seoul"
+            },
+            {
+              "key": "amount|number",
+              "numberValue": "={{ $json.amount }}"
+            },
+            {
+              "key": "card_company|multi_select",
+              "multiSelectValue": "={{ $json.card_company }}"
+            },
+            {
+              "key": "category|select",
+              "selectValue": "={{ $json.category }}"
+            }
+          ]
+        },
+        "options": {
+          "icon": "💵"
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "af85e7ac-a823-4037-bbac-a8173c6cc5a5",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "7bEpDSUrjMciNa2V",
+          "name": "효원 계정"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        528,
+        224
+      ],
+      "id": "2fe246cf-4c29-4d27-a58e-aeb32e56445e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "loym4PLJ0BaWcrnB",
+          "name": "효원 계정"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. AI가 준 데이터(output) 가져오기\nconst aiText = $input.first().json.output;\n\n// 2. ```json 같은 마크다운 기호 다 지우고, { 와 } 사이의 내용만 발라내기\nconst jsonStart = aiText.indexOf('{');\nconst jsonEnd = aiText.lastIndexOf('}') + 1;\nconst cleanJson = aiText.substring(jsonStart, jsonEnd);\n\n// 3. 진짜 JSON 데이터로 변환해서 내보내기\nreturn JSON.parse(cleanJson);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "237ea9d9-e4ea-40b0-a058-ddc81ae8c866",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "## Webhook\n**결제/승인**문자 또는 앱 알람 가져오기 ",
+        "height": 240,
+        "width": 192,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -272,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "615cb33f-e613-4ea2-9619-d54fb85e87a6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Google Sheets\n문자/알람 텍스트 기록",
+        "height": 240,
+        "width": 192
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -48,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "1ccc88d5-7874-422f-b1d6-25a6c9d9f19f",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 데이터 전처리\n주요 컬럼만 추출",
+        "height": 240,
+        "width": 192,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        176,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "41cbd3d7-1d31-4f98-85c7-dc0af2f82d8b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body }}",
+        "options": {
+          "systemMessage": "=# Role\n당신은 금융 결제 알림 텍스트를 분석하여 데이터베이스에 저장할 JSON 데이터를 추출하는 전문 AI 비서입니다.\n\n# Task\n텍스트를 분석하여 아래 5가지 필드를 추출하고, 반드시 지정된 JSON 형식으로만 출력하십시오. (부연 설명 금지)\n\n# Output JSON Format\n{\n    \"merchant\": \"String\",      // 가맹점 이름 (특수문자 제거)\n    \"date\": \"YYYY-MM-DD\",      // 결제 날짜\n    \"amount\": Integer,         // 결제 금액 (숫자만)\n    \"card_company\": \"String\",  // 카드사 이름\n    \"category\": \"String\"       // 지출 카테고리\n}\n\n# Parsing Rules (중요)\n1. **merchant (사용처)**: \n   - 텍스트에서 가맹점 이름을 찾으세요. (예: \"카페아이엠티 지타워*\")\n   - 이름 뒤에 붙은 특수문자(*, #)나 불필요한 지점명, 법인 표기((주))는 상황에 맞춰 깔끔하게 정리하세요.\n   - 예: \"카페아이엠티 지타워*\" -> \"카페아이엠티\"\n\n2. **amount (금액)**:\n   - '내용'뿐만 아니라 **'제목'**에 적힌 금액도 반드시 확인하세요. (특히 토스, 카카오페이 등은 제목에 금액이 있습니다.)\n   - \"3,200원\" -> 3200 (쉼표와 '원' 제거, 정수형 반환)\n   - '취소' 문자가 포함된 경우 음수(-)로 표기하세요.\n\n3. **date (날짜)**:\n   - 텍스트에 있는 날짜(예: 10/29)를 최우선으로 사용하세요.\n   - 연도가 없다면 현재 연도인 **2025년**을 붙여서 \"2025-10-29\" 형식으로 만드세요.\n   - (참고: 입력된 '시간' 타임스탬프는 무시하고 텍스트 날짜를 따르세요.)\n\n4. **card_company (카드사)**:\n   - \"우리(3743)\" -> \"우리카드\" (숫자나 괄호 제거)\n\n5. **category (카테고리)**:\n   - merchant(사용처)와 문맥을 분석하여 아래 기준에 따라 가장 적절한 카테고리를 하나만 선택하세요.\n\n   - **[식비]**: 일반 음식점, 배달 앱(배달의민족, 요기요, 쿠팡이츠), 식재료 장보기(이마트, 홈플러스, 마켓컬리, 롯데마트), 반찬가게, 주점/술집\n   - **[카페]**: 커피 전문점(스타벅스, 메가커피, 이디야 등), 베이커리(파리바게뜨, 뚜레쥬르), 디저트 가게, 아이스크림\n   - **[교통]**: 택시(카카오T, 우티), 대중교통(코레일, 티머니), 주유소, 하이패스, 주차장, 킥보드/자전거 대여\n   - **[쇼핑]**: 온라인 쇼핑몰(쿠팡, 네이버쇼핑, 11번가), 백화점, 아울렛, 다이소, 올리브영, 의류/잡화 매장, 가전제품\n   - **[의료]**: 병원, 의원, 약국, 한의원, 건강검진센터, 동물병원\n   - **[공과금]**: 아파트 관리비, 전기요금(한국전력), 도시가스, 수도세, 지방세/국세, 과태료\n   - **[문화]**: 영화관(CGV, 롯데시네마), OTT 구독(넷플릭스, 유튜브, 멜론), 서점(교보문고), 전시회/공연 관람, PC방, 노래방\n   - **[교육]**: 학원비, 인터넷 강의(클래스101, 인프런), 독서실/스터디카페, 학습지\n   - **[통신]**: 통신요금(SKT, KT, LGU+), 인터넷/TV 요금, 알뜰폰 요금\n   - **[기타]**: 위 분류에 속하지 않는 항목, 회비, 경조사비, 현금인출, 수수료, 기부금\n\n# Few-Shot Examples\nInput:\n내용: [Web발신] 삼성(1234) 승인 홍길동 15,400원 11/24 12:30 (주)맥도날드강남점\n보낸곳: 1588-8700\n시간: 1763959619779\n\nOutput:\n{\n    \"merchant\": \"맥도날드\",\n    \"date\": \"2025-11-24\",\n    \"amount\": 15400,\n    \"card_company\": \"삼성카드\",\n    \"category\": \"식비\"\n}\n\n# Output Rules (Strict)\n- **절대로** 마크다운 코드 블록(```json ... ```)을 사용하지 마십시오.\n- 앞뒤에 설명이나 공백 없이 **오직 순수 JSON 텍스트(Raw JSON)**만 출력하십시오."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "c6d3ecf7-a9e9-4003-9a3d-86632a020132",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "content": "## 데이터 정제\n마크다운 코드 블록(```json) 등의 불필요한 문자 제거",
+        "height": 240,
+        "width": 192,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        768,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "c26b1b77-f740-4b25-86c5-791bfd1857c3",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Notion 기록\nNotion DB에 형식에 맞게 데이터 입력",
+        "height": 240,
+        "width": 192
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        992,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "a5dcc685-61ba-4e2f-bc3a-f4264df53c1d",
+      "name": "Sticky Note5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6f0586c1-14b6-4368-8797-35f1787ef380",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a3c9c522adfd6385f845232ff4cc78161b141f603e69361658584d0ff2befbeb"
+  },
+  "id": "2omOZo8gtciSb5Eh",
+  "tags": []
+}
