@@ -80,7 +80,7 @@
 ## 📖 사용 방법
 
 <details>
-  <summary>1️⃣ 폴더 구조 생성</summary>
+  <summary> ## 1️⃣ 폴더 구조 생성</summary>
 
 ```
 C:\Users\YOUR_USERNAME\Desktop\
