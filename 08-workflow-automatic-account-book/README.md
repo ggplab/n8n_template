@@ -142,7 +142,6 @@
   <summary>프롬프트 예시</summary>
   <ul>
 
-        ```
 # Role
 당신은 금융 결제 알림 텍스트를 분석하여 데이터베이스에 저장할 JSON 데이터를 추출하는 전문 AI 비서입니다.
 
@@ -209,7 +208,6 @@ Output:
 # Output Rules (Strict)
 - **절대로** 마크다운 코드 블록(```json ... ```)을 사용하지 마십시오.
 - 앞뒤에 설명이나 공백 없이 **오직 순수 JSON 텍스트(Raw JSON)**만 출력하십시오.
-        ```
     
   </ul>
 </details>
@@ -219,7 +217,6 @@ Output:
   <summary>코드 예시</summary>
   <ul>
 
-        ```
 // 1. AI가 준 데이터(output) 가져오기
 const aiText = $input.first().json.output;
 
@@ -230,7 +227,6 @@ const cleanJson = aiText.substring(jsonStart, jsonEnd);
 
 // 3. 진짜 JSON 데이터로 변환해서 내보내기
 return JSON.parse(cleanJson);
-        ```
     
   </ul>
 </details>
