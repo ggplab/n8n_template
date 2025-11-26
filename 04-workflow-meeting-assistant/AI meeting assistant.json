@@ -11,10 +11,10 @@
         "triggerOn": "specificFolder",
         "folderToWatch": {
           "__rl": true,
-          "value": "1AEKKkomcvFyXsazCbEsnys_8l9n9sCdJ",
+          "value": "google-drive-folder-id-recorded",
           "mode": "list",
           "cachedResultName": "Recorded",
-          "cachedResultUrl": "https://drive.google.com/drive/folders/1AEKKkomcvFyXsazCbEsnys_8l9n9sCdJ"
+          "cachedResultUrl": "https://drive.google.com/drive/folders/google-drive-folder-id-removed"
         },
         "event": "fileCreated",
         "options": {}
@@ -31,8 +31,8 @@
       "executeOnce": false,
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "dG9mAu5IMty4EPqE",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -56,8 +56,8 @@
       "name": "Google Drive1",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "dG9mAu5IMty4EPqE",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -75,8 +75,8 @@
       "name": "Google Gemini Chat Model2",
       "credentials": {
         "googlePalmApi": {
-          "id": "loym4PLJ0BaWcrnB",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -90,10 +90,10 @@
         },
         "folderId": {
           "__rl": true,
-          "value": "1RmvjrMwY2e6miTKrXXfemuY-eaxifK9P",
+          "value": "google-drive-folder-id-input",
           "mode": "list",
           "cachedResultName": "회의록 input",
-          "cachedResultUrl": "https://drive.google.com/drive/folders/1RmvjrMwY2e6miTKrXXfemuY-eaxifK9P"
+          "cachedResultUrl": "https://drive.google.com/drive/folders/google-drive-folder-id-removed"
         },
         "options": {}
       },
@@ -107,8 +107,8 @@
       "name": "Upload file2",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "dG9mAu5IMty4EPqE",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -126,8 +126,8 @@
       "name": "Google Gemini Chat Model3",
       "credentials": {
         "googlePalmApi": {
-          "id": "loym4PLJ0BaWcrnB",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -160,10 +160,10 @@
         },
         "folderId": {
           "__rl": true,
-          "value": "10MyuWjlEPmQj_Mi1Zd38rJiw5GMnnsVa",
+          "value": "google-drive-folder-id-output",
           "mode": "list",
           "cachedResultName": "회의록 output",
-          "cachedResultUrl": "https://drive.google.com/drive/folders/10MyuWjlEPmQj_Mi1Zd38rJiw5GMnnsVa"
+          "cachedResultUrl": "https://drive.google.com/drive/folders/google-drive-folder-id-removed"
         },
         "options": {}
       },
@@ -177,8 +177,8 @@
       "name": "Upload file3",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "dG9mAu5IMty4EPqE",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -265,7 +265,7 @@
         "promptType": "define",
         "text": "={{ $('AI Agent1').item.json.output }}",
         "options": {
-          "systemMessage": "=당신은 비즈니스 문서 정리에 특화된 '수석 서기'입니다.\n제공된 회의 스크립트(타임코드 포함)를 분석하여, **바쁜 팀원들이 1분 만에 파악할 수 있는 가독성 최상의 회의록**을 작성하세요.\n\n[참여자 및 주요 용어 사전]\n- 팀원: 정 님, 효원 님, 소정 님, 동완 님, 차병 님\n- 기술용어: n8n, Obsidian, Webhook\n\n[작업 지침 - 엄격 준수]\n\n1. **📝 3줄 요약 (Executive Summary)**\n   - 회의의 핵심 목적과 결론을 가장 중요한 순서대로 딱 3문장으로 요약하세요.\n\n2. **🗣️ 발언자별 핵심 발언 (Who Said What)**\n   - **담당 업무는 제외하고**, 각 참여자가 회의에서 논의한 **주요 의견만** 간결하게 요약하세요.\n   - **형식:**\n     - **이름**: 주요 발언 요약\n\n3. **✅ 담당자별 액션 아이템 (Action Items by Assignee)**\n   - 회의에서 도출된 할 일을 담당자별로 그룹화하여 정리하세요.\n   - 공동 작업이거나 담당자가 불명확할 경우 '공통' 또는 '팀 전체'로 분류하세요.\n   - **형식:**\n     - **담당자명**\n       - [ ] 할 일 내용 (⚠️ 마감: 문맥상 날짜가 유추될 경우 기입하고, 그렇지 않다면 빈칸 유지, 보통 마감일은 {{ $now.toFormat('yyyy-MM-dd') }} 보다 이후 날짜가 맞으므로 {{ $now.toFormat('yyyy-MM-dd') }} 이후 날짜라면 마감일 생략.)\n       - [ ] 할 일 내용\n   - **[위험 고지]** 액션 아이템의 마감 기한은 **문맥상 명확하게 언급되었을 때만 기입**하며, 유추된 마감일에는 **더블 체크가 필요함**을 상기하세요.\n\n4. **⏰ 타임라인 챕터 (Chapter Timeline)**\n   - 주요 주제가 전환되는 시점 위주로 굵직하게 요약하세요.\n   - **시간 표기:** 반드시 **시간:분 (`hh:mm`) 형식**을 준수하며, **초는 드롭**하세요. (예: 0시간 5분 -> 00:05, 0시간 30분 -> 00:30)\n   - **형식:** Markdown 표(Table) 사용\n   | 시간 | 주제 | 핵심 내용 |\n   | :--- | :--- | :--- |\n   | 00:00 | 오프닝 | 금주 일정 및 근황 공유 |\n   | 00:15 | 비용 가이드 | OpenAI API 키 분리 논의 |\n\n[출력 스타일]\n- 서론/결론 없이 본문만 출력.\n- Obsidian 호환 Markdown 문법 사용 (볼드체, 표, 체크박스 등).\n\n[입력 데이터]\n{{ $('AI Agent1').item.json.output }}"
+          "systemMessage": "=당신은 비즈니스 문서 정리에 특화된 '수석 서기'입니다.\n제공된 회의 스크립트(타임코드 포함)를 분석하여, **바쁜 팀원들이 1분 만에 파악할 수 있는 가독성 최상의 회의록**을 작성하세요.\n\n[참여자 및 주요 용어 사전]\n- 팀원: 참여자 A, 참여자 B, 참여자 C, 참여자 D, 참여자 E\n- 기술용어: n8n, Obsidian, Webhook\n\n[작업 지침 - 엄격 준수]\n\n1. **📝 3줄 요약 (Executive Summary)**\n   - 회의의 핵심 목적과 결론을 가장 중요한 순서대로 딱 3문장으로 요약하세요.\n\n2. **🗣️ 발언자별 핵심 발언 (Who Said What)**\n   - **담당 업무는 제외하고**, 각 참여자가 회의에서 논의한 **주요 의견만** 간결하게 요약하세요.\n   - **형식:**\n     - **이름**: 주요 발언 요약\n\n3. **✅ 담당자별 액션 아이템 (Action Items by Assignee)**\n   - 회의에서 도출된 할 일을 담당자별로 그룹화하여 정리하세요.\n   - 공동 작업이거나 담당자가 불명확할 경우 '공통' 또는 '팀 전체'로 분류하세요.\n   - **형식:**\n     - **담당자명**\n       - [ ] 할 일 내용 (⚠️ 마감: 문맥상 날짜가 유추될 경우 기입하고, 그렇지 않다면 빈칸 유지, 보통 마감일은 {{ $now.toFormat('yyyy-MM-dd') }} 보다 이후 날짜가 맞으므로 {{ $now.toFormat('yyyy-MM-dd') }} 이후 날짜라면 마감일 생략.)\n       - [ ] 할 일 내용\n   - **[위험 고지]** 액션 아이템의 마감 기한은 **문맥상 명확하게 언급되었을 때만 기입**하며, 유추된 마감일에는 **더블 체크가 필요함**을 상기하세요.\n\n4. **⏰ 타임라인 챕터 (Chapter Timeline)**\n   - 주요 주제가 전환되는 시점 위주로 굵직하게 요약하세요.\n   - **시간 표기:** 반드시 **시간:분 (`hh:mm`) 형식**을 준수하며, **초는 드롭**하세요. (예: 0시간 5분 -> 00:05, 0시간 30분 -> 00:30)\n   - **형식:** Markdown 표(Table) 사용\n   | 시간 | 주제 | 핵심 내용 |\n   | :--- | :--- | :--- |\n   | 00:00 | 오프닝 | 금주 일정 및 근황 공유 |\n   | 00:15 | 비용 가이드 | OpenAI API 키 분리 논의 |\n\n[출력 스타일]\n- 서론/결론 없이 본문만 출력.\n- Obsidian 호환 Markdown 문법 사용 (볼드체, 표, 체크박스 등).\n\n[입력 데이터]\n{{ $('AI Agent1').item.json.output }}"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -291,8 +291,8 @@
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "loym4PLJ0BaWcrnB",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -301,7 +301,7 @@
         "promptType": "define",
         "text": "={{ $json.output }}",
         "options": {
-          "systemMessage": "=당신은 내용에 일절 손댈 수 없는 '불변 포맷 변환기'입니다.\n귀하의 유일한 임무는 입력된 원본 텍스트의 내용을 한 글자도 바꾸지 않고 오직 형식(Format)만 슬랙에 최적화하는 것입니다.\n\n[변환 규칙 - 엄격 준수]\n1. **🔥 내용 불변의 원칙 (Non-Negotiable)**: 원본 텍스트의 단어나 문장 구조, 내용을 절대로 변경하거나 요약, 삭제, 추가하지 마세요. 오직 형식(마크다운 → 슬랙 mrkdwn) 변환만 허용됩니다.\n2. **상단 날짜**: 최상단에 `📅 {{ $now.setZone('Asia/Seoul').toFormat('yyyy-MM-dd') }} 회의 요약`을 **굵게(*제목*)** 작성하고 빈 줄을 추가하세요.\n\n3. **🔥 행 시작 기호 완벽 제거 (Aggressive Strip)**:\n   - 모든 행(Line)의 맨 앞에서 발견되는 `*`, `•`, `-` 기호 및 들여쓰기 공백을 완전히 제거하세요. 텍스트를 왼쪽으로 정렬하세요.\n\n4. **체크박스/리스트 정리 (New)**:\n   - **체크박스 제거**: 내용 내에 남아있는 **`[ ]`** 또는 **`[x]`** 같은 마크다운 체크박스 기호는 **모두 삭제**하세요. (슬랙에 불필요한 문자 제거)\n   - **액션 아이템 재구성**: 모든 액션 아이템은 **글머리 기호(•)**를 사용하여 슬랙 리스트로 만드세요.\n\n5. **헤더 변환**: `#`, `##` 헤더는 제거하고, 해당 줄을 **굵게(*제목*)** 처리하세요.\n\n6. **구조적 요소 불렛 금지 (New)**:\n   - 타임라인(`[hh:mm]`)이나 담당 업무 화살표 (`→`)가 시작되는 줄에는 **글머리 기호(`•`)를 절대 붙이지 마세요.** (화살표가 리스트 기호 역할을 대체함)\n\n7. **구분감**: 각 섹션 사이에는 빈 줄을 하나씩 넣어주세요.\n\n[입력 데이터]\n{{ $('AI Agent2').item.json.output }}"
+          "systemMessage": "=당신은 내용에 일절 손댈 수 없는 '불변 포맷 변환기'입니다.\n귀하의 유일한 임무는 입력된 원본 텍스트의 내용을 한 글자도 바꾸지 않고 오직 형식(Format)만 슬랙에 최적화하는 것입니다.\n\n[변환 규칙 - 엄격 준수]\n1. **🔥 내용 불변의 원칙 (Non-Negotiable)**: 원본 텍스트의 단어나 문장 구조, 내용을 절대로 변경하거나 요약, 삭제, 추가하지 마세요. 오직 형식(마크다운 → 슬랙 mrkdwn) 변환만 허용됩니다.\n2. **상단 날짜**: 최상단에 `📅 {{ $now.setZone('Asia/Seoul').toFormat('yyyy-MM-dd') }} 회의 요약`을 **굵게(*제목*)** 작성하고 빈 줄을 추가하세요.\n\n3. **🔥 행 시작 기호 완벽 제거 (Aggressive Strip)**:\n   - 모든 행(Line)의 맨 앞에서 발견되는 `*`, `•`, `-` 기호 및 들여쓰기 공백을 완전히 제거하세요. 텍스트를 왼쪽으로 정렬하세요.\n\n4. **체크박스/리스트 정리 (New)**:\n   - **체크박스 제거**: 내용 내에 남아있는 **`[ ]`** 또는 **`[x]`** 같은 마크다운 체크박스 기호는 **모두 삭제**하세요. (슬랙에 불필요한 문자 제거)\n   - **액션 아이템 재구성**: 모든 액션 아이템은 **글머리 기호(•)**를 사용하여 슬랙 리스트로 만드세요.\n\n5. **헤더 변환**: `#`, `##` 헤더는 제거하고, 해당 줄을 **굵게(*제목*)** 처리하세요.\n\n6. **구조적 요소 불렛 금지 (New)**:\n   - 타임라인(`[hh:mm]`)이나 담당 업무 화살표 (`→`)가 시작되는 줄에는 **글머리 기호(`•`)를 절대 붙이지 마세요.** (화살표가 리스트 기호 역할을 대체함)\n\n7. **구분감**: 각 섹션 사이에는 빈 줄을 하나씩 넣어주세요.\n\n[입력 데이터]\n{{ $('AI Agent2').item.json.output }}"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -318,7 +318,7 @@
         "select": "channel",
         "channelId": {
           "__rl": true,
-          "value": "C09QW084Y1Y",
+          "value": "slack-channel-id-removed",
           "mode": "list",
           "cachedResultName": "4_챗봇"
         },
@@ -340,18 +340,18 @@
       ],
       "id": "bd7175dd-699b-44d4-8b4e-823a0aa19d9c",
       "name": "Send a message (After7)",
-      "webhookId": "7a286da4-3800-43ea-bdbc-2d19bb9b7793",
+      "webhookId": "webhook-id-removed",
       "credentials": {
         "slackApi": {
-          "id": "XOmc0YgpFHXdvmK9",
-          "name": "효원 회의요약봇"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
     {
       "parameters": {
         "outputFormat": "mp3",
-        "additionalOptions": "={\n  \"audio_bitrate\": 32\n}"
+        "additionalOptions": "={\n  \"audio_bitrate\": 32\n}"
       },
       "type": "@cloudconvert/n8n-nodes-cloudconvert.cloudConvert",
       "typeVersion": 1,
@@ -363,8 +363,8 @@
       "name": "CloudConvert",
       "credentials": {
         "cloudConvertOAuth2Api": {
-          "id": "TCs0oV5Cl5Kg9SZK",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -384,8 +384,8 @@
       "name": "Transcribe a recording",
       "credentials": {
         "openAiApi": {
-          "id": "XyX8E2GvF8H8R6pz",
-          "name": "OpenAi account 3"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -491,10 +491,10 @@
         "resource": "databasePage",
         "databaseId": {
           "__rl": true,
-          "value": "2b7d0e76-ed44-80ce-b23f-e15ebba71aa7",
+          "value": "notion-database-id-removed",
           "mode": "list",
           "cachedResultName": "회의록 요약",
-          "cachedResultUrl": "https://www.notion.so/2b7d0e76ed4480ceb23fe15ebba71aa7"
+          "cachedResultUrl": "https://www.notion.so/notion-database-id-removed"
         },
         "title": "={{ $now.setZone('Asia/Seoul').toFormat('yyyy-MM-dd') }} 회의록",
         "propertiesUi": {
@@ -537,8 +537,8 @@
       "name": "Create a database page",
       "credentials": {
         "notionApi": {
-          "id": "Nce6Lzdioq8RyVAw",
-          "name": "회의 요약"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -556,8 +556,8 @@
       "name": "Google Gemini Chat Model1",
       "credentials": {
         "googlePalmApi": {
-          "id": "loym4PLJ0BaWcrnB",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -566,7 +566,7 @@
         "promptType": "define",
         "text": "={{ $json.output }}",
         "options": {
-          "systemMessage": "=당신은 'Notion 데이터베이스용 핵심 정보 추출 전문가'입니다.\n입력된 전체 회의록 마크다운 텍스트를 분석하여, *내용의 핵심과 구조를 최대한 유지*하며, 최종 출력 글자 수를 **공백 포함 1,800자 이하**로 줄이세요.\n\n[필수 추출 섹션]\n1.  3줄 핵심 요약 섹션\n2.  발언자별 핵심 발언 섹션\n3.  담당자별 액션 아이템 섹션 (체크박스 포맷 유지)\n\n[작업 지침]\n1. **발언 내용 제한**: '발언자별 핵심 발언' 섹션을 추출할 때, **각 참여자의 발언 내용은 최대 3문장 이내**로 요약하여 간결함을 유지해야 합니다.\n2.  **글자 수 제한**: 최종 출력의 전체 글자 수가 공백 포함 **1,800자를 넘지 않도록** 엄격하게 제한해야 합니다.\n3.  **구조 보존**: 추출한 섹션의 Markdown 형식은 최대한 그대로 유지하세요.\n4.  **불필요한 섹션 제거**: 위 [필수 추출 섹션] 외의 모든 내용(타임라인, 상세 논의 등)은 완전히 제외하고 출력하세요.\n\n[입력 데이터]\n{{ $json.output }}"
+          "systemMessage": "=당신은 'Notion 데이터베이스용 핵심 정보 추출 전문가'입니다.\n입력된 전체 회의록 마크다운 텍스트를 분석하여, *내용의 핵심과 구조를 최대한 유지*하며, 최종 출력 글자 수를 **공백 포함 1,800자 이하**로 줄이세요.\n\n[필수 추출 섹션]\n1.  3줄 핵심 요약 섹션\n2.  발언자별 핵심 발언 섹션\n3.  담당자별 액션 아이템 섹션 (체크박스 포맷 유지)\n\n[작업 지침]\n1. **발언 내용 제한**: '발언자별 핵심 발언' 섹션을 추출할 때, **각 참여자의 발언 내용은 최대 3문장 이내**로 요약하여 간결함을 유지해야 합니다.\n2.  **글자 수 제한**: 최종 출력의 전체 글자 수가 공백 포함 **1,800자를 넘지 않도록** 엄격하게 제한해야 합니다.\n3.  **구조 보존**: 추출한 섹션의 Markdown 형식은 최대한 그대로 유지하세요.\n4.  **불필요한 섹션 제거**: 위 [필수 추출 섹션] 외의 모든 내용(타임라인, 상세 논의 등)은 완전히 제외하고 출력하세요.\n\n[입력 데이터]\n{{ $json.output }}"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -798,11 +798,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "1308f886-ecb3-40b4-a4d6-26f244d471ab",
+  "versionId": "workflow-version-id-removed",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "a3c9c522adfd6385f845232ff4cc78161b141f603e69361658584d0ff2befbeb"
+    "instanceId": "instance-id-removed"
   },
-  "id": "4Q1LlZVVM2LVW01Z",
+  "id": "workflow-id-removed",
   "tags": []
 }
