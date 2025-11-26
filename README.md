@@ -12,7 +12,7 @@
 - [05-workflow-email-data](./05-workflow-email-data/): AI 기반 이메일 자동 분류 및 일정 관리 시스템
 - [06-workflow-reservation system-data](./06-workflow-reservation%20system-data/): 예약 웹앱을 이용한 예약 알림 시스템
 - [07-] <- 소정 2>
-- [08-workflow-automatic-account-book](./08-workflow-automatic-account-book/): 결제 문자 메시지를 표준 JSON 포맷으로 변환하여 노션 데이터베이스에 즉시 동기화하여 자동으로 가계부 기입
+- [08-workflow-automatic-account-book](./08-workflow-automatic-account-book/): 결제 문자 메시지를 자동으로 가계부에 기입 및 세분화
 - [09-workflow-file-organizer](./09-workflow-file-organizer/): 지능형 파일 분류 및 자동 정리 워크플로우
 - [10-] <- 차병 2>
 - [11-] <- 소정 3>
