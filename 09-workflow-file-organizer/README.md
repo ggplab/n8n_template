@@ -10,7 +10,6 @@
 
 <img width="703" height="408" alt="documents" src="https://github.com/user-attachments/assets/92cd74c9-7dc7-4a8b-8c67-23db5ab250cb" />
 
----
 
 ## 📑 목차
 
@@ -20,7 +19,6 @@
 - 사용 비용
 - 참고 문헌
 
----
 
 ## 🎯 문제 정의
 
@@ -64,8 +62,6 @@
 📊 기존 폴더 조회 → 🤖 OpenAI 분석 → 📋 JSON 파싱 →
 🚚 파일 이동 → 📝 Google Sheets 로그
 ```
-
-
 
 ## 👥 예상 사용자/부서
 
@@ -130,16 +126,12 @@ docker-compose up -d
 
 **브라우저에서 접속:** `http://localhost:5678`
 
----
-
 ### 3️⃣ n8n 워크플로우 Import
 
 1. n8n 웹 인터페이스 접속
 2. **Workflows** → **Import from File**
 3. `file_organizer_github.json` 파일 선택
 4. Import 완료
-
----
 
 ### 4️⃣ Credential 연결
 
@@ -163,7 +155,6 @@ docker-compose up -d
 | timestamp | original_path | filename | extension | file_type | category | target_folder | confidence | reasoning | moved | action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
----
 
 ### 5️⃣ 경로 설정 (중요!)
 
@@ -176,23 +167,17 @@ docker-compose up -d
 | **노드 4 (기존 폴더 조회)** | `const documentsPath = '/data/test/Documents';` |
 | **노드 7 (파일 이동)** | `const baseDir = '/data/test/Documents';` |
 
----
-
 ### 6️⃣ 저장 및 활성화
 
 1. 워크플로우 우측 상단 **Save** 클릭
 2. **Active** 토글 켜기 ✅
 3. 자동 실행 시작!
 
----
-
 ### 7️⃣ 실행 확인
 
 **Downloads 폴더에 파일 추가** → **5분 대기** → **Documents 폴더에서 정리된 파일 확인**
 
 **수동 실행:** n8n에서 **Execute Workflow** 버튼 클릭
-
----
 
 ### 🔄 Docker Compose 관리
 
@@ -214,8 +199,6 @@ docker-compose logs -f n8n
 
 ```
 
----
-
 ### 🎯 AI 분류 예시
 
 | 파일명 | AI 분류 결과 |
@@ -225,8 +208,6 @@ docker-compose logs -f n8n
 | `invoice_202411.xlsx` | Documents/재무/영수증/ |
 | `screenshot_bug.png` | Documents/스크린샷/ |
 | `machine_learning_paper.pdf` | Documents/논문/ |
-
----
 
 ## 💰 사용 비용
 
@@ -250,8 +231,6 @@ docker-compose logs -f n8n
 - ✅ Docker Compose (무료)
 - ✅ Google Sheets API (무료)
 
----
-
 ## 🔧 트러블슈팅
 
 ### ❌ "Module 'fs' is disallowed"
@@ -269,8 +248,6 @@ environment:
 docker-compose restart
 ```
 
----
-
 ### ❌ "ENOENT: no such file or directory"
 
 **해결:** Docker 볼륨 마운트 경로 확인
@@ -278,8 +255,6 @@ docker-compose restart
 1. `docker-compose.yml`에서 경로 확인
 2. 실제 폴더 존재 여부 확인
 3. 컨테이너 재시작
-
----
 
 ### ❌ 재부팅 후 n8n이 자동 시작 안 됨
 
@@ -294,9 +269,6 @@ docker-compose restart
     restart: unless-stopped  # 이게 있어야 함
     ```
     
-
----
-
 ## 📚 참고 문헌
 
 ### 공식 문서
@@ -311,7 +283,6 @@ docker-compose restart
 - [n8n Community Workflows](https://n8n.io/workflows/)
 - [n8n Code Node Guide](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/)
 
----
 
 ## 🎁 파일 목록
 
