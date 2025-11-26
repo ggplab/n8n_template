@@ -13,7 +13,7 @@
 - [06-workflow-reservation system-data](./06-workflow-reservation%20system-data/): 예약 웹앱을 이용한 예약 알림 시스템
 - [07-] <- 소정 2>
 - [08-] <- 효원 2>
-- [09-] <- 동완 2>
+- [09-workflow-file-organizer](./09-workflow-file-organizer/): 지능형 파일 분류 및 자동 정리 워크플로우
 - [10-] <- 차병 2>
 - [11-] <- 소정 3>
 - [12-] <- 효원 3>
