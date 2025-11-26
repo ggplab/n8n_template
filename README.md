@@ -41,7 +41,7 @@
 
 - 이효원 [✉️ Linkedin](https://www.linkedin.com/in/hyowonlee1807/), [📝 블로그](https://dlgydnjs718.tistory.com/)
 
-- 강동완
+- 강동완 [📝 블로그](https://lovecat09.tistory.com/manage/posts/)
 
 - 김차병 [📃블로그](https://bitsoo97.tistory.com/)
 
