@@ -10,7 +10,8 @@
 
 
 
-- 실제 결과물 화면: <div align="center">
+- 실제 결과물 화면:
+  <div align="center">
   <img src="https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/%ED%9A%8C%EC%9D%98%EB%A1%9D%20%EC%9A%94%EC%95%BD%20%EC%8A%AC%EB%9E%99.png" alt="Slack 요약 결과 화면" width="400px"/>
   
   <img src="https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/%ED%9A%8C%EC%9D%98%EB%A1%9D%20%EC%9A%94%EC%95%BD%20%EB%85%B8%EC%85%98.png" alt="Obsidian 요약 결과 화면" width="400px"/>
