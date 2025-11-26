@@ -230,3 +230,20 @@ return JSON.parse(cleanJson);
     
   </ul>
 </details>
+
+
+## 💵 5. 사용 비용
+
+
+|  | **Cost** |
+| --- | --- |
+| **Gemini API** | ₩1,700 |
+| **Notion API** | free |
+| **MacroGroid App** | AVOD (Advertising-based Video on Demand) |
+
+## 🗃️ 6. 참고 문헌
+
+
+https://community.n8n.io/t/trigger-from-android-phone/179222/2
+
+https://www.youtube.com/watch?v=2oea8rihdGM
