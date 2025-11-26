@@ -5,14 +5,14 @@
 > **AI 회의록 구조화 전문 에이전트**
 실시간 음성 기록을 기반으로 한 회의 구조 분석과 담당자별 행동 계획 자동 추출
 > 
-- n8n 화면: ![AI 회의 요약 워크플로우 다이어그램](https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/AI%20%ED%9A%8C%EC%9D%98%20%EC%9A%94%EC%95%BD%20%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0%20%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8.png)
+- n8n 화면: ![AI 회의 요약 워크플로우 다이어그램](https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/%ED%9A%8C%EC%9D%98%EC%9A%94%EC%95%BD%EB%B4%87%20%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0.png)
 
 
 
 - 실제 결과물 화면: <div align="center">
-  <img src="https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/Slack%20%EC%9A%94%EC%95%BD%20%EA%B2%B0%EA%B3%BC%20%ED%99%94%EB%A9%B4.png" alt="Slack 요약 결과 화면" width="400px"/>
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/%ED%9A%8C%EC%9D%98%EB%A1%9D%20%EC%9A%94%EC%95%BD%20%EC%8A%AC%EB%9E%99.png" alt="Slack 요약 결과 화면" width="400px"/>
   
-  <img src="https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/Obsidian%20%EC%9A%94%EC%95%BD%20%EA%B2%B0%EA%B3%BC%20%ED%99%94%EB%A9%B4.png" alt="Obsidian 요약 결과 화면" width="400px"/>
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/%ED%9A%8C%EC%9D%98%EB%A1%9D%20%EC%9A%94%EC%95%BD%20%EB%85%B8%EC%85%98.png" alt="Obsidian 요약 결과 화면" width="400px"/>
 </div>
 
 
@@ -83,6 +83,8 @@
     <li><strong>AI Agent 1 (Correction)</strong>: <strong>Proofreader</strong> 역할로, Whisper가 생성한 원시 텍스트의 맞춤법, 문법, 그리고 <strong>팀원 이름 등의 고유명사 오류를 수정</strong>하여 텍스트를 정제합니다.</li>
     <li><strong>Convert to File 2 & Upload file 2</strong>: (백업 경로) 정제된 원본 텍스트를 <code>.txt</code> 파일로 만들어 <strong>Google Drive에 안전하게 백업</strong>합니다.</li>
     <li><strong>AI Agent 2 (Summarization)</strong>: <strong>구조 분석가</strong> 역할로, 정제된 텍스트를 기반으로 <strong>Executive Summary, 담당자별 액션 아이템, 타임라인 표</strong> 등 최종 아카이빙 포맷(Markdown)으로 요약하고 구조화합니다.</li>
+    <li><strong>AI Agent(Length Controller) (Summarization)</strong>: <strong>포맷 변환기</strong> 역할로, 옵시디언용으로 만든 복잡한 마크다운(표, #헤더)을 <strong>Notion에서 깨지지 않고 보기 쉬운 리스트 형식(mrkdwn)</strong>으로 변환합니다.</li>
+    <li><strong>Create a database page (Summarization)</strong>: 최종적으로 가독성이 최적화된 <strong>액션 아이템 및 요약 메시지</strong>strong>를 Notion Database에 페이지를 형성하여 회의록 요약 내용을 업로드합니다.</li>
     <li><strong>Convert to File 3 & Upload file 3</strong>: 최종적으로 구조화된 요약본을 <code>.md</code> 파일로 변환하여 <strong>Obsidian 또는 Google Drive에 영구 보관/아카이빙</strong>합니다.</li>
     <li><strong>AI Agent 3 (Slack Converter)</strong>: <strong>포맷 변환기</strong> 역할로, 옵시디언용으로 만든 복잡한 마크다운(표, #헤더)을 <strong>Slack에서 깨지지 않고 보기 쉬운 리스트 형식(mrkdwn)</strong>으로 변환합니다.</li>
     <li><strong>Send a message</strong>: 최종적으로 가독성이 최적화된 <strong>액션 아이템 및 요약 메시지</strong>를 팀 협업 채널인 Slack으로 즉시 발송합니다.</li>
@@ -186,6 +188,28 @@
 
 [입력 데이터]
 {{ $('AI Agent2').item.json.output }}
+
+  </details>
+      <details>
+        <summary><strong>AI Agent(Length Controller): Notion에 맞게 형식 변환</strong></summary>
+        <br>
+
+당신은 'Notion 데이터베이스용 핵심 정보 추출 전문가'입니다.
+입력된 전체 회의록 마크다운 텍스트를 분석하여, *내용의 핵심과 구조를 최대한 유지*하며, 최종 출력 글자 수를 **공백 포함 1,800자 이하**로 줄이세요.
+
+[필수 추출 섹션]
+1.  3줄 핵심 요약 섹션
+2.  발언자별 핵심 발언 섹션
+3.  담당자별 액션 아이템 섹션 (체크박스 포맷 유지)
+
+[작업 지침]
+1. **발언 내용 제한**: '발언자별 핵심 발언' 섹션을 추출할 때, **각 참여자의 발언 내용은 최대 3문장 이내**로 요약하여 간결함을 유지해야 합니다.
+2.  **글자 수 제한**: 최종 출력의 전체 글자 수가 공백 포함 **1,800자를 넘지 않도록** 엄격하게 제한해야 합니다.
+3.  **구조 보존**: 추출한 섹션의 Markdown 형식은 최대한 그대로 유지하세요.
+4.  **불필요한 섹션 제거**: 위 [필수 추출 섹션] 외의 모든 내용(타임라인, 상세 논의 등)은 완전히 제외하고 출력하세요.
+
+[입력 데이터]
+{{ $json.output }}
 
   </details>
   </ul>
