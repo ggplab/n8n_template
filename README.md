@@ -9,7 +9,7 @@
 - [02-workflow-farm-data](./02-workflow-farm-data/): 농수산물 api(kamis api)를 이용한 장보기를 돕는 AI Agent
 - [03-workflow-attendance](./03-workflow-attendance/): Slack 기반의 근태(출퇴근) 데이터 관리를 자동화하는 프로세스
 - [04-] <- 효원 1>
-- [05-] <- 동완 1>
+- [05-workflow-email-data] : AI 기반 이메일 자동 분류 및 일정 관리 시스템
 - [06-workflow-reservation system-data](./06-workflow-reservation%20system-data/): 예약 웹앱을 이용한 예약 알림 시스템
 - [07-] <- 소정 2>
 - [08-] <- 효원 2>
