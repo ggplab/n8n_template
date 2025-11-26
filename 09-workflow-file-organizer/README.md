@@ -306,8 +306,7 @@ docker-compose restart
 - [Google Sheets API](https://developers.google.com/sheets/api)
 
 ### 레퍼런스
-
-- [n8n Community Workflows](https://n8n.io/workflows/)
+- [n8n Community Workflows](https://n8n.io/workflows/2334-organise-your-local-file-directories-with-ai/)
 - [n8n Code Node Guide](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/)
 
 
