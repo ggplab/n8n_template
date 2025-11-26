@@ -1,0 +1,247 @@
+{
+  "name": "🗂️ AI 기반 파일 자동 정리 시스템",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger-001",
+      "name": "1. 매 5분마다 실행",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [1504, -752],
+      "notes": "⏰ 매 5분마다 자동으로 워크플로우 실행\n\n변경 방법:\n- minutesInterval: 10 → 10분마다\n- field: 'hours', hoursInterval: 1 → 1시간마다"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 2. Downloads 폴더 스캔\nconst fs = require('fs');\nconst path = require('path');\n\n// ⚠️ Docker 환경: '/data/test/Downloads'\n// ⚠️ Windows 직접: 'C:\\\\Users\\\\YOUR_NAME\\\\Desktop\\\\test\\\\Downloads'\nconst downloadsPath = '/data/test/Downloads';\n\ntry {\n  // 폴더 내 파일 목록 가져오기\n  const files = fs.readdirSync(downloadsPath);\n  \n  // 파일만 필터링 (폴더 제외)\n  const fileList = files.filter(file => {\n    const fullPath = path.join(downloadsPath, file);\n    return fs.statSync(fullPath).isFile();\n  }).map(file => {\n    const fullPath = path.join(downloadsPath, file);\n    return {\n      filename: file,\n      fullPath: fullPath,\n      size: fs.statSync(fullPath).size\n    };\n  });\n  \n  if (fileList.length === 0) {\n    return [];\n  }\n  \n  return fileList.map(file => ({ json: file }));\n  \n} catch (error) {\n  console.error('폴더 스캔 에러:', error);\n  return [{\n    json: {\n      error: error.message,\n      path: downloadsPath\n    }\n  }];\n}"
+      },
+      "id": "scan-folder-001",
+      "name": "2. 폴더 스캔",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1744, -752],
+      "notes": "📂 Downloads 폴더의 모든 파일 목록 가져오기"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 3. 파일 정보 추출\nconst item = $input.item.json;\n\nconst filename = item.filename || '';\nconst fullPath = item.fullPath || '';\n\n// 확장자 추출\nconst lastDot = filename.lastIndexOf('.');\nconst extension = lastDot > 0 ? filename.substring(lastDot + 1).toLowerCase() : '';\nconst nameWithoutExt = lastDot > 0 ? filename.substring(0, lastDot) : filename;\n\n// 파일 타입 분류\nconst typeMap = {\n  // 문서\n  'pdf': '문서', 'doc': '문서', 'docx': '문서', 'txt': '문서',\n  'hwp': '문서', 'xls': '문서', 'xlsx': '문서', 'ppt': '문서',\n  'pptx': '문서', 'csv': '문서',\n  // 이미지\n  'jpg': '이미지', 'jpeg': '이미지', 'png': '이미지', 'gif': '이미지',\n  'bmp': '이미지', 'webp': '이미지', 'svg': '이미지', 'heic': '이미지',\n  // 비디오\n  'mp4': '비디오', 'mov': '비디오', 'avi': '비디오', 'mkv': '비디오',\n  // 오디오\n  'mp3': '오디오', 'wav': '오디오', 'flac': '오디오', 'm4a': '오디오',\n  // 압축\n  'zip': '압축파일', 'rar': '압축파일', '7z': '압축파일', 'tar': '압축파일',\n  // 코드\n  'js': '코드', 'py': '코드', 'java': '코드', 'html': '코드',\n  'css': '코드', 'json': '코드'\n};\n\nconst fileType = typeMap[extension] || '기타';\n\nconst now = new Date();\nconst today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;\n\nreturn {\n  json: {\n    originalPath: fullPath,\n    filename: filename,\n    nameWithoutExt: nameWithoutExt,\n    extension: extension,\n    fileType: fileType,\n    fileSize: item.size,\n    today: today,\n    processedAt: now.toISOString()\n  }\n};"
+      },
+      "id": "extract-info-001",
+      "name": "3. 파일 정보 추출",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1984, -752],
+      "notes": "🔍 각 파일의 이름, 확장자, 타입 분석"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 4. 기존 폴더 목록 조회\nconst fs = require('fs');\nconst path = require('path');\n\n// ⚠️ Docker 환경: '/data/test/Documents'\n// ⚠️ Windows 직접: 'C:\\\\Users\\\\YOUR_NAME\\\\Desktop\\\\test\\\\Documents'\nconst documentsPath = '/data/test/Documents';\n\ntry {\n  // Documents 폴더가 없으면 생성\n  if (!fs.existsSync(documentsPath)) {\n    fs.mkdirSync(documentsPath, { recursive: true });\n  }\n  \n  // 하위 폴더 목록 가져오기\n  const items = fs.readdirSync(documentsPath);\n  const folders = items.filter(item => {\n    const fullPath = path.join(documentsPath, item);\n    return fs.statSync(fullPath).isDirectory();\n  });\n  \n  const existingFolders = folders.length > 0 ? folders : ['폴더없음'];\n  const existingFoldersStr = existingFolders.join(', ');\n  \n  // 모든 입력 아이템에 폴더 정보 추가\n  return $input.all().map(item => ({\n    json: {\n      ...item.json,\n      existingFolders: existingFolders,\n      existingFoldersStr: existingFoldersStr\n    }\n  }));\n  \n} catch (error) {\n  console.error('폴더 조회 에러:', error);\n  return $input.all().map(item => ({\n    json: {\n      ...item.json,\n      existingFolders: [],\n      existingFoldersStr: '조회 실패',\n      folderError: error.message\n    }\n  }));\n}"
+      },
+      "id": "get-folders-001",
+      "name": "4. 기존 폴더 목록 조회",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2224, -752],
+      "notes": "📊 Documents 폴더의 하위 폴더 목록"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "당신은 파일 정리 전문가입니다. 파일명과 확장자를 분석하여 최적의 저장 위치를 결정합니다.\n\n**중요: 반드시 아래 형식의 순수 JSON만 반환해.**\n**절대 ```json 같은 코드 블록이나 설명 문장을 붙이지 마.**\n\n## 분류 규칙\n\n### 1. 기존 폴더 우선 사용\n- 기존 폴더 중 적합한 곳이 있으면 그곳으로 분류\n- 기존 폴더와 유사한 카테고리면 기존 폴더 사용\n\n### 2. 새 폴더 제안 조건\n- 기존 폴더 중 적합한 곳이 전혀 없을 때만 새 폴더 제안\n- 새 폴더명은 한국어로, 간결하게 (예: 영수증, 계약서, 프로젝트)\n\n### 3. 파일명 키워드 인식\n- invoice, receipt, 영수증 → 재무/영수증\n- contract, 계약 → 계약서\n- resume, 이력서 → 취업\n- screenshot, 스크린샷 → 스크린샷\n- IMG_, DSC_, photo → 사진\n\n## JSON 형식\n\n{\n  \"category\": \"대분류\",\n  \"subcategory\": \"소분류 (없으면 빈 문자열)\",\n  \"target_folder\": \"최종 폴더 경로 (예: 문서/영수증)\",\n  \"create_new_folder\": true 또는 false,\n  \"confidence\": 0.0 ~ 1.0 사이 숫자,\n  \"reasoning\": \"판단 근거 한 줄 설명\"\n}",
+              "role": "system"
+            },
+            {
+              "content": "=오늘 날짜: {{ $json.today }}\n\n파일 정보:\n- 파일명: {{ $json.filename }}\n- 확장자: {{ $json.extension }}\n- 기본 타입: {{ $json.fileType }}\n\n현재 존재하는 하위 폴더:\n{{ $json.existingFoldersStr }}\n\n이 파일을 어디로 이동해야 할까요?"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "openai-analysis-001",
+      "name": "5. OpenAI 파일 분석",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.5,
+      "position": [2416, -752],
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI API Key"
+        }
+      },
+      "notes": "🤖 AI가 파일명 + 확장자 + 기존 폴더 분석\n\n⚠️ OpenAI API Key 필요"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 6. JSON 파싱 및 통합\nconst fileInfo = $node['3. 파일 정보 추출'].json;\n\nconst response = $json.message?.content ?? ($json.choices?.[0]?.message?.content ?? '');\n\nif (!response) {\n  return {\n    json: {\n      ...fileInfo,\n      category: '분류 실패',\n      target_folder: '기타',\n      create_new_folder: false,\n      confidence: 0,\n      reasoning: 'OpenAI 응답 없음'\n    }\n  };\n}\n\ntry {\n  let jsonStr = response;\n  if (jsonStr.includes('```json')) {\n    jsonStr = jsonStr.split('```json')[1].split('```')[0];\n  } else if (jsonStr.includes('```')) {\n    jsonStr = jsonStr.split('```')[1].split('```')[0];\n  }\n  \n  const analysis = JSON.parse(jsonStr.trim());\n  \n  return {\n    json: {\n      ...fileInfo,\n      category: analysis.category || '기타',\n      subcategory: analysis.subcategory || '',\n      target_folder: analysis.target_folder || '기타',\n      create_new_folder: analysis.create_new_folder || false,\n      confidence: analysis.confidence || 0.5,\n      reasoning: analysis.reasoning || '분석 완료'\n    }\n  };\n} catch (error) {\n  return {\n    json: {\n      ...fileInfo,\n      category: '분류 실패',\n      target_folder: '기타',\n      create_new_folder: false,\n      confidence: 0,\n      reasoning: '파싱 오류: ' + error.message\n    }\n  };\n}"
+      },
+      "id": "json-parse-001",
+      "name": "6. JSON 파싱 및 통합",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2752, -752],
+      "notes": "📋 OpenAI 응답을 구조화된 데이터로 변환"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 7. 파일 이동 (fs 모듈 사용)\nconst fs = require('fs');\nconst path = require('path');\n\nconst item = $input.item.json;\n\nconst sourcePath = item.originalPath;\n// ⚠️ Docker 환경: '/data/test/Documents'\n// ⚠️ Windows 직접: 'C:\\\\Users\\\\YOUR_NAME\\\\Desktop\\\\test\\\\Documents'\nconst baseDir = '/data/test/Documents';\nconst targetFolder = item.target_folder || '기타';\nconst targetDir = path.join(baseDir, targetFolder);\nconst targetPath = path.join(targetDir, item.filename);\n\ntry {\n  // 1. 폴더 없으면 생성\n  if (!fs.existsSync(targetDir)) {\n    fs.mkdirSync(targetDir, { recursive: true });\n    console.log(`폴더 생성: ${targetDir}`);\n  }\n  \n  // 2. 원본 파일 존재 확인\n  if (!fs.existsSync(sourcePath)) {\n    throw new Error(`원본 파일 없음: ${sourcePath}`);\n  }\n  \n  // 3. 목적지에 같은 이름 파일 있으면 덮어쓰기\n  if (fs.existsSync(targetPath)) {\n    console.log(`기존 파일 덮어쓰기: ${targetPath}`);\n  }\n  \n  // 4. 파일 복사\n  fs.copyFileSync(sourcePath, targetPath);\n  console.log(`파일 복사 완료: ${sourcePath} → ${targetPath}`);\n  \n  // 5. 원본 파일 삭제\n  fs.unlinkSync(sourcePath);\n  console.log(`원본 파일 삭제: ${sourcePath}`);\n  \n  return {\n    json: {\n      ...item,\n      moved: true,\n      newPath: targetPath,\n      folderCreated: !fs.existsSync(targetDir),\n      action: '이동 완료'\n    }\n  };\n  \n} catch (error) {\n  console.error('파일 이동 에러:', error);\n  return {\n    json: {\n      ...item,\n      moved: false,\n      error: error.message,\n      sourcePath: sourcePath,\n      targetPath: targetPath,\n      action: '이동 실패'\n    }\n  };\n}"
+      },
+      "id": "move-file-001",
+      "name": "7. 파일 이동",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3008, -752],
+      "notes": "🚚 AI가 결정한 위치로 파일 이동"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEETS_ID",
+          "mode": "list",
+          "cachedResultName": "파일 정리 로그"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "file-log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $json.processedAt }}",
+            "original_path": "={{ $json.originalPath }}",
+            "filename": "={{ $json.filename }}",
+            "extension": "={{ $json.extension }}",
+            "file_type": "={{ $json.fileType }}",
+            "category": "={{ $json.category }}",
+            "target_folder": "={{ $json.target_folder }}",
+            "confidence": "={{ $json.confidence }}",
+            "new_folder_created": "={{ $json.create_new_folder }}",
+            "reasoning": "={{ $json.reasoning }}",
+            "moved": "={{ $json.moved }}",
+            "action": "={{ $json.action }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "sheets-log-001",
+      "name": "8. Google Sheets 로그",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [3248, -752],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2"
+        }
+      },
+      "notes": "📝 모든 파일 이동 기록을 Google Sheets에 저장\n\n⚠️ Google Sheets API 인증 필요"
+    },
+    {
+      "parameters": {
+        "content": "## 🗂️ AI 기반 파일 자동 정리 시스템\n\n**작동 방식:**\n1. ⏰ Schedule Trigger → 매 5분마다 자동 실행\n2. 📂 폴더 스캔 → Downloads 폴더의 모든 파일 목록\n3. 🔍 파일 정보 추출 → 확장자, 타입 분석\n4. 📊 기존 폴더 조회 → AI 학습용 데이터\n5. 🤖 OpenAI 분석 → 최적 위치 결정\n6. 📋 JSON 파싱 → 데이터 통합\n7. 🚚 파일 이동 → 실제 이동 수행\n8. 📝 Google Sheets 로그 → 기록\n\n**⚠️ 설정 필요:**\n- OpenAI API Key\n- Google Sheets OAuth2\n- 경로 설정 (노드 2, 4, 7)\n\n**📖 상세 가이드:**\nREADME.md 참고",
+        "height": 450,
+        "width": 400,
+        "color": 4
+      },
+      "id": "note-overview-001",
+      "name": "📖 워크플로우 가이드",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1392, -1200]
+    },
+    {
+      "parameters": {
+        "content": "# 🚀 Trigger",
+        "height": 288,
+        "width": 288,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [1392, -896],
+      "typeVersion": 1,
+      "id": "sticky-trigger",
+      "name": "Trigger Zone"
+    },
+    {
+      "parameters": {
+        "content": "# 🎯 Processing",
+        "height": 288,
+        "width": 960,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [1712, -896],
+      "typeVersion": 1,
+      "id": "sticky-processing",
+      "name": "Processing Zone"
+    },
+    {
+      "parameters": {
+        "content": "# 📥 Output",
+        "height": 288,
+        "width": 480,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [2944, -896],
+      "typeVersion": 1,
+      "id": "sticky-output",
+      "name": "Output Zone"
+    }
+  ],
+  "connections": {
+    "1. 매 5분마다 실행": {
+      "main": [[{"node": "2. 폴더 스캔", "type": "main", "index": 0}]]
+    },
+    "2. 폴더 스캔": {
+      "main": [[{"node": "3. 파일 정보 추출", "type": "main", "index": 0}]]
+    },
+    "3. 파일 정보 추출": {
+      "main": [[{"node": "4. 기존 폴더 목록 조회", "type": "main", "index": 0}]]
+    },
+    "4. 기존 폴더 목록 조회": {
+      "main": [[{"node": "5. OpenAI 파일 분석", "type": "main", "index": 0}]]
+    },
+    "5. OpenAI 파일 분석": {
+      "main": [[{"node": "6. JSON 파싱 및 통합", "type": "main", "index": 0}]]
+    },
+    "6. JSON 파싱 및 통합": {
+      "main": [[{"node": "7. 파일 이동", "type": "main", "index": 0}]]
+    },
+    "7. 파일 이동": {
+      "main": [[{"node": "8. Google Sheets 로그", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "github-release-v1.0",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": ["file-management", "ai-automation", "openai", "file-organizer"]
+}
