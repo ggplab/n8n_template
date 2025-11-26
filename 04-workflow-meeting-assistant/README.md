@@ -10,9 +10,9 @@
 
 
 - 실제 결과물 화면: <div align="center">
-  <img src="https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/Slack%20%EC%9A%94%EC%95%BD%20%EA%B2%B0%EA%B3%BC%20%ED%99%94%EB%A9%B4.png" alt="Slack 요약 결과 화면" width="200px"/>
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/Slack%20%EC%9A%94%EC%95%BD%20%EA%B2%B0%EA%B3%BC%20%ED%99%94%EB%A9%B4.png" alt="Slack 요약 결과 화면" width="400px"/>
   
-  <img src="https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/Obsidian%20%EC%9A%94%EC%95%BD%20%EA%B2%B0%EA%B3%BC%20%ED%99%94%EB%A9%B4.png" alt="Obsidian 요약 결과 화면" width="200px"/>
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/04-workflow-meeting-assistant/screenshot/Obsidian%20%EC%9A%94%EC%95%BD%20%EA%B2%B0%EA%B3%BC%20%ED%99%94%EB%A9%B4.png" alt="Obsidian 요약 결과 화면" width="400px"/>
 </div>
 
 
