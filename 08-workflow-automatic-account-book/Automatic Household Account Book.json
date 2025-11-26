@@ -6,17 +6,17 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "193Oc55SyDzh9BC0S-qAcecFKoAvboDk1U_VRVfhT3mg",
+          "value": "google-sheet-doc-id-removed",
           "mode": "list",
           "cachedResultName": "자동 가계부",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/193Oc55SyDzh9BC0S-qAcecFKoAvboDk1U_VRVfhT3mg/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/google-sheet-doc-id-removed/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 1258867330,
+          "value": "google-sheet-gid-removed",
           "mode": "list",
           "cachedResultName": "SMS_Log",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/193Oc55SyDzh9BC0S-qAcecFKoAvboDk1U_VRVfhT3mg/edit#gid=1258867330"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/google-sheet-doc-id-removed/edit#gid=google-sheet-gid-removed"
         },
         "columns": {
           "mappingMode": "autoMapInputData",
@@ -99,8 +99,8 @@
       "name": "Append row in sheet",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "dbt6bFAnSVfkNKpf",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -141,7 +141,7 @@
       ],
       "id": "dbb3f5c3-8fdf-4fd2-a710-c0c99aa9d1a1",
       "name": "Webhook1",
-      "webhookId": "771ee284-770e-4df0-b37d-1d20fe13f0af"
+      "webhookId": "webhook-id-removed"
     },
     {
       "parameters": {
@@ -164,10 +164,10 @@
         "resource": "databasePage",
         "databaseId": {
           "__rl": true,
-          "value": "2ab6e7f9-f73b-80f7-a7b5-e5ccf4c67695",
+          "value": "notion-database-id-removed",
           "mode": "list",
           "cachedResultName": "가계부",
-          "cachedResultUrl": "https://www.notion.so/2ab6e7f9f73b80f7a7b5e5ccf4c67695"
+          "cachedResultUrl": "https://www.notion.so/notion-database-id-removed"
         },
         "title": "={{ $json.merchant }}",
         "propertiesUi": {
@@ -206,8 +206,8 @@
       "name": "Create a database page",
       "credentials": {
         "notionApi": {
-          "id": "7bEpDSUrjMciNa2V",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -225,8 +225,8 @@
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "loym4PLJ0BaWcrnB",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -412,11 +412,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "6f0586c1-14b6-4368-8797-35f1787ef380",
+  "versionId": "workflow-version-id-removed",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "a3c9c522adfd6385f845232ff4cc78161b141f603e69361658584d0ff2befbeb"
+    "instanceId": "instance-id-removed"
   },
-  "id": "2omOZo8gtciSb5Eh",
+  "id": "workflow-id-removed",
   "tags": []
 }
