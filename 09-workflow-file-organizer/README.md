@@ -134,10 +134,10 @@ docker-compose up -d
 <details>
   <summary>3️⃣ n8n 워크플로우 Import</summary>
 
-1. n8n 웹 인터페이스 접속
-2. **Workflows** → **Import from File**
-3. `file_organizer_github.json` 파일 선택
-4. Import 완료
+- n8n 웹 인터페이스 접속
+- **Workflows** → **Import from File**
+- `file_organizer_github.json` 파일 선택
+- Import 완료
 </details>
 
 <details>
@@ -145,18 +145,18 @@ docker-compose up -d
 
 ### OpenAI API 설정
 
-1. [OpenAI Platform](https://platform.openai.com/api-keys)에서 API Key 발급
-2. `5. OpenAI 파일 분석` 노드 클릭
-3. **Credential** → **Create New**
-4. API Key 입력 후 저장
+- [OpenAI Platform](https://platform.openai.com/api-keys)에서 API Key 발급
+- `5. OpenAI 파일 분석` 노드 클릭
+- **Credential** → **Create New**
+- API Key 입력 후 저장
 
 ### Google Sheets API 설정
 
-1. [Google Cloud Console](https://console.cloud.google.com/) 접속
-2. 새 프로젝트 생성 → **Google Sheets API** 활성화
-3. **OAuth 2.0 Client ID** 생성
-4. n8n에서 `8. Google Sheets 로그` 노드 클릭
-5. **Credential** → **Create New** → OAuth2 인증
+- [Google Cloud Console](https://console.cloud.google.com/) 접속
+- 새 프로젝트 생성 → **Google Sheets API** 활성화
+- **OAuth 2.0 Client ID** 생성
+- n8n에서 `8. Google Sheets 로그` 노드 클릭
+- **Credential** → **Create New** → OAuth2 인증
 
 **Google Sheets 구조 (첫 번째 행):**
 
@@ -182,9 +182,9 @@ docker-compose up -d
 <details>
   <summary>6️⃣ 저장 및 활성화</summary>
 
-1. 워크플로우 우측 상단 **Save** 클릭
-2. **Active** 토글 켜기 ✅
-3. 자동 실행 시작!
+- 워크플로우 우측 상단 **Save** 클릭
+- **Active** 토글 켜기 ✅
+- 자동 실행 시작!
 
 </details>
 
