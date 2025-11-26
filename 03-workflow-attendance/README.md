@@ -22,7 +22,8 @@ ___
 
    ### 결과 (Result)
 
-![n8n_Slack_Attendance_Bot](https://github.com/user-attachments/assets/b9d64510-2e97-4d5e-a8f4-12d95aa7e733)
+![n8n_Slack_Attendance_Bot_v2](https://github.com/user-attachments/assets/ee8b6b4d-0330-4f6c-8e08-83569ec150f4)
+
 
 
 <img width="350" height="400" alt="Attendance_slack" src="https://github.com/user-attachments/assets/735eaf08-12fb-425f-a125-b5afe980d761" />
