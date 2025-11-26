@@ -3,11 +3,11 @@
 > n8n + OpenAI + Docker Compose로 구현한 지능형 파일 분류 및 자동 정리 워크플로우
 > 
 
-![image.png](attachment:bcc3cea3-aaea-4124-a0c3-28a334573fc5:image.png)
+<img width="1580" height="518" alt="workflow" src="https://github.com/user-attachments/assets/59c2bc22-c236-476f-a112-595a4ae6b5f3" />
 
-![image.png](attachment:842e81d2-ecec-4914-8750-995452854f2a:image.png)
+<img width="703" height="408" alt="documents" src="https://github.com/user-attachments/assets/a0a4a87b-dee2-4f7e-92c3-50e1d1eca7e3" />
 
-![image.png](attachment:b335c937-1be0-43cd-8817-24deefa43b2a:image.png)
+<img width="1644" height="464" alt="google sheets" src="https://github.com/user-attachments/assets/626e49c5-01bf-4b9a-a6a5-71727497a93f" />
 
 ---
 
