@@ -80,7 +80,7 @@
 ## 📖 사용 방법
 
 <details>
-  <summary> ## 1️⃣ 폴더 구조 생성</summary>
+  <summary>1️⃣ 폴더 구조 생성</summary>
 
 ```
 C:\Users\YOUR_USERNAME\Desktop\
@@ -92,8 +92,9 @@ C:\Users\YOUR_USERNAME\Desktop\
 ```
 </details>
 
-### 2️⃣ Docker Compose 설정
-
+<details>
+  <summary>2️⃣ Docker Compose 설정</summary>
+         
 **`C:\Users\YOUR_USERNAME\Desktop\N8N\docker-compose.yml` 파일 생성:**
 
 ```yaml
@@ -128,14 +129,19 @@ docker-compose up -d
 
 **브라우저에서 접속:** `http://localhost:5678`
 
-### 3️⃣ n8n 워크플로우 Import
+</details>
+
+<details>
+  <summary>3️⃣ n8n 워크플로우 Import</summary>
 
 1. n8n 웹 인터페이스 접속
 2. **Workflows** → **Import from File**
 3. `file_organizer_github.json` 파일 선택
 4. Import 완료
+</details>
 
-### 4️⃣ Credential 연결
+<details>
+  <summary>4️⃣ Credential 연결</summary>
 
 ### OpenAI API 설정
 
@@ -157,8 +163,10 @@ docker-compose up -d
 | timestamp | original_path | filename | extension | file_type | category | target_folder | confidence | reasoning | moved | action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
+</details>
 
-### 5️⃣ 경로 설정 (중요!)
+<details>
+  <summary>5️⃣ 경로 설정 (중요!)</summary>
 
 **3곳의 경로를 일치시켜야 합니다:**
 
@@ -169,13 +177,19 @@ docker-compose up -d
 | **노드 4 (기존 폴더 조회)** | `const documentsPath = '/data/test/Documents';` |
 | **노드 7 (파일 이동)** | `const baseDir = '/data/test/Documents';` |
 
-### 6️⃣ 저장 및 활성화
+</details>
+
+<details>
+  <summary>6️⃣ 저장 및 활성화</summary>
 
 1. 워크플로우 우측 상단 **Save** 클릭
 2. **Active** 토글 켜기 ✅
 3. 자동 실행 시작!
 
-### 7️⃣ 실행 확인
+</details>
+
+<details>
+  <summary>7️⃣ 실행 확인</summary>
 
 **Downloads 폴더에 파일 추가** → **5분 대기** → **Documents 폴더에서 정리된 파일 확인**
 
@@ -210,6 +224,8 @@ docker-compose logs -f n8n
 | `invoice_202411.xlsx` | Documents/재무/영수증/ |
 | `screenshot_bug.png` | Documents/스크린샷/ |
 | `machine_learning_paper.pdf` | Documents/논문/ |
+
+</details>
 
 ## 💰 사용 비용
 
