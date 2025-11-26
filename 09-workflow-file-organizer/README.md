@@ -79,7 +79,8 @@
 
 ## 📖 사용 방법
 
-### 1️⃣ 폴더 구조 생성
+<details>
+  <summary>1️⃣ 폴더 구조 생성</summary>
 
 ```
 C:\Users\YOUR_USERNAME\Desktop\
@@ -89,6 +90,7 @@ C:\Users\YOUR_USERNAME\Desktop\
 │   └── Documents\          ← 정리된 파일이 저장될 폴더
 └── n8n_data\               ← n8n 데이터 저장 (자동 생성됨)
 ```
+</details>
 
 ### 2️⃣ Docker Compose 설정
 
