@@ -251,7 +251,8 @@ docker-compose logs -f n8n
 
 ## 🔧 트러블슈팅
 
-### ❌ "Module 'fs' is disallowed"
+<details>
+  <summary>❌ "Module 'fs' is disallowed"</summary>
 
 **해결:** `docker-compose.yml`에 환경 변수 확인
 
@@ -266,7 +267,10 @@ environment:
 docker-compose restart
 ```
 
-### ❌ "ENOENT: no such file or directory"
+</details>
+
+<details>
+  <summary>❌ "ENOENT: no such file or directory"</summary>
 
 **해결:** Docker 볼륨 마운트 경로 확인
 
@@ -274,7 +278,10 @@ docker-compose restart
 2. 실제 폴더 존재 여부 확인
 3. 컨테이너 재시작
 
-### ❌ 재부팅 후 n8n이 자동 시작 안 됨
+</details>
+
+<details>
+  <summary>❌ 재부팅 후 n8n이 자동 시작 안 됨</summary>
 
 **해결:**
 
@@ -286,7 +293,9 @@ docker-compose restart
     ```yaml
     restart: unless-stopped  # 이게 있어야 함
     ```
-    
+</details>
+
+
 ## 📚 참고 문헌
 
 ### 공식 문서
