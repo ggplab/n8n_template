@@ -1,0 +1,2393 @@
+{
+  "name": "주식 포트폴리오 리포트",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "triggerAtHour": 21
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1520,
+        1424
+      ],
+      "id": "631a7a6d-ace7-449a-9eb8-f07ecc98b96a",
+      "name": "데일리 리포트"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-nano-2025-04-14",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-NANO-2025-04-14"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "={{ $json.userPrompt }}{{ $json.systemPrompt }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        1440
+      ],
+      "id": "caa790ba-91bd-483a-9a5d-0a1db9ee15ab",
+      "name": "데일리 리포트 작성",
+      "credentials": {
+        "openAiApi": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        592,
+        960
+      ],
+      "id": "e2754699-d226-4a22-8fbb-49609061bea5",
+      "name": "딜레이",
+      "webhookId": "70567956-e300-458d-8ce2-772b134634b7"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const j = item.json;\n\n  // 숫자 변환 유틸\n  const toNum = (v) => {\n    if (v === null || v === undefined || v === '') return 0;\n    const n = Number(String(v).replace(/,/g, '').trim());\n    return isNaN(n) ? 0 : n;\n  };\n\n  // 기본 값들\n  const type   = $('종목배치1').first().json[\"구분\"];           // 보유 / 관심\n  const price  = $input.first().json.output.stck_prpr;   // 현재가\n  const chg    = $input.first().json.output.prdy_ctrt;   // 등락률 (%)\n  const prev   = $('종목배치1').first().json['현재가']; // 직전가격 (stocks 시트에서 가져온 값)\n  const buy    = $('종목배치1').first().json['매수가'];      // 매수가\n  const qty    = $('종목배치1').first().json['보유수량'];    // 보유수량\n\n  // 1) 직전 기록 대비 변동률\n  let prevChangeRate = null; // 직전대비변동률(%)\n  if (prev > 0 && price > 0) {\n    prevChangeRate = ((price - prev) / prev) * 100;\n  }\n\n  // 2) 평가 손익/수익률 (보유 종목만)\n  let evalAmount = null;   // 평가금액\n  let buyAmount  = null;   // 매수금액\n  let profitLoss = null;   // 평가손익\n  let profitRate = null;   // 평가수익률(%)\n\n  if (type === '보유' && buy > 0 && qty > 0 && price > 0) {\n    buyAmount  = buy * qty;\n    evalAmount = price * qty;\n    profitLoss = evalAmount - buyAmount;\n    profitRate = (profitLoss / buyAmount) * 100;\n  }\n\n  // 3) 알림 조건 계산 (목표가/등락률 기준)\n  const upTarget   = $('종목배치1').first().json[\"목표가(상향)\"]\n  const downTarget = $('종목배치1').first().json['목표가(하향)'];\n  const upPct      = $('종목배치1').first().json['상승알림(%)'];\n  const downPct    = $('종목배치1').first().json['하락알림(%)'];\n\n  let alertReason = null;\n  let conditionValue = null;\n\n  if (upTarget && price >= upTarget) {\n    alertReason = '목표가 상향 도달';\n    conditionValue = upTarget;\n  } else if (downTarget && price <= downTarget) {\n    alertReason = '목표가 하향 이탈';\n    conditionValue = downTarget;\n  } else if (upPct && chg >= upPct) {\n    alertReason = `등락률 ${upPct}% 이상 상승`;\n    conditionValue = upPct;\n  } else if (downPct && chg <= downPct) {\n    alertReason = `등락률 ${downPct}% 이하 하락`;\n    conditionValue = downPct;\n  }\n\n  // 4) 직전가격/직전기록시각 업데이트용 값 (지금 시각 기준)\n    const now = new Date();\n    const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);\n    const nowTs = kst.toISOString().slice(0,16).replace('T',' ');\n\n  return {\n    json: {\n      ...j,\n      직전대비변동률: prevChangeRate,   // 새로 추가\n      평가금액: evalAmount,\n      매수금액: buyAmount,\n      평가손익: profitLoss,\n      평가수익률: profitRate,\n      알림 : alertReason,\n      conditionValue,\n      새직전가격: price,        // stocks 시트 업데이트용\n      새직전기록시각: nowTs,    // stocks 시트 업데이트용\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        656
+      ],
+      "id": "a01bd088-5120-4abd-9e2d-47f19d716f87",
+      "name": "직전대비/평가손익/알림 조건"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "05c409ae-3fae-45dd-ad40-96310e487d04",
+              "leftValue": "={{ $json['알림'] }}",
+              "rightValue": "목표가 상향 도달",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "ce9e5ab0-7d53-4607-8303-d6462a5318be",
+              "leftValue": "={{ $json['알림'] }}",
+              "rightValue": "목표가 하향 이탈",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -368,
+        656
+      ],
+      "id": "1661a5e7-5777-4c1a-a200-984a95b05b86",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "*/10 8-18 * * 1-5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1520,
+        640
+      ],
+      "id": "2e380212-9ba3-4194-ae3e-b8168f124eee",
+      "name": "실시간 스냅샷"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ",
+          "mode": "list",
+          "cachedResultName": "주식 포트폴리오 리포트DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "stocks",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "리포트여부",
+              "lookupValue": "Y"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1328,
+        1424
+      ],
+      "id": "5cb0a9f2-4465-487d-b3ae-2cdc326911f5",
+      "name": "stocks 호출",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -944,
+        640
+      ],
+      "id": "a73962c0-b520-4287-a855-7d09b10b3f7f",
+      "name": "종목배치1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ",
+          "mode": "list",
+          "cachedResultName": "주가변동 리포트DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2075094210,
+          "mode": "list",
+          "cachedResultName": "snapshots",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit#gid=2075094210"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "기록일자": "={{ $('snapshot 평가손익 업데이트').all()[$itemIndex].json.기록일자 }}",
+            "RSI": "={{ $json.RSI }}",
+            "5MA": "={{ $json[\"5MA\"] }}",
+            "10MA": "={{ $json[\"10MA\"] }}",
+            "row_number": 0
+          },
+          "matchingColumns": [
+            "기록일자"
+          ],
+          "schema": [
+            {
+              "id": "기록일자",
+              "displayName": "기록일자",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "종목코드",
+              "displayName": "종목코드",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "종목명",
+              "displayName": "종목명",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "현재가",
+              "displayName": "현재가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "직전가격",
+              "displayName": "직전가격",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "직전대비변동율",
+              "displayName": "직전대비변동율",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "평가금액",
+              "displayName": "평가금액",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "매수금액",
+              "displayName": "매수금액",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "평가손익",
+              "displayName": "평가손익",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "평가수익률(%)",
+              "displayName": "평가수익률(%)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "시가",
+              "displayName": "시가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "고가",
+              "displayName": "고가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "저가",
+              "displayName": "저가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "거래량",
+              "displayName": "거래량",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "거래대금",
+              "displayName": "거래대금",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "PER",
+              "displayName": "PER",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "PBR",
+              "displayName": "PBR",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "EPS",
+              "displayName": "EPS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "BPS",
+              "displayName": "BPS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "시총",
+              "displayName": "시총",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "외국인보유",
+              "displayName": "외국인보유",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "외국인순매수",
+              "displayName": "외국인순매수",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "프로그램순매수",
+              "displayName": "프로그램순매수",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RSI",
+              "displayName": "RSI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "5MA",
+              "displayName": "5MA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "10MA",
+              "displayName": "10MA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        960
+      ],
+      "id": "da86b17b-3f4a-4e6f-9c30-d30b4619eecf",
+      "name": "snapshot 기록",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ",
+          "mode": "list",
+          "cachedResultName": "주식 포트폴리오 리포트DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "stocks",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('종목배치1').all()[$itemIndex].json.row_number }}",
+            "종목코드": "={{ $('종목배치1').all()[$itemIndex].json.종목코드 }}",
+            "종목명": "={{ $('종목배치1').all()[$itemIndex].json.종목명 }}",
+            "매수가": "={{ $('종목배치1').all()[$itemIndex].json.매수가 }}",
+            "보유수량": "={{ $('종목배치1').all()[$itemIndex].json.보유수량 }}",
+            "목표가(상향)": "={{ $('종목배치1').all()[$itemIndex].json[\"목표가(상향)\"] }}",
+            "목표가(하향)": "={{ $('종목배치1').all()[$itemIndex].json[\"목표가(하향)\"] }}",
+            "상승알림(%)": "={{ $('종목배치1').all()[$itemIndex].json[\"상승알림(%)\"] }}",
+            "하락알림(%)": "={{ $('종목배치1').all()[$itemIndex].json[\"하락알림(%)\"] }}",
+            "알림여부": "={{ $('종목배치1').all()[$itemIndex].json.알림여부 }}",
+            "리포트여부": "={{ $('종목배치1').all()[$itemIndex].json.리포트여부 }}",
+            "메모": "={{ $('종목배치1').all()[$itemIndex].json.메모 }}",
+            "현재가": "={{ $('RSI/5MA/10MA').item.json['현재가'] }}",
+            "기록시각": "={{ $('RSI/5MA/10MA').item.json['기록일자'] }}",
+            "구분": "={{ $('종목배치1').all()[$itemIndex].json.구분 }}",
+            "관련종목코드목록": "={{ $('종목배치1').all()[$itemIndex].json.관련종목코드목록 }}",
+            "관련종목명목록": "={{ $('종목배치1').all()[$itemIndex].json.관련종목명목록 }}",
+            "코스피": "={{ $('종목배치1').all()[$itemIndex].json.코스피 }}",
+            "WICS": "={{ $('종목배치1').all()[$itemIndex].json.WICS }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "구분",
+              "displayName": "구분",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "종목코드",
+              "displayName": "종목코드",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "종목명",
+              "displayName": "종목명",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "코스피",
+              "displayName": "코스피",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "WICS",
+              "displayName": "WICS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "매수가",
+              "displayName": "매수가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "보유수량",
+              "displayName": "보유수량",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "목표가(상향)",
+              "displayName": "목표가(상향)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "목표가(하향)",
+              "displayName": "목표가(하향)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "상승알림(%)",
+              "displayName": "상승알림(%)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "하락알림(%)",
+              "displayName": "하락알림(%)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "알림여부",
+              "displayName": "알림여부",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "리포트여부",
+              "displayName": "리포트여부",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "현재가",
+              "displayName": "현재가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "기록시각",
+              "displayName": "기록시각",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "메모",
+              "displayName": "메모",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "관련종목코드목록",
+              "displayName": "관련종목코드목록",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "관련종목명목록",
+              "displayName": "관련종목명목록",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        960
+      ],
+      "id": "a1da8c61-44ac-485e-9499-6af08130e6ee",
+      "name": "stocks 업데이트",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1136,
+        1424
+      ],
+      "id": "bd5176b8-1e1b-4bae-b2bb-b7d3b1260338",
+      "name": "종목배치2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ",
+          "mode": "list",
+          "cachedResultName": "주식 포트폴리오 리포트DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2075094210,
+          "mode": "list",
+          "cachedResultName": "snapshots",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit#gid=2075094210"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "종목명",
+              "lookupValue": "={{ $json[\"종목명\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -944,
+        1440
+      ],
+      "id": "429e2b3f-7d8b-4e12-a707-aef802d0791b",
+      "name": "snapshot 호출",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const peers = $json.industryCompareInfo || [];\n\n// 자기 자신(현재 종목)까지 포함되어 있을 수도 있으니, 같은 코드 제거\nconst thisCode = $items('관련종목, 코드 수집')[0].json['종목코드'];\n\nconst filtered = peers.filter(p => p.itemCode !== thisCode);\n\n// 상위 3개만\nconst top3 = filtered.slice(0, 3);\n\nconst names = top3.map(p => p.stockName);\nconst codes = top3.map(p => p.itemCode);\n\nreturn [\n  {\n    json: {\n      관련종목코드목록: codes.join(','),\n      관련종목명목록: names.join(','),\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        176
+      ],
+      "id": "7a0cdc93-e327-4e82-b041-2930049a7d01",
+      "name": "관렴종목 이름 뽑기"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ",
+          "mode": "list",
+          "cachedResultName": "주식 포트폴리오 리포트DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "stocks",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        160
+      ],
+      "id": "df26ebc6-5820-4c86-9c76-a8df04fdbc47",
+      "name": "신규종목 추가",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ",
+          "mode": "list",
+          "cachedResultName": "주식 포트폴리오 리포트DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2075094210,
+          "mode": "list",
+          "cachedResultName": "snapshots",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit#gid=2075094210"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "종목코드",
+              "lookupValue": "={{ $('종목배치1').item.json[\"종목코드\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -176,
+        960
+      ],
+      "id": "a68e889d-c74c-4f4c-b2d4-870a11be3b01",
+      "name": "이전 snapshot 호출",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ==============================\n// 설정: 위쪽에서 현재 시점 지표를 만들어 준 노드 이름\n// 예) '직전대비/평가손익/알림 조건' 같은 JS 노드\n// ==============================\nconst CURRENT_NODE_NAME = '직전대비/평가손익/알림 조건';  // ← 네 워크플로우 노드 이름으로 바꿔줘!\n\n// 1) 현재 시점 데이터(종목 + 시세 + 평가손익 등) 가져오기\nconst currentItem = $items(CURRENT_NODE_NAME)[0];\nif (!currentItem || !currentItem.json) {\n  throw new Error(`${CURRENT_NODE_NAME} 노드에서 현재 데이터를 가져올 수 없습니다.`);\n}\nconst cur = currentItem.json;\n\n// 2) 이 Code 노드의 입력: 해당 종목의 과거 스냅샷 rows\n//    (바로 앞 'snapshot 호출' 노드 결과)\nconst historyItems = $input.all();     // [{json: {...}}, ...]\nconst historyRows  = historyItems.map(i => i.json);\n\n// 숫자 변환 유틸\nconst toNum = (v) => Number(String(v).replace(/,/g, '')) || 0;\n\n// 3) 직전가격 / 직전대비 변동률 계산\nlet prevPrice = null;\nif (historyRows.length > 0) {\n  // 기록일자 기준으로 정렬해서 마지막(가장 최근) 스냅샷 사용\n  historyRows.sort((a, b) =>\n    String(a['기록일자']).localeCompare(String(b['기록일자']))\n  );\n  const lastSnap = historyRows[historyRows.length - 1];\n  prevPrice = toNum(lastSnap['현재가']);\n}\n\nconst price = toNum($('직전대비/평가손익/알림 조건').first().json.output.stck_prpr);\nlet prevChangeRate = 0;  // 직전대비 가격변동율(%)\n\nif (prevPrice && prevPrice > 0 && price > 0) {\n  prevChangeRate = ((price - prevPrice) / prevPrice) * 100;\n}\n\n// 4) RSI / 5MA / 10MA 계산용 클로즈 배열 만들기\nconst closes = historyRows.map(r => toNum(r['현재가']));\ncloses.push(price);  // 마지막에 현재가 추가\n\nfunction sma(arr, n) {\n  if (!arr || arr.length < n) return null;\n  const slice = arr.slice(-n);\n  const sum   = slice.reduce((s, v) => s + v, 0);\n  return +(sum / n).toFixed(2);\n}\n\nfunction calcRSI(closes, period = 14) {\n  if (!closes || closes.length <= period) return null;\n\n  let gains = 0;\n  let losses = 0;\n\n  for (let i = closes.length - period; i < closes.length; i++) {\n    const diff = closes[i] - closes[i - 1];\n    if (diff > 0) gains += diff;\n    else losses -= diff;  // diff가 음수면 손실로 더함\n  }\n\n  const avgGain = gains / period;\n  const avgLoss = losses / period;\n\n  if (avgLoss === 0) return 100;   // 손실이 없으면 RSI 100\n\n  const rs  = avgGain / avgLoss;\n  const rsi = 100 - 100 / (1 + rs);\n  return +rsi.toFixed(2);\n}\n\nconst rsi  = calcRSI(closes, 14);  // 기간 14 (원하면 바꿔도 됨)\nconst ma5  = sma(closes, 5);\nconst ma10 = sma(closes, 10);\n\n// 6) 스냅샷 시트 컬럼 순서에 맞춰 한 줄 JSON 구성\n//   최종 스냅샷 컬럼:\n//   기록일자\t종목코드\t종목명\t현재가\t직전가격\t직전대비 가격변동율\n//   평가금액\t매수금액\t평가손익\t평가수익률(%)\n//   시가\t고가\t저가\t거래량\t거래대금\tPER\tPBR\tEPS\tBPS\t시총\n//   외국인보유\t외국인순매수\t프로그램순매수\tRSI\t5MA\t10MA\n\nconst row = {\n  기록일자: $('직전대비/평가손익/알림 조건').first().json['새직전기록시각'],\n  종목코드: $('종목배치1').first().json[\"종목코드\"],\n  종목명: $('종목배치1').first().json[\"종목명\"],\n\n  현재가: price,\n  직전가격: prevPrice,\n  '직전대비 가격변동율': +prevChangeRate.toFixed(2),\n\n  평가금액:        cur['평가금액'] ?? null,\n  매수금액:        cur['매수금액'] ?? null,\n  평가손익:        cur['평가손익'] ?? null,\n  '평가수익률(%)': cur['평가수익률'] ?? null,\n\n  시가:     toNum($('직전대비/평가손익/알림 조건').first().json.output.stck_oprc),\n  고가:     toNum($('직전대비/평가손익/알림 조건').first().json.output.stck_hgpr),\n  저가:     toNum($('직전대비/평가손익/알림 조건').first().json.output.stck_lwpr),\n  거래량:   toNum($('직전대비/평가손익/알림 조건').first().json.output.acml_vol),\n  거래대금: toNum($('직전대비/평가손익/알림 조건').first().json.output.acml_tr_pbmn),\n\n  PER: toNum($('직전대비/평가손익/알림 조건').first().json.output.per),\n  PBR: toNum($('직전대비/평가손익/알림 조건').first().json.output.pbr),\n  EPS: toNum($('직전대비/평가손익/알림 조건').first().json.output.eps),\n  BPS: toNum($('직전대비/평가손익/알림 조건').first().json.output.bps),\n  시총: toNum($('직전대비/평가손익/알림 조건').first().json.output.hts_avls),\n\n  외국인보유:    toNum($('직전대비/평가손익/알림 조건').first().json.output.frgn_hldn_qty),\n  외국인순매수:  toNum($('직전대비/평가손익/알림 조건').first().json.output.frgn_ntby_qty),\n  프로그램순매수: toNum($('직전대비/평가손익/알림 조건').first().json.output.pgtr_ntby_qty),\n\n  RSI:  rsi,\n  '5MA': ma5,\n  '10MA': ma10,\n};\n\n// 7) Google Sheets Append에서 바로 쓸 수 있도록 1개 아이템으로 반환\nreturn [{ json: row }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        960
+      ],
+      "id": "fc3bc0ec-d8ad-49f0-9f32-0e4ae2a5ad32",
+      "name": "RSI/5MA/10MA"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ",
+          "mode": "list",
+          "cachedResultName": "주식 포트폴리오 리포트DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "stocks",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "관련종목코드목록"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1328,
+        160
+      ],
+      "id": "7f3dbbd9-5473-4025-b949-795e593d6c41",
+      "name": "stock호출",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 관련종목, 코드 세팅 \n* 신규 종목 추가 시 해당종목과 관련있는 종목의 종목과 코드를 추가",
+        "height": 448,
+        "width": 1168,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1552,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "a0908570-5269-4e54-85b6-e0b94132d3d5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1136,
+        160
+      ],
+      "id": "9ce62a75-8a23-4baf-a7ff-a8be55cb8e71",
+      "name": "종목 배치0"
+    },
+    {
+      "parameters": {
+        "url": "=https://m.stock.naver.com/api/stock/{{ $json[\"종목코드\"] }}/integration",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -944,
+        176
+      ],
+      "id": "d4fdaffd-6055-42ec-9bdf-983e22001361",
+      "name": "관련종목, 코드 수집"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ",
+          "mode": "list",
+          "cachedResultName": "주식 포트폴리오 리포트DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "stocks",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": 0,
+            "종목코드": "={{ $('신규종목 추가').item.json[\"종목코드\"] }}",
+            "구분": "={{ $('신규종목 추가').item.json[\"구분\"] }}",
+            "종목명": "={{ $('신규종목 추가').item.json[\"종목명\"] }}",
+            "산업구분": "={{ $('신규종목 추가').item.json[\"산업구분\"] }}",
+            "매수가": "={{ $('신규종목 추가').item.json[\"매수가\"] }}",
+            "보유수량": "={{ $('신규종목 추가').item.json[\"보유수량\"] }}",
+            "목표가(상향)": "={{ $('신규종목 추가').item.json[\"목표가(상향)\"] }}",
+            "목표가(하향)": "={{ $('신규종목 추가').item.json[\"목표가(하향)\"] }}",
+            "상승알림(%)": "={{ $('신규종목 추가').item.json[\"상승알림(%)\"] }}",
+            "하락알림(%)": "={{ $('신규종목 추가').item.json[\"하락알림(%)\"] }}",
+            "알림여부": "={{ $('신규종목 추가').item.json[\"알림여부\"] }}",
+            "리포트여부": "={{ $('신규종목 추가').item.json[\"리포트여부\"] }}",
+            "현재가": "={{ $('신규종목 추가').item.json[\"현재가\"] }}",
+            "기록시각": "={{ $('신규종목 추가').item.json[\"기록시각\"] }}",
+            "메모": "={{ $('신규종목 추가').item.json[\"메모\"] }}",
+            "관련종목코드목록": "={{ $json[\"관련종목코드목록\"] }}",
+            "관련종목명목록": "={{ $json[\"관련종목명목록\"] }}"
+          },
+          "matchingColumns": [
+            "종목코드"
+          ],
+          "schema": [
+            {
+              "id": "구분",
+              "displayName": "구분",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "종목코드",
+              "displayName": "종목코드",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "종목명",
+              "displayName": "종목명",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "산업구분",
+              "displayName": "산업구분",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "매수가",
+              "displayName": "매수가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "보유수량",
+              "displayName": "보유수량",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "목표가(상향)",
+              "displayName": "목표가(상향)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "목표가(하향)",
+              "displayName": "목표가(하향)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "상승알림(%)",
+              "displayName": "상승알림(%)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "하락알림(%)",
+              "displayName": "하락알림(%)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "알림여부",
+              "displayName": "알림여부",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "리포트여부",
+              "displayName": "리포트여부",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "현재가",
+              "displayName": "현재가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "기록시각",
+              "displayName": "기록시각",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "메모",
+              "displayName": "메모",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "관련종목코드목록",
+              "displayName": "관련종목코드목록",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "관련종목명목록",
+              "displayName": "관련종목명목록",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -560,
+        176
+      ],
+      "id": "de4abcfb-0572-48b5-a761-2f3d407b42cf",
+      "name": "관련종목, 코드 업데이트",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 스냅샷 누적\n* 8시 ~ 18시까지 10분당 한국투자증권 api를 통해 관심/ 보유 종목의 현재가, 평가금액, 평가 수익률, 시가, 고가, 저가, 거래량, 거래대금 등 내용을 수집하여 누적",
+        "height": 752,
+        "width": 2320,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1552,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "1127160f-ec7b-4ec8-85f9-82cffafb6297",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 데일리리포트 작성\n* 매일 19시 최근 7일간의 누적내용을 집계하고 해당 업종을 분석하여 리포트 작성하여 발송\n",
+        "height": 496,
+        "width": 1680,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1552,
+        1168
+      ],
+      "typeVersion": 1,
+      "id": "9e2df2ec-0605-47e6-bef8-28beabbe340b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const stock  = $json;              \nconst agg    = stock['통계'] || {};\nconst latest = agg['최신스냅샷'] || {};\n\n// 종목 기본 정보는 종목배치2에서 직접 가져오기\nconst name = $('종목배치2').first().json[\"종목명\"] ?? '';\nconst code = $('종목배치2').first().json[\"종목코드\"] ?? '';\nconst wics = $('종목배치2').first().json[\"WICS\"] ?? '';\n\nconst systemPrompt = `\n당신은 한국 주식 시장의 흐름을 설명하는 분석 전문가입니다.\n투자 권유, 매수/매도 추천은 하지 말고,\n관찰과 가능성 위주의 중립적인 톤으로 작성하세요.\n아래 정보를 기반으로 다음과 같은 형식으로 상세하고 간결한 리포트를 작성해 주세요.\n`;\n\nconst userPrompt = `\n[기본 정보]\n- 종목명: ${name} (${code})\n- 산업명: ${wics}\n- 현재가: ${latest['현재가'] ?? ''}\n- PER: ${latest.PER ?? ''}, PBR: ${latest.PBR ?? ''}, EPS: ${latest.EPS ?? ''}, BPS: ${latest.BPS ?? ''}\n- 시가총액: ${latest['시총'] ?? ''}\n\n[최근 7일 요약]\n- 평균 시가: ${agg['평균시가'] ?? ''}\n- 평균 종가: ${agg['평균종가'] ?? ''}\n- 최고/최저가: ${agg['최고가'] ?? ''} / ${agg['최저가'] ?? ''}\n- 변동폭: ${agg['변동폭'] ?? ''}\n- 평균 거래량: ${agg['평균거래량'] ?? ''}\n- 종가 기준 변동성(표준편차): ${agg['변동성'] ?? ''}\n\n[추가 지표]\n- RSI: ${latest.RSI ?? ''}\n- 5일 이평선: ${latest['5MA'] ?? ''}\n- 10일 이평선: ${latest['10MA'] ?? ''}\n- 외국인 보유: ${latest['외국인보유'] ?? ''}\n- 외국인 순매수: ${latest['외국인순매수'] ?? ''}\n- 프로그램 순매수: ${latest['프로그램순매수'] ?? ''}\n\n위 데이터를 사용해서, 아래 양식을 그대로 유지한 리포트를 작성해 주세요.\n\n📃종목 분석 리포트\n\n[1] 한 줄 요약\n- (이 종목의 현재 상황을 1~2문장으로 요약)\n\n[2] 최근 7일 가격 흐름 및 변동성\n- (위의 최근 7일 데이터만 사용해서 가격 흐름과 변동성을 2~4문장으로 설명)\n\n[3] 현재가 위치 (5일/10일 이평선 기준)\n- (현재가가 5일/10일 이평선 대비 위/아래 어디에 있는지,\n   단기적인 흐름이 어떤지 2~4문장으로 설명.\n   이평선 정보가 부족하면, 그 사실을 짧게 언급하고\n   대신 평균 종가 등 다른 데이터로 합리적인 추론을 해줘.)\n\n[4] 밸류에이션 분석 (PER/PBR/EPS/BPS)\n- (PER/PBR/EPS/BPS 수치를 기반으로,\n   적자/흑자 여부, 자산 대비 평가 수준 등을 2~4문장으로 설명.\n   '고평가/저평가 확정' 보다는 특성을 분석하는 쪽으로 작성.)\n\n[5] 산업 분석 (${wics} 기준)\n- (산업명 \"${wics}\" 를 기준으로 산업 구조, 시장 트렌드,\n   성장 요인과 리스크 요인, 단/중/장기 전망을 3~5문장으로 설명.\n   '산업 정보가 제공되지 않는다' 같은 문장은 절대 쓰지 말 것.)\n\n[6] 핵심 포인트 요약\n- (투자자가 참고할 핵심 포인트를 3~5개 bullet로 정리. 각 항목은 한 문장으로.)\n`;\n\n// ⬅ 여기서 종목명/코드/WICS를 같이 넘겨주기\nreturn [{\n  json: {\n    systemPrompt,\n    userPrompt,\n    종목명: name,\n    종목코드: code,\n    WICS: wics\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        1440
+      ],
+      "id": "ac6fe933-abd5-4ae1-873b-b8ccbb127875",
+      "name": "프롬프트 생성"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ",
+          "mode": "list",
+          "cachedResultName": "주가변동 리포트DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2075094210,
+          "mode": "list",
+          "cachedResultName": "snapshots",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit#gid=2075094210"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "평가손익": "={{ $json['평가손익'] }}",
+            "평가수익률(%)": "={{ $json['평가수익률'] }}",
+            "매수금액": "={{ $json['매수금액'] }}",
+            "평가금액": "={{ $json['평가금액'] }}",
+            "현재가": "={{ $json.output.stck_prpr }}",
+            "종목코드": "={{ $('종목배치1').item.json['종목코드'] }}",
+            "종목명": "={{ $('종목배치1').item.json['종목명'] }}",
+            "기록일자": "={{ $json['새직전기록시각'] }}",
+            "직전대비변동율": "={{ $json['직전대비변동률'] }}",
+            "시가": "={{ $json.output.stck_oprc }}",
+            "고가": "={{ $json.output.stck_hgpr }}",
+            "저가": "={{ $json.output.stck_lwpr }}",
+            "거래량": "={{ $json.output.acml_vol }}",
+            "거래대금": "={{ $json.output.acml_tr_pbmn }}",
+            "PER": "={{ $json.output.per }}",
+            "PBR": "={{ $json.output.pbr }}",
+            "EPS": "={{ $json.output.eps }}",
+            "BPS": "={{ $json.output.bps }}",
+            "시총": "={{ $json.output.hts_avls }}",
+            "외국인보유": "={{ $json.output.frgn_hldn_qty }}",
+            "외국인순매수": "={{ $json.output.frgn_ntby_qty }}",
+            "프로그램순매수": "={{ $json.output.pgtr_ntby_qty }}",
+            "RSI": "=",
+            "5MA": "=",
+            "10MA": "=",
+            "직전가격": "={{ $('종목배치1').item.json['현재가'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "기록일자",
+              "displayName": "기록일자",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "종목코드",
+              "displayName": "종목코드",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "종목명",
+              "displayName": "종목명",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "현재가",
+              "displayName": "현재가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "직전가격",
+              "displayName": "직전가격",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "직전대비변동율",
+              "displayName": "직전대비변동율",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "평가금액",
+              "displayName": "평가금액",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "매수금액",
+              "displayName": "매수금액",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "평가손익",
+              "displayName": "평가손익",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "평가수익률(%)",
+              "displayName": "평가수익률(%)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "시가",
+              "displayName": "시가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "고가",
+              "displayName": "고가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "저가",
+              "displayName": "저가",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "거래량",
+              "displayName": "거래량",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "거래대금",
+              "displayName": "거래대금",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PER",
+              "displayName": "PER",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PBR",
+              "displayName": "PBR",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "EPS",
+              "displayName": "EPS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "BPS",
+              "displayName": "BPS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "시총",
+              "displayName": "시총",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "외국인보유",
+              "displayName": "외국인보유",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "외국인순매수",
+              "displayName": "외국인순매수",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "프로그램순매수",
+              "displayName": "프로그램순매수",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RSI",
+              "displayName": "RSI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "5MA",
+              "displayName": "5MA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "10MA",
+              "displayName": "10MA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -368,
+        960
+      ],
+      "id": "e7976d14-c203-4bc3-a883-9b91f436f2fc",
+      "name": "snapshot 평가손익 업데이트",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 신규종목 호출\n* 추가로 관심이나 보유하고있는 종목이 있을 시 1분마다 추가 ",
+        "height": 288,
+        "width": 358
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1552,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "ceb57583-85fa-4deb-85c4-d27f0d92ee9d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 관련종목 코드 수집\n* 한종목씩 관련 코드를 호출해서 관련종목과 종목 코드 수집",
+        "height": 288,
+        "width": 550
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1168,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "5df19ba2-fea0-4d48-abc7-98aeea53e923",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Stock시트에 저장\n* 관련 종목, 종목코드 저장",
+        "height": 288,
+        "width": 166
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -592,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "154ae6b4-d7b3-49d7-a8c9-24b1564afd50",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "## 스케줄 트리거\n* 월~금 / 8 - 18시까지 10분마다 호출\n",
+        "height": 304,
+        "width": 166
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1552,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "2b47315a-c4ac-4dc0-b793-aab5f73bd0fe",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "## 기본 세팅\n* 호출을 위해 종목정보와 토큰 호출",
+        "height": 304,
+        "width": 358
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1360,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "9fe1d616-40bb-4a08-9d85-737b7cce4813",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "## 종목 현황 호출\n* 종목의 현재가, 평가금액, 평가 수익률, 시가, 고가, 저가, 거래량, 거래대금 등 내용 호출 ",
+        "height": 304,
+        "width": 550
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -976,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "986c7a4e-2f5c-46df-804f-8eeaa1b5486c",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "## 목표 도달 알림\n* 목표 금액(율)에 도달할 경우 카톡 알림 발송",
+        "height": 304,
+        "width": 358
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -400,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "4f1fa44e-cef0-422d-ad6a-a3a926c86add",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "## 종목현황 업데이트\n* 종목의 현황정보 내용 저장",
+        "height": 304,
+        "width": 166
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -400,
+        800
+      ],
+      "typeVersion": 1,
+      "id": "289d6d76-3d70-4c4e-9a48-1dc67adf0bec",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "content": "## RSI, 5MA, 10MA 계산\n* 현황정보를 기준으로 RSI, 5MA, 10MA 계산하여 snapshot시트에 업데이트",
+        "height": 304,
+        "width": 550
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -208,
+        800
+      ],
+      "typeVersion": 1,
+      "id": "8e66cb60-3375-49b7-9356-d1da04850544",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "content": "## 주식 현재가 업데이트\n* 현재가 stocks시트에 업데이트",
+        "height": 304,
+        "width": 166
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        368,
+        800
+      ],
+      "typeVersion": 1,
+      "id": "0341bda6-b9b7-40ce-91b3-8d8984e0d814",
+      "name": "Sticky Note22"
+    },
+    {
+      "parameters": {
+        "content": "## 딜레이\n* 다음 종목 호출과의 시간간격 부여",
+        "height": 304,
+        "width": 166
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        560,
+        800
+      ],
+      "typeVersion": 1,
+      "id": "477c5330-70a6-4491-9ba1-a70429db3941",
+      "name": "Sticky Note23"
+    },
+    {
+      "parameters": {
+        "content": "## 스케줄 트리거\n* 월~금 / 19시 호출",
+        "height": 320,
+        "width": 166
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1552,
+        1248
+      ],
+      "typeVersion": 1,
+      "id": "85b200d9-18f9-4e30-9f1e-df905ea7219e",
+      "name": "Sticky Note24"
+    },
+    {
+      "parameters": {
+        "content": "##리포트 요청 종목 호출\n* stocks시트에서 리포트를 받을 종목만 호출",
+        "height": 320,
+        "width": 166
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1360,
+        1248
+      ],
+      "typeVersion": 1,
+      "id": "a8cb5c2c-c62b-44cd-9f8d-7fd8ce097595",
+      "name": "Sticky Note25"
+    },
+    {
+      "parameters": {
+        "content": "## 7일간 집계 진행\n* 오늘기준 최근 7일간의 누적 내용을 호출하여 평균시가, 평균종가, 최고가, 최저가, 변동 폭 등을 통계",
+        "height": 320,
+        "width": 550
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1168,
+        1248
+      ],
+      "typeVersion": 1,
+      "id": "c36de3d1-adad-4285-bf3d-9a6d06d82bdd",
+      "name": "Sticky Note26"
+    },
+    {
+      "parameters": {
+        "content": "## 리포트 작성\n1) 최근 1주일 가격 흐름과 변동성을 요약\n2) 현재가 위치를 5일/10일 이평선 기준으로 해석\n3) PER/PBR/EPS/BPS를 바탕으로 밸류에이션 수준평가\n4) 산업구분 관점에서 이 산업의 구조, 현재 산업 내에서 나타나는 시장 트렌드와 변화, 산업 성장 요인 및 리스크 요인, 단기(1~4주) / 중기(3~6개월) / 장기(6~24개월) 전망\n5) 마지막에 핵심 포인트를 bullet 3줄로 정리\n",
+        "height": 336,
+        "width": 486
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -592,
+        1232
+      ],
+      "typeVersion": 1,
+      "id": "6fca7705-1d99-49b4-a4d9-d5d74dbdc367",
+      "name": "Sticky Note29"
+    },
+    {
+      "parameters": {
+        "content": "## 리포트 발송\n* 리포트 내용을 지메일로 발송",
+        "height": 320,
+        "width": 166
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -80,
+        1248
+      ],
+      "typeVersion": 1,
+      "id": "3c7bcaf4-657d-4664-9652-e213c5146731",
+      "name": "Sticky Note31"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://openapi.koreainvestment.com:9443/oauth2/tokenP",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"grant_type\": \"client_credentials\",\n  \"appkey\": \"\",\n  \"appsecret\": \"\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1328,
+        640
+      ],
+      "id": "df561764-a68e-44d0-86bb-5b8e27bc7f82",
+      "name": "토큰 발급"
+    },
+    {
+      "parameters": {
+        "url": "=https://openapi.koreainvestment.com:9443/uapi/domestic-stock/v1/quotations/inquire-price",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fid_cond_mrkt_div_code",
+              "value": "J"
+            },
+            {
+              "name": "fid_input_iscd",
+              "value": "={{ $json['종목코드'] }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "authorization",
+              "value": "={{ $('토큰 발급').item.json.token_type }} {{ $('토큰 발급').item.json.access_token }}"
+            },
+            {
+              "name": "appkey",
+              "value": "PSeMMmgtMAUpkINnWm28NdhaHb9m2eTDWC9W"
+            },
+            {
+              "name": "appsecret",
+              "value": "=rA776zNMVdL0E7XM5a6cYgG9VUfcB/3NLMtia2IL8pdOuAg6aY5p6lmVZCEZ8fuGy0rPbg5q+Yn4SZ/Rltu6mRH53NAfvTo4tcag9aQjYAyFidLzIxw5V/N2Ahnxnvrx19/2d/M655HZQvKOK11gyphKtjC5yPxW3L/x+JX7S/pSxYpnmWs="
+            },
+            {
+              "name": "tr_id",
+              "value": "FHKST01010100"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -752,
+        656
+      ],
+      "id": "c568659e-0144-4cde-8858-39fc633f972c",
+      "name": "각 종목 현재가 조회"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ",
+          "mode": "list",
+          "cachedResultName": "주식 포트폴리오 리포트DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "stocks",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1naMUsWqz0hD7MSaQxQSWFWcdX9BVKHZNb6JXMuz1McQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1136,
+        640
+      ],
+      "id": "dd281e8a-f7e8-4bc1-aed0-6293c468e22f",
+      "name": "stocks읽기1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "kcb1509@gmail.com",
+        "subject": "={{ $('최근 7일 집계').item.json.snapshots[0][\"종목명\"] }} 종목 분석 리포트",
+        "emailType": "text",
+        "message": "={{ $json.output[0].content[0].text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -32,
+        1440
+      ],
+      "id": "05b24246-7273-45af-bb83-f84cca800bf2",
+      "name": "리포트 발송",
+      "webhookId": "d85a33f9-9237-4ed8-a55a-414ae09f6005",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://kapi.kakao.com/v2/api/talk/memo/default/send",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded;charset=utf-8"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "template_object",
+              "value": "={\n        \"object_type\": \"text\",\n        \"text\": \"주식 알림 발송드립니다.\\n{{ $('종목배치1').item.json['종목명'] }}가(이) {{ $('직전대비/평가손익/알림 조건').item.json['알림'] }}\\n현재가: {{ $('종목배치1').item.json['현재가'] }}\"\n        }\n    }"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -176,
+        640
+      ],
+      "id": "e1d9ac6b-d6bd-4d31-a69f-4968d60f7386",
+      "name": "카카오톡 알림발송",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ⚠️ 이 노드는 \"Run Once for All Items\" 모드여야 합니다.\n\n// 1) 이 노드의 메인 입력: 해당 종목의 스냅샷 rows (이미 종목코드 필터된 상태라고 가정)\nconst snapshots = $input.all();\n\nif (!snapshots || snapshots.length === 0) {\n  // 이 종목에 대한 스냅샷이 하나도 없으면 빈 통계 리턴\n  return [\n    {\n      json: {\n        종목코드: null,\n        snapshots: [],\n        통계: null,\n      },\n    },\n  ];\n}\n\n// 스냅샷 rows를 js 객체 배열로 꺼내기\nconst rowsAll = snapshots.map(i => i.json);\n\n// 이 종목코드는 첫 행에서 가져온다고 가정 (이미 필터된 상태라 모두 동일해야 함)\nconst code = rowsAll[0]['종목코드'];\n\n// 2) 최근 7일 범위 계산\nconst now = new Date();\nconst endDate   = now.toISOString().slice(0, 10); // 오늘 YYYY-MM-DD\nconst startDate = new Date(\n  now.getFullYear(),\n  now.getMonth(),\n  now.getDate() - 6,\n).toISOString().slice(0, 10); // 6일 전 YYYY-MM-DD\n\nfunction inRange(ts) {\n  if (!ts) return false;\n  const d = String(ts).slice(0, 10);\n  return d >= startDate && d <= endDate;\n}\n\n// 3) 날짜 범위로 한 번 더 필터 + 시간순 정렬\nconst rows = rowsAll\n  .filter(r => r['기록일자'] && inRange(r['기록일자']))\n  .sort((a, b) =>\n    String(a['기록일자']).localeCompare(String(b['기록일자'])),\n  );\n\nif (!rows.length) {\n  // 이 종목의 최근 7일 데이터가 없으면\n  return [\n    {\n      json: {\n        종목코드: code,\n        snapshots: [],\n        통계: null,\n      },\n    },\n  ];\n}\n\n// 4) 통계 계산\nconst toNum = v => Number(String(v).replace(/,/g, '')) || 0;\n\nconst closes = rows.map(r => toNum(r['현재가']));\nconst opens  = rows.map(r => toNum(r['시가']));\nconst highs  = rows.map(r => toNum(r['고가']));\nconst lows   = rows.map(r => toNum(r['저가']));\nconst vols   = rows.map(r => toNum(r['거래량']));\n\nconst avg = arr => +(arr.reduce((s, v) => s + v, 0) / arr.length).toFixed(2);\n\nconst latest = rows[rows.length - 1];\n\nconst maxHigh = Math.max(...highs);\nconst minLow  = Math.min(...lows);\nconst priceRange = maxHigh - minLow;\n\n// 종가 기준 변동성(표준편차)\nconst meanClose = avg(closes);\nconst variance =\n  closes.reduce((s, v) => s + Math.pow(v - meanClose, 2), 0) /\n  closes.length;\nconst stddev = +Math.sqrt(variance).toFixed(2);\n\n// 5) 최종 반환: 다음 OpenAI 노드에서 바로 쓸 수 있는 구조\nreturn [\n  {\n    json: {\n      종목코드: code,\n      snapshots: rows,  // 최근 7일 필터된 스냅샷 전체\n      통계: {\n        평균시가: avg(opens),\n        평균종가: avg(closes),\n        최고가: maxHigh,\n        최저가: minLow,\n        변동폭: priceRange,\n        평균거래량: avg(vols),\n        변동성: stddev,\n        최신스냅샷: latest,\n      },\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        1440
+      ],
+      "id": "a5fd7f10-e2a5-4bc2-a504-6980774939df",
+      "name": "최근 7일 집계"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "데일리 리포트": {
+      "main": [
+        [
+          {
+            "node": "stocks 호출",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "데일리 리포트 작성": {
+      "main": [
+        [
+          {
+            "node": "리포트 발송",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "딜레이": {
+      "main": [
+        [
+          {
+            "node": "종목배치1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "직전대비/평가손익/알림 조건": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "snapshot 평가손익 업데이트",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "카카오톡 알림발송",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "실시간 스냅샷": {
+      "main": [
+        [
+          {
+            "node": "토큰 발급",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "stocks 호출": {
+      "main": [
+        [
+          {
+            "node": "종목배치2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "종목배치1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "각 종목 현재가 조회",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "snapshot 기록": {
+      "main": [
+        [
+          {
+            "node": "stocks 업데이트",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "stocks 업데이트": {
+      "main": [
+        [
+          {
+            "node": "딜레이",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "종목배치2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "snapshot 호출",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "snapshot 호출": {
+      "main": [
+        [
+          {
+            "node": "최근 7일 집계",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "관렴종목 이름 뽑기": {
+      "main": [
+        [
+          {
+            "node": "관련종목, 코드 업데이트",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "신규종목 추가": {
+      "main": [
+        [
+          {
+            "node": "stock호출",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "이전 snapshot 호출": {
+      "main": [
+        [
+          {
+            "node": "RSI/5MA/10MA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSI/5MA/10MA": {
+      "main": [
+        [
+          {
+            "node": "snapshot 기록",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "stock호출": {
+      "main": [
+        [
+          {
+            "node": "종목 배치0",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "종목 배치0": {
+      "main": [
+        [],
+        [
+          {
+            "node": "관련종목, 코드 수집",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "관련종목, 코드 수집": {
+      "main": [
+        [
+          {
+            "node": "관렴종목 이름 뽑기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "관련종목, 코드 업데이트": {
+      "main": [
+        [
+          {
+            "node": "종목 배치0",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "프롬프트 생성": {
+      "main": [
+        [
+          {
+            "node": "데일리 리포트 작성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "snapshot 평가손익 업데이트": {
+      "main": [
+        [
+          {
+            "node": "이전 snapshot 호출",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "토큰 발급": {
+      "main": [
+        [
+          {
+            "node": "stocks읽기1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "각 종목 현재가 조회": {
+      "main": [
+        [
+          {
+            "node": "직전대비/평가손익/알림 조건",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "stocks읽기1": {
+      "main": [
+        [
+          {
+            "node": "종목배치1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "리포트 발송": {
+      "main": [
+        [
+          {
+            "node": "종목배치2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "카카오톡 알림발송": {
+      "main": [
+        []
+      ]
+    },
+    "최근 7일 집계": {
+      "main": [
+        [
+          {
+            "node": "프롬프트 생성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Seoul",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "4be73aab-5824-41ff-a7fe-336a833fef2c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a3c9c522adfd6385f845232ff4cc78161b141f603e69361658584d0ff2befbeb"
+  },
+  "id": "nuEX3kMu03ByyUxO",
+  "tags": []
+}
