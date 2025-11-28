@@ -2,7 +2,7 @@
 
 ## 🚲 서울시 공공자전거 따릉이 실시간 재고관리 
 이 프로젝트는 서울시 따릉이 실시간 대여소 데이터를 자동으로 수집하고,
-특정 대여소의 잔여 재고수량을 카카오톡 메시지로 전송하거나 AI 기반 간단 요약을 생성하여 구글 시트로 자동 발송하는 워크플로우입니다.
+특정 대여소의 잔여 재고수량을 카카오톡 메시지로 전송하거나 AI 기반 간단 요약을 생성하여 구글 시트로 자동 발송하는 워크플로우입니다.  
 __
 ### 📌 프로젝트 개요
 - 서울시 공공데이터 API 기반 실시간 자전거 대여소 정보 수집
@@ -67,17 +67,16 @@ Access Token을 발급 받기 위해 인가토큰을 생성
 
 ### 결과 (Result)  
 
-<img width="1620" height="751" alt="n8n-inventory-bicycle-workflow" src="https://github.com/user-attachments/assets/f3b67de6-b223-48dd-94b2-576712c262b6" />  
+![n8n-inventory-bicycle](https://github.com/user-attachments/assets/e9a58e56-b044-40db-9281-db501ad62d68)
+
 
 <img width="330" height="400" alt="inventory-bicycle-katalk1" src="https://github.com/user-attachments/assets/69e2580d-dac5-4093-b0ad-c29be4f786c6" />  
 
-<img width="340" height="420" alt="inventory-bicycle-katalk2" src="https://github.com/user-attachments/assets/03aff4f6-1ce6-42e1-9900-70fa637e21eb" />
+<img width="340" height="400" alt="inventory-bicycle-katalk2" src="https://github.com/user-attachments/assets/03aff4f6-1ce6-42e1-9900-70fa637e21eb" />
 
-<img width="440" height="240" alt="inventory-bicycle-summary" src="https://github.com/user-attachments/assets/c7e082c1-b5cc-4804-b041-eba033af0e0a" />
+<img width="480" height="280" alt="inventory-bicycle-summary" src="https://github.com/user-attachments/assets/c7e082c1-b5cc-4804-b041-eba033af0e0a" />
 
-
-![n8n-inventory-bicycle](https://github.com/user-attachments/assets/e9a58e56-b044-40db-9281-db501ad62d68)
-
+<img width="1620" height="751" alt="n8n-inventory-bicycle-workflow" src="https://github.com/user-attachments/assets/f3b67de6-b223-48dd-94b2-576712c262b6" />  
 
 
 ### 📊 구조 및 데이터 흐름
