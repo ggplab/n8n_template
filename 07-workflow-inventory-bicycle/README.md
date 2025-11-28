@@ -1,10 +1,10 @@
 # n8n템플릿
 #n8n #자동화 #노코드 #재고관리 #따릉이 #OpenAI #Seoul_Public_Data API #KakaoTalk
-___
+__
 ## 🚲 서울시 공공자전거 따릉이 실시간 재고관리 
 이 프로젝트는 서울시 따릉이 실시간 대여소 데이터를 자동으로 수집하고,
 특정 대여소의 잔여 재고수량을 카카오톡 메시지로 전송하거나 AI 기반 간단 요약을 생성하여 구글 시트로 자동 발송하는 워크플로우입니다.
-___
+__
 ### 📌 프로젝트 개요
 - 서울시 공공데이터 API 기반 실시간 자전거 대여소 정보 수집
 - 특정 대여소 및 지역 기준으로 필터링
@@ -56,25 +56,25 @@ JSON → item 단위 분리
 {{JSON.stringify($json)}}
 ```
 
-5) 카카오톡 인가토큰 생성 (HTTP Request1)
-카카오톡 나에게 메시지 보내기는 Access Token이 필요
-Access Token을 발급 받기 위해 인가토큰을 생성
+5) 카카오톡 인가토큰 생성 (HTTP Request1)    
+카카오톡 나에게 메시지 보내기는 Access Token이 필요    
+Access Token을 발급 받기 위해 인가토큰을 생성    
+  
+6) 데이터 처리 (Merge, Edit)    
+따릉이 재고현황에 대한 데이터와 카카오톡 액세스 토큰을 병합      
 
-6) 데이터 처리 (Merge, Edit)
-따릉이 재고현황에 대한 데이터와 카카오톡 액세스 토큰을 병합 
+7) 데이터 전송     
+카카오톡으로 나에게 메시지 보내기    
 
-7) 데이터 전송 
-카카오톡으로 나에게 메시지 보내기
-
-### 결과 (Result)
+### 결과 (Result)  
 
 <img width="1620" height="751" alt="n8n-inventory-bicycle-workflow" src="https://github.com/user-attachments/assets/f3b67de6-b223-48dd-94b2-576712c262b6" />  
 
-<img width="388" height="456" alt="inventory-bicycle-katalk1" src="https://github.com/user-attachments/assets/69e2580d-dac5-4093-b0ad-c29be4f786c6" />  
+<img width="330" height="400" alt="inventory-bicycle-katalk1" src="https://github.com/user-attachments/assets/69e2580d-dac5-4093-b0ad-c29be4f786c6" />  
 
-<img width="396" height="473" alt="inventory-bicycle-katalk2" src="https://github.com/user-attachments/assets/03aff4f6-1ce6-42e1-9900-70fa637e21eb" />
+<img width="340" height="420" alt="inventory-bicycle-katalk2" src="https://github.com/user-attachments/assets/03aff4f6-1ce6-42e1-9900-70fa637e21eb" />
 
-<img width="497" height="290" alt="inventory-bicycle-summary" src="https://github.com/user-attachments/assets/c7e082c1-b5cc-4804-b041-eba033af0e0a" />
+<img width="440" height="240" alt="inventory-bicycle-summary" src="https://github.com/user-attachments/assets/c7e082c1-b5cc-4804-b041-eba033af0e0a" />
 
 
 ![n8n-inventory-bicycle](https://github.com/user-attachments/assets/e9a58e56-b044-40db-9281-db501ad62d68)
