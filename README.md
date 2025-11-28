@@ -11,7 +11,7 @@
 - [04-workflow-meeting-assistant](./04-workflow-meeting-assistant/): 실시간 음성 기록을 기반으로 한 회의 구조 분석과 담당자별 행동 계획 자동 추출
 - [05-workflow-email-data](./05-workflow-email-data/): AI 기반 이메일 자동 분류 및 일정 관리 시스템
 - [06-workflow-reservation system-data](./06-workflow-reservation%20system-data/): 예약 웹앱을 이용한 예약 알림 시스템
-- [07-] <- 소정 2>
+- [07-workflow-inventory-bicycle](./07-workflow-inventory-bicycle/): 서울시 공공자전거 데이터를 통한 재고관리 프로세스
 - [08-workflow-automatic-account-book](./08-workflow-automatic-account-book/): 결제 문자 메시지를 자동으로 가계부에 기입 및 세분화
 - [09-workflow-file-organizer](./09-workflow-file-organizer/): 지능형 파일 분류 및 자동 정리 워크플로우
 - [10-workflow-Stock-Portfolio-Report-data](./10-workflow-Stock-Portfolio-Report-data/): 주식종목 데이터 누적 및 주식 리포트 작성 및 발송
@@ -37,7 +37,7 @@
 
 - 임정 @ 지지플랩, [✉️ Linkedin](https://www.linkedin.com/in/jayjunglim/), [📝 블로그](https://snowgot.tistory.com)
 
-- 윤소정
+- 윤소정 [✉️ Linkedin](https://www.linkedin.com/in/sjeong722/), [📝 블로그]([https://sjeong722.tistory.com/)
 
 - 이효원 [✉️ Linkedin](https://www.linkedin.com/in/hyowonlee1807/), [📝 블로그](https://dlgydnjs718.tistory.com/)
 
