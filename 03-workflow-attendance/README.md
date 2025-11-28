@@ -50,7 +50,7 @@ ___
       - Google Sheets API: 시트에 접근하여 추가, 수정, 삭제하기
 
 ### 참조문서
-   - [n8n 공식홈페이지](https://n8n.io/))
+   - [n8n 공식홈페이지](https://n8n.io/)
    - [n8n 공식 문서](https://docs.n8n.io/integrations/)
    - [n8n 한글 가이드북 slack api 챕터](https://wikidocs.net/290920)
 
