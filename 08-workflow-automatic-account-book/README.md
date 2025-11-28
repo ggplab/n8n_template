@@ -249,5 +249,3 @@ return JSON.parse(cleanJson);
 
 
 https://community.n8n.io/t/trigger-from-android-phone/179222/2
-
-https://www.youtube.com/watch?v=2oea8rihdGM
