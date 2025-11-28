@@ -37,7 +37,7 @@
 
 - 임정 @ 지지플랩, [✉️ Linkedin](https://www.linkedin.com/in/jayjunglim/), [📝 블로그](https://snowgot.tistory.com)
 
-- 윤소정 [✉️ Linkedin](https://www.linkedin.com/in/sjeong722/), [📝 블로그]([https://sjeong722.tistory.com/)
+- 윤소정 [✉️ Linkedin](https://www.linkedin.com/in/sjeong722/), [📝 블로그](https://sjeong722.tistory.com/)
 
 - 이효원 [✉️ Linkedin](https://www.linkedin.com/in/hyowonlee1807/), [📝 블로그](https://dlgydnjs718.tistory.com/)
 
