@@ -1,18 +1,7 @@
 ## 🚲 따릉이 실시간 모니터링 자동화
-### n8n · OpenAI · 공공데이터 API · KakaoTalk 연동 프로젝트
-
-이 프로젝트는 서울시 따릉이 실시간 대여소 데이터를 자동으로 수집하고,
-AI 기반 간단 요약을 생성하여 카카오톡 메시지로 자동 발송하는 워크플로우입니다.
-
-## 📌 1. 프로젝트 개요
-- 공공데이터(서울시 따릉이 API)를 30분 간격으로 수집
-- 특정 대여소 필터링 (ex: 망원역 일대 등 지정 구역)
-- OpenAI 모델로 “요약 텍스트(짧은 리포트)” 생성
-- 생성된 정보를 카카오톡 메시지로 자동 전송
-- 향후 확장 위해 “전체 리포트” 구조도 설계(현재는 미사용)
-
 
 # n8n템플릿
+## 🚲 따릉이 실시간 모니터링 자동화
 ___
 #n8n #자동화 #노코드 #재고관리 #따릉이 #OpenAI #Seoul_Public_Data API #KakaoTalk
 ## 🚲 서울시 공공자전거 따릉이 실시간 재고관리 
@@ -82,6 +71,15 @@ Access Token을 발급 받기 위해 인가토큰을 생성
 
 ### 결과 (Result)
 
+<img width="1620" height="751" alt="n8n-inventory-bicycle-workflow" src="https://github.com/user-attachments/assets/f3b67de6-b223-48dd-94b2-576712c262b6" />  
+
+<img width="388" height="456" alt="inventory-bicycle-katalk1" src="https://github.com/user-attachments/assets/69e2580d-dac5-4093-b0ad-c29be4f786c6" />  
+
+<img width="396" height="473" alt="inventory-bicycle-katalk2" src="https://github.com/user-attachments/assets/03aff4f6-1ce6-42e1-9900-70fa637e21eb" />
+
+
+![n8n-inventory-bicycle](https://github.com/user-attachments/assets/e9a58e56-b044-40db-9281-db501ad62d68)
+
 
 
 ### 📊 구조 및 데이터 흐름
@@ -109,7 +107,7 @@ Authorization: Bearer {{ $json.access_token }}
 Content-Type: application/x-www-form-urlencoded
 ```
 인가코드 생성 [URL](https://kauth.kakao.com/oauth/authorize?client_id=281596886c198c0d285b76bb5880991b&redirect_uri=https://n8n.ggplab.xyz/rest/oauth2-credential/callback&response_type=code&scope=talk_message)
-카카오톡 로그인 필요, 1회용이므로 노드 실행시 재발급. 
+카카오톡 로그인 필요, 1회용이므로 노드 실행시 재발급.  
 또는 토큰 발행 실행시 같이 생성되는 REFRESH 토큰(6시간 지속) 사용.
 
 ### 예상 사용자/ 부서
