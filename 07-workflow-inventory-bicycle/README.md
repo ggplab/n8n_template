@@ -1,9 +1,6 @@
-## 🚲 따릉이 실시간 모니터링 자동화
-
 # n8n템플릿
-## 🚲 따릉이 실시간 모니터링 자동화
-___
 #n8n #자동화 #노코드 #재고관리 #따릉이 #OpenAI #Seoul_Public_Data API #KakaoTalk
+___
 ## 🚲 서울시 공공자전거 따릉이 실시간 재고관리 
 이 프로젝트는 서울시 따릉이 실시간 대여소 데이터를 자동으로 수집하고,
 특정 대여소의 잔여 재고수량을 카카오톡 메시지로 전송하거나 AI 기반 간단 요약을 생성하여 구글 시트로 자동 발송하는 워크플로우입니다.
@@ -76,6 +73,8 @@ Access Token을 발급 받기 위해 인가토큰을 생성
 <img width="388" height="456" alt="inventory-bicycle-katalk1" src="https://github.com/user-attachments/assets/69e2580d-dac5-4093-b0ad-c29be4f786c6" />  
 
 <img width="396" height="473" alt="inventory-bicycle-katalk2" src="https://github.com/user-attachments/assets/03aff4f6-1ce6-42e1-9900-70fa637e21eb" />
+
+<img width="497" height="290" alt="inventory-bicycle-summary" src="https://github.com/user-attachments/assets/c7e082c1-b5cc-4804-b041-eba033af0e0a" />
 
 
 ![n8n-inventory-bicycle](https://github.com/user-attachments/assets/e9a58e56-b044-40db-9281-db501ad62d68)
