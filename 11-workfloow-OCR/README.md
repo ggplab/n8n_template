@@ -20,10 +20,11 @@ ___
 
 ![n8n-OCR-workflow](https://github.com/user-attachments/assets/35cf05a1-e897-49fa-b4ee-f7d1a205c95d)
 
+인풋 데이터 (영수증, 처방전, 계약서 등)
 <img width="562" height="248" alt="n8n-OCR-input" src="https://github.com/user-attachments/assets/8cd7a321-1cad-43a3-88c5-e0ad4fa0e467" />
 
-
-<img width="764" height="826" alt="n8n-OCR-output" src="https://github.com/user-attachments/assets/114c0478-ebae-4689-9a75-bf0aebd7d209" />
+아웃풋데이터 (텍스트 추출)
+<img width="604" height="706" alt="n8n-OCR-output" src="https://github.com/user-attachments/assets/114c0478-ebae-4689-9a75-bf0aebd7d209" />
 
 
    
