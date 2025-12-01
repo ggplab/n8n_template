@@ -1,0 +1,324 @@
+{
+  "name": "n8n_소정_zone5문서처리",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 트리거",
+        "height": 256,
+        "width": 208
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -512,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "cd9da632-48ae-48ed-a404-140b62d14392",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 태스크",
+        "height": 272,
+        "width": 928,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -272,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "a0b672a2-cccc-434e-8646-113a03a092e1",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## 타켓",
+        "height": 272,
+        "width": 176,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "49448292-86d2-4198-869d-062ab4669da5",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "mode": "list",
+          "value": "18VLBJKVaxFtmZblbbChfVOHXWdNoYhBD"
+        },
+        "event": "fileCreated",
+        "options": {
+          "fileType": "all"
+        }
+      },
+      "id": "af768e3b-9257-450c-aabe-9bf17fe1bcb4",
+      "name": "드라이브에 파일 업로드",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        0
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UFtHbVyK4eQX4JKm",
+          "name": "n8n-소정-ocr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "slackChannel",
+              "value": "C0A0LCB10S0",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "=all",
+        "options": {}
+      },
+      "id": "ac025dd2-3649-4079-9233-4a6831f96974",
+      "name": "슬랙채널명 세팅",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json[\"id\"] }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "3a46e1c8-b3fe-4b11-ade7-ca132497a9aa",
+      "name": "파일 다운로드",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UFtHbVyK4eQX4JKm",
+          "name": "n8n-소정-ocr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9a832655-0dbb-4b77-b6ed-95591163adbd",
+              "name": "image",
+              "value": "data",
+              "type": "binary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        0
+      ],
+      "id": "c3d8c2fd-d906-4cad-867b-3f1f8849932c",
+      "name": "바이너리 데이터 처리"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "image",
+        "returnMode": "text"
+      },
+      "type": "n8n-nodes-upstage.documentOCRUpstage",
+      "typeVersion": 1,
+      "position": [
+        352,
+        0
+      ],
+      "id": "d441691d-997a-429a-896d-f0ebe8570a84",
+      "name": "OCR 변환",
+      "credentials": {
+        "upstageApi": {
+          "id": "XIHnWgbNGsc3VZJo",
+          "name": "n8n_소정_문서처리"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "solar-pro2",
+        "messages": {
+          "message": [
+            {
+              "content": "=={{ $node[\"OCR 변환\"].json.text }}"
+            },
+            {
+              "role": "system",
+              "content": "=당신은 OCR 텍스트를 분석하여 문서의 핵심 정보를 추출하고, 그 결과를 Slack Block Kit JSON 메시지로 변환하는 전문 변환기입니다.\n\n[작업]\n1. 입력된 텍스트(OCR 결과)에서 문서의 핵심 정보를 추출합니다.\n2. 예시: 이미지(책 표지)를 기반으로 다음과 같은 항목을 추출합니다:\n    - 문서 종류 (예: '책 표지', 실제 사용 시 '처방전' 또는 '계약서'로 변경)\n    - 주요 제목\n    - 부제/설명 (메인 제목 아래의 문구)\n    - 저자 목록 (가장 큰 글씨로 표시된 저자 3명까지)\n3. 추출할 수 없는 정보는 추출하지 않습니다.\n\n[규칙]\n1. 결과는 Slack Block Kit JSON 구조만 출력해야 하며, 코드 블록(```)을 사용해서는 안 됩니다.\n2. Block Kit의 Header 블록에는 추출된 **주요 제목**을 포함하고, Section 블록에는 나머지 추출된 정보를 **목록 형태**로 정리하여 출력합니다.\n\n[출력 예시 - JSON ONLY]\n{\n  \"blocks\": [\n    {\n      \"type\": \"header\",\n      \"text\": {\n        \"type\": \"plain_text\",\n        \"text\": \"트렌드 코리아 2026\"\n      }\n    },\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"*문서 종류:* 책 표지\\n*부제:* AI 대전환의 시대, 무엇을 준비해야 하는가? | 디지털과 아날로그, 빠름과 늦음...\\n*주요 저자:* 김난도, 전미영, 최지혜 외\"\n      }\n    },\n    {\n      \"type\": \"divider\"\n    },\n    {\n      \"type\": \"context\",\n      \"elements\": [\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"💡 이 정보는 Upstage Solar OCR 및 Chat 모델을 통해 추출되었습니다.\"\n        }\n      ]\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-upstage.lmChatUpstage",
+      "typeVersion": 1,
+      "position": [
+        528,
+        0
+      ],
+      "id": "c8637af4-8767-4ed1-9eba-19e8bbfb4088",
+      "name": "텍스트 정리",
+      "credentials": {
+        "upstageApi": {
+          "id": "XIHnWgbNGsc3VZJo",
+          "name": "n8n_소정_문서처리"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0A0LCB10S0",
+          "mode": "list",
+          "cachedResultName": "n8n-업스테이지"
+        },
+        "messageType": "block",
+        "blocksUi": "={{ $json.content }}",
+        "text": "=새로운 OCR 분석 결과가 도착했습니다.",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        720,
+        0
+      ],
+      "id": "c09545c3-8651-479f-a4eb-775625f5870d",
+      "name": "메시지 보내기",
+      "webhookId": "de7c91a3-14b8-4097-8efb-9978ac929060",
+      "credentials": {
+        "slackApi": {
+          "id": "sINmR4UTw1aZwM4B",
+          "name": "n8n_소정_슬랙"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "드라이브에 파일 업로드": {
+      "main": [
+        [
+          {
+            "node": "슬랙채널명 세팅",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "슬랙채널명 세팅": {
+      "main": [
+        [
+          {
+            "node": "파일 다운로드",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "파일 다운로드": {
+      "main": [
+        [
+          {
+            "node": "바이너리 데이터 처리",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "바이너리 데이터 처리": {
+      "main": [
+        [
+          {
+            "node": "OCR 변환",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR 변환": {
+      "main": [
+        [
+          {
+            "node": "텍스트 정리",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "텍스트 정리": {
+      "main": [
+        [
+          {
+            "node": "메시지 보내기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 3600,
+    "availableInMCP": false
+  },
+  "versionId": "7fce2ad0-2d2a-4889-86d8-2eee4563cbfb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3a2f1e493c58813431ee31e1bf0b0578de9e5243b1ae5b510120463672b15c48"
+  },
+  "id": "lJSjHVX1DiXRo4KQ",
+  "tags": []
+}
