@@ -17,7 +17,15 @@ ___
    - 실시간 알림: 슬랙 채널에 정돈된 텍스트 파일이 메시지로 즉시 발송
 
    ### 결과 (Result) 
-   
+
+![n8n-OCR-workflow](https://github.com/user-attachments/assets/35cf05a1-e897-49fa-b4ee-f7d1a205c95d)
+
+<img width="562" height="248" alt="n8n-OCR-input" src="https://github.com/user-attachments/assets/8cd7a321-1cad-43a3-88c5-e0ad4fa0e467" />
+
+
+<img width="764" height="826" alt="n8n-OCR-output" src="https://github.com/user-attachments/assets/114c0478-ebae-4689-9a75-bf0aebd7d209" />
+
+
    
    
    
@@ -40,7 +48,6 @@ ___
 
 
 ### 3. 기술 검토 
-   - 주요 사용 노드 (n8n):
    <details>
   <summary>Google Drive 트리거</summary>
 
