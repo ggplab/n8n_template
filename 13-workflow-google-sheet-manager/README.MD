@@ -157,7 +157,9 @@ INSERT INTO sheet_versions (
 <details>
   <summary> 추적 워크플로우 (자동 버전 저장)</summary>
 
-### n8n 워크플로우 구조
+<img width="1500" height="300" alt="traking workflow" src="https://github.com/user-attachments/assets/8c86120d-a78c-4630-ab48-587fbe082402" />
+
+n8n 워크플로우 구조
 
 **1단계: Import**
 
@@ -203,6 +205,8 @@ Save (Ctrl+S) → Active 토글 ON
 
 <details>
   <summary> 복구 워크플로우 (버전 복구)</summary>
+
+<img width="1500" height="320" alt="restore workflow" src="https://github.com/user-attachments/assets/9392dc38-f520-496f-b4c5-64ad17d8e673" />
 
 ### n8n 워크플로우 구조
 
@@ -322,6 +326,7 @@ Success Response (성공 응답)
 ### 실제 사용법
 
 <img width="500" height="500" alt="notify slack" src="https://github.com/user-attachments/assets/254cf37c-da77-4dac-a3c9-c87071157b34" />
+
 slack 알림
 
 <details>
