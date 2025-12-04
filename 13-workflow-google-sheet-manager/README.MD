@@ -444,7 +444,7 @@ User: 당신은 Google Sheets 버전 관리 전문가입니다.
 ## 🚧 5. Troubleshooting
 
 <details>
-  <summary> 문제 1: "webhook is not registered" 오류</summary>
+  <summary> 문제 : "webhook is not registered" 오류</summary>
 
 **증상:**
 
@@ -462,7 +462,7 @@ n8n → 워크플로우 → 우측 상단 토글 ON → Save
 </details>
 
 <details>
-  <summary> 문제 2: 버전이 계속 1로 고정</summary>
+  <summary> 문제 : 버전이 계속 1로 고정</summary>
 
 **원인:** Get Last Version 노드에 정렬 없음
 
@@ -477,7 +477,7 @@ Get Last Version 노드 클릭
 </details>
 
 <details>
-  <summary>문제 3: 복구 시 빈 행만 생성</summary>
+  <summary>문제 : 복구 시 빈 행만 생성</summary>
 
 **원인:** row_number 필드가 제거되지 않음
 
@@ -502,7 +502,7 @@ return cleanData.map(row => ({ json: row }));
 
 
 <details>
-  <summary>문제 4: 복구 후 데이터가 다시 사라짐</summary>
+  <summary>문제 : 복구 후 데이터가 다시 사라짐</summary>
 
 **원인:** Tracking 워크플로우가 계속 실행 중
 
@@ -516,7 +516,7 @@ return cleanData.map(row => ({ json: row }));
 </details>
 
 <details>
-  <summary>문제 5: OpenAI API 키 오류</summary>
+  <summary>문제 : OpenAI API 키 오류</summary>
 
 **원인:** API 키가 하드코딩되어 있거나 잘못됨
 
