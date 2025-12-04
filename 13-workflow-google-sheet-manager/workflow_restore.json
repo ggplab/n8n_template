@@ -1,0 +1,756 @@
+{
+  "name": "Google Sheets Version Restore (final)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "###  HTTP 요청 받기\nURL: /webhook/restore-sheet-version\n입력: {\"version_id\": 3}",
+        "height": 240,
+        "width": 294
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1760,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "69293b8c-21ee-4c0a-96d7-a3f9665c944a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "### 요청 데이터 파싱\n출력: {\n  sheet_id: \"1VXE...\",\n  version_id: 3\n}",
+        "height": 240,
+        "width": 160
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1472,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "257c33e9-e4b9-46f1-a4e7-b1c7297cacb5",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "###  복구할 버전 조회\n쿼리: SELECT * FROM sheet_versions WHERE id = 3\n출력: 버전 데이터 (50개 행)",
+        "height": 240,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1312,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "9b36a0d0-1cea-464b-aad4-c17e29297ded",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Triger",
+        "height": 480,
+        "width": 944,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1808,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "4602f562-e369-41c3-b957-4f245966a069",
+      "name": "Sticky Note28"
+    },
+    {
+      "parameters": {
+        "content": "# Target",
+        "height": 464,
+        "width": 688,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        368,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "d40d5791-0ac3-4b1c-b20b-4cc380b57962",
+      "name": "Sticky Note30"
+    },
+    {
+      "parameters": {
+        "content": "### 버전 있는지 체크\nTRUE → 복구 진행\nFALSE → 오류 응답",
+        "height": 240,
+        "width": 176
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1088,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "cff870a8-3dd6-468e-ade2-63dc8c731e8e",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "### 현재 데이터 읽기 (백업용)\n출력: 현재 시트의 모든 데이터",
+        "height": 256,
+        "width": 208
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -784,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "d08ca101-4596-4090-aa0d-a42c98bae8e3",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "### 백업 데이터 준비\n출력: {\n  version_number: 9999,\n  data: [...],\n  summary: \"복구 전 백업\"\n}",
+        "height": 256,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -576,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "d2c9c54b-9802-4baf-8287-666485932ad1",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "### 역할: v9999로 백업 저장\n테이블: sheet_versions\n목적: 복구 실수 대비",
+        "height": 256,
+        "width": 208
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -352,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "4030dfab-f5e8-4733-a25f-f30b1a58db66",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "###  시트 비우기\n작업: 모든 데이터 삭제",
+        "height": 256,
+        "width": 192
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "dd6ae623-fc61-4bac-8b4d-a9b3187b7710",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "### 복구 데이터 정리\n작업: row_number 제거\n출력: 깨끗한 데이터",
+        "height": 256,
+        "width": 192
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "96cf6433-2571-4bee-b915-fbbdf23bf22a",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "### 시트에 데이터 쓰기\n작업: 이전 버전 데이터 복원",
+        "height": 256,
+        "width": 192
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        416,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "3f95021e-cb6b-46b0-adcb-e820d3e742ef",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "###  복구 기록 저장\n테이블: restore_log\n저장: {\n  from_version_id: 11 (백업),\n  to_version_id: 3 (복구됨)\n}",
+        "height": 256,
+        "width": 208
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        608,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "aacd4ab6-da41-459f-8e0f-49c919a3c213",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "###  성공 응답 반환\n출력: {\n  success: true,\n  row_count: 50,\n  backup_version_id: 11\n}",
+        "height": 256,
+        "width": 192
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        816,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "952105d6-89c4-428e-950c-c38fc9ba1436",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "# Task",
+        "height": 464,
+        "width": 1136,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -816,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "696b34a1-f307-4762-b46d-af318a8c95e6",
+      "name": "Sticky Note29"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "restore-sheet-version",
+        "options": {}
+      },
+      "id": "5af182d8-883f-4151-98cb-1ee15e28265e",
+      "name": "Webhook Restore",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1664,
+        192
+      ],
+      "webhookId": "restore-sheet-version"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "sheet_versions",
+        "limit": 1
+      },
+      "id": "1cb75593-3341-4a0e-b901-ca6b27600977",
+      "name": "Get Version to Restore",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1248,
+        192
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $input.all().length }}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "66a77b61-56e1-403e-8214-f3ccd6503bbe",
+      "name": "IF Version Exists",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1056,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Your Sheet Name",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Your Sheet Tab Name",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "0f62ed9f-b2c2-4435-bd73-89e4e0ea6abc",
+      "name": "Backup Current Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -736,
+        128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Your Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 현재 데이터 백업 준비\nconst currentData = $input.all().map(item => item.json);\nconst versionData = $('Get Version to Restore').first().json;\nconst requestData = $('Parse Request').first().json;\n\nfunction simpleHash(data) {\n  const str = JSON.stringify(data);\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const char = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + char;\n    hash = hash & hash;\n  }\n  return hash.toString(16);\n}\n\nreturn [{\n  json: {\n    sheet_id: requestData.sheet_id,\n    sheet_name: requestData.sheet_name,\n    version_number: 9999,\n    data: currentData,\n    row_count: currentData.length,\n    data_hash: simpleHash(currentData),\n    summary: `복구 전 백업 (v${versionData.version_number}로 복구 전)`,\n    restore_version_id: versionData.id,\n    restore_version_number: versionData.version_number\n  }\n}];"
+      },
+      "id": "2179a899-a1ff-40dc-b010-51f7f0b66c2d",
+      "name": "Prepare Backup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -512,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "sheet_versions",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sheet_id",
+              "fieldValue": "={{ $json.sheet_id }}"
+            },
+            {
+              "fieldId": "sheet_name",
+              "fieldValue": "={{ $json.sheet_name }}"
+            },
+            {
+              "fieldId": "version_number",
+              "fieldValue": "={{ $json.version_number }}"
+            },
+            {
+              "fieldId": "data",
+              "fieldValue": "={{ JSON.stringify($json.data) }}"
+            },
+            {
+              "fieldId": "row_count",
+              "fieldValue": "={{ $json.row_count }}"
+            },
+            {
+              "fieldId": "data_hash",
+              "fieldValue": "={{ $json.data_hash }}"
+            },
+            {
+              "fieldId": "summary",
+              "fieldValue": "={{ $json.summary }}"
+            },
+            {
+              "fieldId": "created_by",
+              "fieldValue": "backup_before_restore"
+            }
+          ]
+        }
+      },
+      "id": "a87400fc-28fa-4d5d-8580-30caa7e2146b",
+      "name": "Save Backup",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        128
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 복구할 데이터 준비\nconst versionData = $('Get Version to Restore').first().json;\nconst restoreData = typeof versionData.data === 'string' \n  ? JSON.parse(versionData.data) \n  : versionData.data;\n\nconst cleanData = restoreData.map(row => {\n  const { row_number, ...rest } = row;\n  return rest;\n});\n\nreturn cleanData.map(row => ({ json: row }));"
+      },
+      "id": "0d3fc21a-48d5-4c39-b2fe-f08a071e8b91",
+      "name": "Prepare Restore Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        112,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Your Sheet Name",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Your Sheet Tab Name",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "날짜",
+              "displayName": "날짜",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "제품",
+              "displayName": "제품",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "수량",
+              "displayName": "수량",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "금액",
+              "displayName": "금액",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6ab85ed6-6e0f-45e7-9054-2dba4e937ad5",
+      "name": "Write Restored Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Your Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "restore_log",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sheet_id",
+              "fieldValue": "={{ $('Parse Request').first().json.sheet_id }}"
+            },
+            {
+              "fieldId": "from_version_id",
+              "fieldValue": "={{ $('Save Backup').first().json.id }}"
+            },
+            {
+              "fieldId": "to_version_id",
+              "fieldValue": "={{ $('Get Version to Restore').first().json.id }}"
+            },
+            {
+              "fieldId": "restored_by",
+              "fieldValue": "n8n_webhook"
+            }
+          ]
+        }
+      },
+      "id": "0844b6eb-597b-4c18-af9b-c15731df28f7",
+      "name": "Log Restore",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        656,
+        128
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({\n  success: true,\n  message: '버전 복구가 완료되었습니다.',\n  restored_version: $('Get Version to Restore').first().json.version_number,\n  restored_version_id: $('Get Version to Restore').first().json.id,\n  row_count: $('Get Version to Restore').first().json.row_count,\n  summary: $('Get Version to Restore').first().json.summary,\n  backup_version_id: $('Save Backup').first().json.id\n}) }}",
+        "options": {}
+      },
+      "id": "3241f6de-66e6-463e-b3b4-3d1cb15bbceb",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({\n  success: false,\n  error: '요청한 버전을 찾을 수 없습니다.',\n  requested_version_id: $('Parse Request').first().json.version_id,\n  requested_version_number: $('Parse Request').first().json.version_number\n}) }}",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "id": "87880247-02fc-403a-a6f2-1541f763be72",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -736,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Your Sheet Name",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Your Sheet Tab Name",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        }
+      },
+      "id": "d00b5bb2-465f-4559-8971-b1e3d130a37e",
+      "name": "Clear Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -96,
+        128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Your Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 요청 파싱\nconst body = $input.first().json.body;\nconst versionId = body.version_id;\nconst versionNumber = body.version_number;\n\nconst sheetId = 'YOUR_GOOGLE_SHEET_ID';\nconst sheetName = 'YOUR_SHEET_NAME';\n\nif (!versionId && !versionNumber) {\n  throw new Error('version_id 또는 version_number가 필요합니다');\n}\n\nreturn [{\n  json: {\n    version_id: versionId ? parseInt(versionId) : null,\n    version_number: versionNumber ? parseInt(versionNumber) : null,\n    sheet_id: sheetId,\n    sheet_name: sheetName,\n    use_id: !!versionId\n  }\n}];"
+      },
+      "id": "4f4803c8-b7e9-45ed-a222-289c7928ad82",
+      "name": "Parse Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1440,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# 복구\n## Webhook → Supabase 조회 → Code 정리 → Google Sheets 쓰기",
+        "height": 128,
+        "width": 720,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "c60c24e8-9694-471b-b725-2a5f95efbd50",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Restore": {
+      "main": [
+        [
+          {
+            "node": "Parse Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Version to Restore": {
+      "main": [
+        [
+          {
+            "node": "IF Version Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Version Exists": {
+      "main": [
+        [
+          {
+            "node": "Backup Current Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Backup Current Data": {
+      "main": [
+        [
+          {
+            "node": "Prepare Backup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Backup": {
+      "main": [
+        [
+          {
+            "node": "Save Backup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Backup": {
+      "main": [
+        [
+          {
+            "node": "Clear Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Restore Data": {
+      "main": [
+        [
+          {
+            "node": "Write Restored Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Restored Data": {
+      "main": [
+        [
+          {
+            "node": "Log Restore",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Restore": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear Sheet": {
+      "main": [
+        [
+          {
+            "node": "Prepare Restore Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Request": {
+      "main": [
+        [
+          {
+            "node": "Get Version to Restore",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {},
+  "id": "H7GN18b6aE5zVpDp",
+  "tags": []
+}
