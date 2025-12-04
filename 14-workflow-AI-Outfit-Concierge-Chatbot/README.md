@@ -62,7 +62,7 @@ AI 코디봇(AI Outfit Concierge)** 은사용자가 입력한 **도시의 실시
 
 전체 Prompt는 분량이 많기 때문에 **토글 형태**로 숨김 처리 권장:
 <details>
-<summary>여기를 눌러주세요</summary>
+<summary>프롬프트 내용</summary>
 <div markdown="1">       
 
  [SYSTEM PROMPT]
