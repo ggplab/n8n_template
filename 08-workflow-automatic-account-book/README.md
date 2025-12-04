@@ -241,7 +241,7 @@ return JSON.parse(cleanJson);
 
 |  | **Cost** |
 | --- | --- |
-| **Gemini API** | ₩1,700 |
+| **Gemini 2.5 Flash** | $0.50 |
 | **Notion API** | free |
 | **MacroGroid App** | AVOD (Advertising-based Video on Demand) |
 
