@@ -13,17 +13,17 @@
         },
         "documentId": {
           "__rl": true,
-          "value": "1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g",
+          "value": "google-sheet-doc-id-removed",
           "mode": "list",
           "cachedResultName": "신규 직원",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/google-sheet-doc-id-removed/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": "gid=0",
+          "value": "google-sheet-gid-removed",
           "mode": "list",
           "cachedResultName": "직원 데이터베이스",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/google-sheet-doc-id-removed/edit#gid=google-sheet-gid-removed"
         },
         "event": "rowAdded",
         "options": {}
@@ -38,8 +38,8 @@
       "name": "Google Sheets Trigger",
       "credentials": {
         "googleSheetsTriggerOAuth2Api": {
-          "id": "7K9Dy5XDYZutX7kc",
-          "name": "효원 계정 - other"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -47,17 +47,17 @@
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g",
+          "value": "google-sheet-doc-id-removed",
           "mode": "list",
           "cachedResultName": "채용 프로세스 자동화",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/google-sheet-doc-id-removed/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": "gid=0",
+          "value": "google-sheet-gid-removed",
           "mode": "list",
           "cachedResultName": "채용 결과",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/google-sheet-doc-id-removed/edit#gid=google-sheet-gid-removed"
         },
         "filtersUI": {
           "values": [
@@ -79,8 +79,8 @@
       "name": "Get row(s) in sheet",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "dbt6bFAnSVfkNKpf",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -89,7 +89,7 @@
         "sendTo": "={{ $json[\"이메일\"] }}",
         "subject": "={{ $json[\"이름\"] }} 님, 입사를 진심으로 환영합니다! - {{ $json[\"이름\"] }} 님의 첫 출근 안내",
         "emailType": "text",
-        "message": "={{ $json['이름'] }} 님께,\n\n안녕하세요. {{ $json['이름'] }} 님의 입사를 진심으로 환영합니다! 🎉\n\n{{ $json['이름'] }} 님을 [회사명]의 {{ $json['팀'] }}팀의 {{ $json['직무'] }}으로 모시게 되어 매우 기쁩니다. 앞으로 {{ $json['이름'] }} 님과 함께 만들어갈 멋진 성과와 여정을 기대합니다.\n\n---\n\n🌟 첫 출근 안내 상세 정보\n\n{{ $json['이름'] }} 님의 원활한 첫 출근을 위해 필요한 주요 정보를 아래와 같이 안내해 드립니다.\n\n1. 출근 일시 및 장소\n\n* 출근 날짜: {{ $json['입사일'] }}\n* 출근 시간: 09시\n* 출근 장소: [회사 주소]\n* 도착 시: 건물 [1층 안내데스크]에서 [인사팀 담당자 이름] 또는 '[회사명] 인사팀'으로 방문 등록 후 연락 주시면 됩니다.\n\n2. 준비 사항\n\n첫 출근일에 오시면 [노트북/출입증/사원증] 등이 준비되어 있을 예정입니다. 다만, 신분 확인 및 서류 작업을 위해 아래 서류를 지참해 주십시오.\n\n**필수 지참 서류:**\n    * 신분증 (운전면허증 또는 주민등록증)\n    * 통장 사본 (급여 이체용)\n    * 최종 학력 증명서 (원본 또는 사본)\n    * 경력 증명서 (경력직의 경우)\n\n3. 담당자 및 문의처\n\n당일 담당자: [인사팀 담당자 이름]\n연락처: [담당자 휴대폰 번호] 또는 [인사팀 직통 번호]\n\n{{ $json['이름'] }} 님의 첫 출근이 설레고 기분 좋은 시작이 될 수 있도록 저희 인사팀이 최선을 다해 준비하겠습니다.\n\n궁금한 점이 있으시면 언제든지 위의 연락처로 편하게 연락 주십시오. 곧 뵙겠습니다!\n\n감사합니다.\n\n- [회사명] 인사팀 드림",
+        "message": "={{ $json['이름'] }} 님께,\n\n안녕하세요. {{ $json['이름'] }} 님의 입사를 진심으로 환영합니다! 🎉\n\n{{ $json['이름'] }} 님을 [회사명]의 {{ $json['팀'] }}팀의 {{ $json['직무'] }}으로 모시게 되어 매우 기쁩니다. 앞으로 {{ $json['이름'] }} 님과 함께 만들어갈 멋진 성과와 여정을 기대합니다.\n\n---\n\n🌟 첫 출근 안내 상세 정보\n\n{{ $json['이름'] }} 님의 원활한 첫 출근을 위해 필요한 주요 정보를 아래와 같이 안내해 드립니다.\n\n1. 출근 일시 및 장소\n\n* 출근 날짜: {{ $json['입사일'] }}\n* 출근 시간: 09시\n* 출근 장소: [회사 주소]\n* 도착 시: 건물 [1층 안내데스크]에서 [인사팀 담당자 이름] 또는 '[회사명] 인사팀'으로 방문 등록 후 연락 주시면 됩니다.\n\n2. 준비 사항\n\n첫 출근일에 오시면 [노트북/출입증/사원증] 등이 준비되어 있을 예정입니다. 다만, 신분 확인 및 서류 작업을 위해 아래 서류를 지참해 주십시오.\n\n**필수 지참 서류:**\n    * 신분증 (운전면허증 또는 주민등록증)\n    * 통장 사본 (급여 이체용)\n    * 최종 학력 증명서 (원본 또는 사본)\n    * 경력 증명서 (경력직의 경우)\n\n3. 담당자 및 문의처\n\n당일 담당자: [인사팀 담당자 이름]\n연락처: [담당자 휴대폰 번호] 또는 [인사팀 직통 번호]\n\n{{ $json['이름'] }} 님의 첫 출근이 설레고 기분 좋은 시작이 될 수 있도록 저희 인사팀이 최선을 다해 준비하겠습니다.\n\n궁금한 점이 있으시면 언제든지 위의 연락처로 편하게 연락 주십시오. 곧 뵙겠습니다!\n\n감사합니다.\n\n- [회사명] 인사팀 드림",
         "options": {
           "appendAttribution": false
         }
@@ -102,11 +102,11 @@
       ],
       "id": "83015c00-26c3-455d-9232-89a0a3a027e5",
       "name": "Send a message",
-      "webhookId": "3937b556-7cd1-430b-a4a2-fcbc9615268d",
+      "webhookId": "webhook-id-removed",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Rn4KZiFuV7eRR7pX",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -123,17 +123,17 @@
       ],
       "id": "8a1e8d5f-cb85-4625-8e93-e81e9434d128",
       "name": "Wait",
-      "webhookId": "55615a2a-cdce-4270-8100-69f374481ed0"
+      "webhookId": "webhook-id-removed"
     },
     {
       "parameters": {
         "select": "channel",
         "channelId": {
           "__rl": true,
-          "value": "=C09T8KY8F7Y",
+          "value": "slack-channel-id-removed",
           "mode": "id"
         },
-        "text": "=💌 안녕하세요!\n\n오늘 [회사명]에 합류하신 신규 입사자들을 소개해 드립니다.\n\n\n[신규 입사자 소개]\n{{\n$json.newHires.map(item =>\n  `🌱 ${item.팀} - ${item.이름} 님\\n\\n` +\n  `${item.이름} 님은 ${item.직무}로 입사하셨습니다. 앞으로 우수한 인재들을 모셔오기 위한 다양한 활동을 통해 [회사명]의 성장에 기여해주실 예정입니다.`\n).join('\\n')\n}}\n\n\n\n모두 함께 따뜻한 환영의 말씀 부탁드립니다! 🎉🎉🎉",
+        "text": "=💌 안녕하세요!\n\n오늘 [회사명]에 합류하신 신규 입사자들을 소개해 드립니다.\n\n\n[신규 입사자 소개]\n{{\n$json.newHires.map(item =>\n  `🌱 ${item.팀} - ${item.이름} 님\\n\\n` +\n  `${item.이름} 님은 ${item.직무}로 입사하셨습니다. 앞으로 우수한 인재들을 모셔오기 위한 다양한 활동을 통해 [회사명]의 성장에 기여해주실 예정입니다.`\n).join('\\n')\n}}\n\n\n\n모두 함께 따뜻한 환영의 말씀 부탁드립니다! 🎉🎉🎉",
         "otherOptions": {
           "includeLinkToWorkflow": false
         }
@@ -146,11 +146,11 @@
       ],
       "id": "aaa6118a-7193-4cca-9495-a79070aed441",
       "name": "Send a message1",
-      "webhookId": "55426b18-cee6-4a44-b0b7-fb03a5ee9741",
+      "webhookId": "webhook-id-removed",
       "credentials": {
         "slackApi": {
-          "id": "vEGGCPtgAC7N4oat",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -167,14 +167,14 @@
       ],
       "id": "368e213b-d349-4a5f-88d6-27101550a494",
       "name": "Wait1",
-      "webhookId": "777851de-5827-4f06-a05f-cc08349ff5db"
+      "webhookId": "webhook-id-removed"
     },
     {
       "parameters": {
         "sendTo": "={{ $('If').item.json['이메일'] }}",
         "subject": "={{ $('If').item.json['이름'] }} 님, [회사명] 입사 30일 차, 솔직한 온보딩 경험 피드백을 부탁드립니다.",
         "emailType": "text",
-        "message": "={{ $('If').item.json['이름'] }} 님께,\n\n안녕하세요. [회사명] 인사팀입니다.\n\n{{ $('If').item.json['이름'] }} 님께서 저희 [회사명]에 합류하신 지 벌써 30일이 되었습니다. 짧지 않은 기간 동안 새로운 환경에 적응하고 업무를 익히시느라 수고 많으셨습니다.\n\n저희 팀은 신규 입사자들이 회사에 잘 정착하는 것이 가장 중요하다고 생각합니다. {{ $('If').item.json['이름'] }} 님의 솔직하고 건설적인 피드백은 앞으로 입사할 새로운 [회사명] 크루들에게 더 나은 온보딩 경험을 제공하는 데 큰 도움이 될 것입니다.\n\n---\n\n 🔍 온보딩 피드백 설문 요청\n\n아래 링크를 통해 {{ $('If').item.json['이름'] }} 님이 직접 경험하신 온보딩 과정에 대해 약 5분 정도 시간을 내어 피드백을 부탁드립니다.\n\n* 설문 참여 링크: https://www.notion.so/2bd6e7f9f73b801aa1fed36431083e12?pvs=106\n* 소요 시간: 약 5분\n* 피드백 항목 예시: 입사 전 안내, 첫 출근 경험, 팀 적응 지원, 필수 장비 지급, 온보딩 자료 유용성 등\n\n본 설문은 익명으로 참여하실 수 있으며, 데이터는 오직 온보딩 프로세스 개선 목적으로만 사용됩니다.\n\n{{ $('If').item.json['이름'] }} 님의 귀한 시간을 내어주셔서 다시 한번 감사드립니다. 앞으로도 [회사명]에서의 멋진 여정을 응원합니다!\n\n감사합니다.\n\n- [회사명] 인사팀 드림",
+        "message": "={{ $('If').item.json['이름'] }} 님께,\n\n안녕하세요. [회사명] 인사팀입니다.\n\n{{ $('If').item.json['이름'] }} 님께서 저희 [회사명]에 합류하신 지 벌써 30일이 되었습니다. 짧지 않은 기간 동안 새로운 환경에 적응하고 업무를 익히시느라 수고 많으셨습니다.\n\n저희 팀은 신규 입사자들이 회사에 잘 정착하는 것이 가장 중요하다고 생각합니다. {{ $('If').item.json['이름'] }} 님의 솔직하고 건설적인 피드백은 앞으로 입사할 새로운 [회사명] 크루들에게 더 나은 온보딩 경험을 제공하는 데 큰 도움이 될 것입니다.\n\n---\n\n 🔍 온보딩 피드백 설문 요청\n\n아래 링크를 통해 {{ $('If').item.json['이름'] }} 님이 직접 경험하신 온보딩 과정에 대해 약 5분 정도 시간을 내어 피드백을 부탁드립니다.\n\n* 설문 참여 링크: notion-feedback-link-removed\n* 소요 시간: 약 5분\n* 피드백 항목 예시: 입사 전 안내, 첫 출근 경험, 팀 적응 지원, 필수 장비 지급, 온보딩 자료 유용성 등\n\n본 설문은 익명으로 참여하실 수 있으며, 데이터는 오직 온보딩 프로세스 개선 목적으로만 사용됩니다.\n\n{{ $('If').item.json['이름'] }} 님의 귀한 시간을 내어주셔서 다시 한번 감사드립니다. 앞으로도 [회사명]에서의 멋진 여정을 응원합니다!\n\n감사합니다.\n\n- [회사명] 인사팀 드림",
         "options": {}
       },
       "type": "n8n-nodes-base.gmail",
@@ -185,11 +185,11 @@
       ],
       "id": "d1ba9740-b5ab-4c54-bf9d-3cbf1ebd9dc3",
       "name": "Send a message2",
-      "webhookId": "af08a6ce-0e1a-4829-bcab-7dbfe540964f",
+      "webhookId": "webhook-id-removed",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Rn4KZiFuV7eRR7pX",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -198,17 +198,17 @@
         "operation": "update",
         "documentId": {
           "__rl": true,
-          "value": "1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g",
+          "value": "google-sheet-doc-id-removed",
           "mode": "list",
           "cachedResultName": "신규 직원",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/google-sheet-doc-id-removed/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": "gid=0",
+          "value": "google-sheet-gid-removed",
           "mode": "list",
           "cachedResultName": "직원 데이터베이스",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/google-sheet-doc-id-removed/edit#gid=google-sheet-gid-removed"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -297,7 +297,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true
+              "canBeUsedToMatch": true,
+              "removed": false
             },
             {
               "id": "row_number",
@@ -326,8 +327,8 @@
       "name": "Update row in sheet",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "dbt6bFAnSVfkNKpf",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -471,10 +472,10 @@
         "resource": "databasePage",
         "databaseId": {
           "__rl": true,
-          "value": "2b96e7f9-f73b-80b0-bd92-dd4e994b68ea",
+          "value": "notion-database-id-removed",
           "mode": "list",
           "cachedResultName": "온보딩 체크리스트",
-          "cachedResultUrl": "https://www.notion.so/2b96e7f9f73b80b0bd92dd4e994b68ea"
+          "cachedResultUrl": "https://www.notion.so/notion-database-id-removed"
         },
         "title": "={{ $json[\"이름\"] }} 님 온보딩 체크리스트",
         "propertiesUi": {
@@ -502,7 +503,7 @@
               "text": {
                 "text": [
                   {
-                    "text": "🧡효원상사 크루가 된 00 님 진심으로 환영합니다🧡",
+                    "text": "🧡[회사명] 크루가 된 00 님 진심으로 환영합니다🧡",
                     "annotationUi": {
                       "bold": true,
                       "color": "orange_background"
@@ -617,8 +618,8 @@
       "name": "Create a database page",
       "credentials": {
         "notionApi": {
-          "id": "7bEpDSUrjMciNa2V",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -673,7 +674,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// 입력으로 들어온 데이터(Aggregate 노드의 출력)를 가져옵니다.\nconst incomingData = $input.item.json.data;\n\n// 최종적으로 Slack 메시지 생성을 위해 가공된 데이터를 저장할 배열입니다.\nconst processedData = [];\n\n// incomingData 배열을 순회하며 필요한 필드만 추출합니다.\nfor (const item of incomingData) {\n    processedData.push({\n        팀: item['팀'],\n        이름: item['이름'],\n        직무: item['직무']\n    });\n}\n\n// 다음 노드(Slack)로 전달할 때, 이 가공된 데이터를 하나의 아이템으로 묶어 전달합니다.\nreturn [{\n    json: {\n        newHires: processedData // \"newHires\"라는 새로운 키에 가공된 데이터 배열을 담습니다.\n    }\n}];"
+        "jsCode": "// 입력으로 들어온 데이터(Aggregate 노드의 출력)를 가져옵니다.\nconst incomingData = $input.item.json.data;\n\n// 최종적으로 Slack 메시지 생성을 위해 가공된 데이터를 저장할 배열입니다.\nconst processedData = [];\n\n// incomingData 배열을 순회하며 필요한 필드만 추출합니다.\nfor (const item of incomingData) {\n    processedData.push({\n        팀: item['팀'],\n        이름: item['이름'],\n        직무: item['직무']\n    });\n}\n\n// 다음 노드(Slack)로 전달할 때, 이 가공된 데이터를 하나의 아이템으로 묶어 전달합니다.\nreturn [{\n    json: {\n        newHires: processedData // \"newHires\"라는 새로운 키에 가공된 데이터 배열을 담습니다.\n    }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -719,17 +720,17 @@
         "operation": "update",
         "documentId": {
           "__rl": true,
-          "value": "1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g",
+          "value": "google-sheet-doc-id-removed",
           "mode": "list",
           "cachedResultName": "신규 직원",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/google-sheet-doc-id-removed/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": "gid=0",
+          "value": "google-sheet-gid-removed",
           "mode": "list",
           "cachedResultName": "직원 데이터베이스",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TO3DZLRXLbu5c2NqkZd-jXRVhTFXAFLul0c06majz_g/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/google-sheet-doc-id-removed/edit#gid=google-sheet-gid-removed"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -848,8 +849,8 @@
       "name": "Update row in sheet1",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "dbt6bFAnSVfkNKpf",
-          "name": "효원 계정"
+          "id": "credential-id-removed",
+          "name": "Credential Name Removed"
         }
       }
     },
@@ -1005,11 +1006,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "afb32013-253b-40b0-9378-371d85dbc980",
+  "versionId": "workflow-version-id-removed",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "a3c9c522adfd6385f845232ff4cc78161b141f603e69361658584d0ff2befbeb"
+    "instanceId": "instance-id-removed"
   },
-  "id": "ib58cbeTZgsAK7S0",
+  "id": "workflow-id-removed",
   "tags": []
 }
