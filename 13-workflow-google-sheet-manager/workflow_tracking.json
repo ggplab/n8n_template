@@ -1,0 +1,624 @@
+{
+  "name": "Google Sheets Version Tracking (end)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "id": "9795e2e1-c606-4efa-a24e-0ab065072d72",
+      "name": "Every 5 Minutes1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -768,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Your Sheet Name",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Your Sheet Tab Name",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "99f78d19-96b1-4ed5-bf06-3bad9914bad9",
+      "name": "Read Current Sheet1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -576,
+        288
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Your Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 현재 시트 데이터 준비\nconst sheetId = 'YOUR_GOOGLE_SHEET_ID';\nconst sheetName = 'YOUR_SHEET_NAME';\nconst currentData = $input.all().map(item => item.json);\n\n// 간단한 해시 생성\nfunction simpleHash(data) {\n  const str = JSON.stringify(data);\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const char = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + char;\n    hash = hash & hash;\n  }\n  return hash.toString(16);\n}\n\nreturn [{\n  json: {\n    sheet_id: sheetId,\n    sheet_name: sheetName,\n    current_data: currentData,\n    row_count: currentData.length,\n    data_hash: simpleHash(currentData),\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "c8f099f5-3c81-47fc-8acf-e3164f8a7f4a",
+      "name": "Prepare Data1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "sheet_versions",
+        "limit": 1
+      },
+      "id": "4b820dc1-4200-4703-86c5-3c1c38de76b7",
+      "name": "Get Last Version1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        48,
+        288
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": false,
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  JSON.stringify({\n    model: \"gpt-4o-mini\",\n    temperature: 0.3,\n    max_tokens: 500,\n    messages: [\n      {\n        role: \"system\",\n        content: \"당신은 데이터 분석 전문가입니다. 항상 유효한 JSON 형식으로만 응답합니다.\"\n      },\n      {\n        role: \"user\",\n        content: \"당신은 Google Sheets 버전 관리 전문가입니다.\\n\\n현재 시트 정보:\\n- 행 개수: \" + $('Prepare Data1').item.json.row_count + \"개\\n- 데이터 해시: \" + $('Prepare Data1').item.json.data_hash + \"\\n\\n\" + \n        ($('Get Last Version1').all().length > 0 \n          ? \"이전 버전 정보:\\n- 버전 번호: \" + $('Get Last Version1').item.json.version_number + \"\\n- 행 개수: \" + $('Get Last Version1').item.json.row_count + \"개\\n- 데이터 해시: \" + $('Get Last Version1').item.json.data_hash \n          : \"이전 버전: 없음 (첫 버전)\") + \n        \"\\n\\n작업:\\n1. 현재 데이터와 이전 버전을 비교\\n2. 변경사항이 있는지 확인\\n3. 변경사항을 한글로 간단히 요약\\n4. 중요한 변경인지 판단\\n\\n응답 형식:\\n{\\n  \\\"has_changes\\\": true,\\n  \\\"summary\\\": \\\"설명\\\",\\n  \\\"is_important\\\": false,\\n  \\\"next_version\\\": 1\\n}\\n\\n\" + \n        ($('Get Last Version1').all().length === 0 \n          ? \"이전 버전이 없으므로 has_changes는 true, summary는 '첫 버전 생성', next_version은 1로 설정하세요.\" \n          : \"\") + \n        \"\\n\\n중요: 반드시 위 JSON 형식으로만 응답하세요.\"\n      }\n    ]\n  })\n}}",
+        "options": {}
+      },
+      "id": "062960a9-49a0-49a6-b581-5f99387dff43",
+      "name": "OpenAI HTTP Request1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        288,
+        288
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// OpenAI API 응답 파싱\nconst response = $input.first().json;\nconst aiMessage = response.choices[0].message.content;\n\n// JSON 추출 (마크다운 제거)\nlet jsonStr = aiMessage.trim();\n\n// 코드블록 제거\nif (jsonStr.includes('```json')) {\n  jsonStr = jsonStr.split('```json')[1].split('```')[0].trim();\n} else if (jsonStr.includes('```')) {\n  jsonStr = jsonStr.split('```')[1].split('```')[0].trim();\n}\n\ntry {\n  const result = JSON.parse(jsonStr);\n  const preparedData = $('Prepare Data1').first().json;\n  \n  return [{\n    json: {\n      ...preparedData,\n      has_changes: result.has_changes,\n      summary: result.summary,\n      is_important: result.is_important,\n      version_number: result.next_version\n    }\n  }];\n} catch (error) {\n  // JSON 파싱 실패 시 폴백\n  console.error('JSON 파싱 실패:', error);\n  console.log('원본 응답:', aiMessage);\n  \n  const preparedData = $('Prepare Data1').first().json;\n  const lastVersion = $('Get Last Version1').all();\n  \n  return [{\n    json: {\n      ...preparedData,\n      has_changes: lastVersion.length === 0 || preparedData.data_hash !== lastVersion[0].json.data_hash,\n      summary: lastVersion.length === 0 ? '첫 버전 생성' : '데이터 변경 감지',\n      is_important: false,\n      version_number: lastVersion.length === 0 ? 1 : lastVersion[0].json.version_number + 1\n    }\n  }];\n}"
+      },
+      "id": "346052e4-321f-409b-866a-b64c0253bba6",
+      "name": "Parse AI Response1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.has_changes }}",
+              "value2": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7286933e-0c72-4dde-aee0-4362d26bb29b",
+      "name": "IF Changes Detected1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        752,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "sheet_versions",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sheet_id",
+              "fieldValue": "={{ $json.sheet_id }}"
+            },
+            {
+              "fieldId": "sheet_name",
+              "fieldValue": "={{ $json.sheet_name }}"
+            },
+            {
+              "fieldId": "version_number",
+              "fieldValue": "={{ $json.version_number }}"
+            },
+            {
+              "fieldId": "data",
+              "fieldValue": "={{ JSON.stringify($json.current_data) }}"
+            },
+            {
+              "fieldId": "row_count",
+              "fieldValue": "={{ $json.row_count }}"
+            },
+            {
+              "fieldId": "data_hash",
+              "fieldValue": "={{ $json.data_hash }}"
+            },
+            {
+              "fieldId": "summary",
+              "fieldValue": "={{ $json.summary }}"
+            }
+          ]
+        }
+      },
+      "id": "61103818-e056-4537-9dd0-107f93ba5c43",
+      "name": "Save Version1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        288
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "change_history",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "sheet_id",
+              "fieldValue": "={{ $json.sheet_id }}"
+            },
+            {
+              "fieldId": "sheet_name",
+              "fieldValue": "={{ $json.sheet_name }}"
+            },
+            {
+              "fieldId": "version_number",
+              "fieldValue": "={{ $json.version_number }}"
+            },
+            {
+              "fieldId": "summary",
+              "fieldValue": "={{ $json.summary }}"
+            },
+            {
+              "fieldId": "is_important",
+              "fieldValue": "={{ $('IF Changes Detected1').item.json.is_important }}"
+            }
+          ]
+        }
+      },
+      "id": "b7a88913-562c-4dfb-b29e-601281117c71",
+      "name": "Save Change History1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        288
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.is_important }}",
+              "value2": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f21d3317-2467-4804-b207-31ce26beb43f",
+      "name": "IF Important Change1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "YOUR_SLACK_CHANNEL_ID",
+          "mode": "list",
+          "cachedResultName": "your-channel"
+        },
+        "text": "=🔔 *Google Sheets 중요 변경 감지!*\n\n*시트:* {{ $json.sheet_name }}\n*버전:* v{{ $json.version_number }}\n*행 개수:* {{ $json.row_count }}개\n*변경 시각:* {{ $json.timestamp }}\n\n*변경 내역:*\n{{ $json.summary }}\n\n🔗 시트 열기: https://docs.google.com/spreadsheets/d/{{ $json.sheet_id }}",
+        "otherOptions": {}
+      },
+      "id": "ada0b19f-0bdd-4da9-b626-405a3d3c3f78",
+      "name": "Send Slack Notification1",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.1,
+      "position": [
+        1792,
+        288
+      ],
+      "webhookId": "0db04cdb-b600-4bc3-8d98-7e6ef4da7737",
+      "credentials": {
+        "slackApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Slack OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### 5분마다 자동 실행\n",
+        "height": 256,
+        "width": 176
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "13c4fc90-3a9a-4f26-8a70-b30c7be675f9",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "### 시트에서 모든 데이터 읽기\n",
+        "height": 256,
+        "width": 208
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -624,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "4abb9306-61b4-42b1-8b45-ed797f9ebdf0",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "### 데이터 정리 + 해시 생성\n",
+        "height": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -272,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "e1bf7665-5c08-463d-b259-6bc412a5aeb7",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "content": "###  AI에게 변경사항 분석 요청\n입력: 현재 데이터 + 이전 버전",
+        "height": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        224,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "7d73836c-ceaa-4ee4-9470-6eaafea3b5a1",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "###  AI 응답에서 JSON 추출\n입력: AI 텍스트 응답\n출력: 구조화된 JSON\n폴백: JSON 파싱 실패 시 자동 계산",
+        "height": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        464,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "42724852-31a5-454b-9505-88268aab9517",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "content": "### 변경 있는지 체크\n조건: has_changes\nTRUE → 저장 진행\nFALSE → 종료",
+        "height": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        704,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "89279893-4662-4c36-9ccb-d25becc20e54",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "content": "### 역할: 새 버전 저장\n테이블: sheet_versions\n저장: 전체 데이터 + 메타정보\n",
+        "height": 256,
+        "width": 208
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1072,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "5aa46396-a2ce-456b-b100-1973be00bac0",
+      "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "content": "### 역할: 변경 로그 기록\n테이블: change_history\n저장: 요약 + 중요도만 (가벼움)",
+        "height": 256,
+        "width": 208
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1280,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "eaaa4c42-31b6-4107-93d9-fb588954dc13",
+      "name": "Sticky Note21"
+    },
+    {
+      "parameters": {
+        "content": "###  중요한 변경인지 체크\n조건: is_important\nTRUE → Slack 알림\nFALSE → 종료",
+        "height": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1488,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "f14a5952-2081-455f-bf67-3653cd5a2dc5",
+      "name": "Sticky Note22"
+    },
+    {
+      "parameters": {
+        "content": "### 중요 변경사항 알림\n메시지: \"🚨 중요 변경: 50개 행 추가됨\"",
+        "height": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1728,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "a6317e68-c820-4797-9335-8a8c07f8364c",
+      "name": "Sticky Note23"
+    },
+    {
+      "parameters": {
+        "content": "# Triger",
+        "height": 368,
+        "width": 464,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -832,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "87170f10-6cab-47a3-9247-561f0ab990ce",
+      "name": "Sticky Note24"
+    },
+    {
+      "parameters": {
+        "content": "# Target",
+        "height": 368,
+        "width": 960,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1040,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "14d7a4b4-3ed0-4d2e-b594-308445f412db",
+      "name": "Sticky Note25"
+    },
+    {
+      "parameters": {
+        "content": "# Task",
+        "height": 368,
+        "width": 1264,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -304,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "234b0910-cc3f-43e5-9e9f-55cb92c1e39a",
+      "name": "Sticky Note26"
+    },
+    {
+      "parameters": {
+        "content": "### 이전 버전 조회\n쿼리: SELECT * FROM sheet_versions ORDER BY id DESC LIMIT 1\n출력: 마지막 저장된 버전",
+        "height": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "798c6177-563b-42a9-9b42-ff67695151fc",
+      "name": "Sticky Note27"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every 5 Minutes1": {
+      "main": [
+        [
+          {
+            "node": "Read Current Sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Current Sheet1": {
+      "main": [
+        [
+          {
+            "node": "Prepare Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Data1": {
+      "main": [
+        [
+          {
+            "node": "Get Last Version1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Last Version1": {
+      "main": [
+        [
+          {
+            "node": "OpenAI HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response1": {
+      "main": [
+        [
+          {
+            "node": "IF Changes Detected1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Changes Detected1": {
+      "main": [
+        [
+          {
+            "node": "Save Version1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Version1": {
+      "main": [
+        [
+          {
+            "node": "Save Change History1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Change History1": {
+      "main": [
+        [
+          {
+            "node": "IF Important Change1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Important Change1": {
+      "main": [
+        [
+          {
+            "node": "Send Slack Notification1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "763f44f2-039c-46ee-8acc-a3dcdab3166b",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "hB0Uxc0NDbIpHHWX",
+  "tags": []
+}
