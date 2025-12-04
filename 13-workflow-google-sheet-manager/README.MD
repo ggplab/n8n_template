@@ -540,7 +540,7 @@ return cleanData.map(row => ({ json: row }));
 ```
 </details>
 
-## 💵 5. 사용 비용
+## 💵 6. 사용 비용
 
 | 항목 | 비용 | 설명 |
 | --- | --- | --- |
@@ -550,7 +550,7 @@ return cleanData.map(row => ({ json: row }));
 | **n8n** | 무료 | Self-hosted |
 | **Slack API** | 무료 | 선택사항 |
 
-## 🗃️ 6. 참고 문헌
+## 🗃️ 7. 참고 문헌
 
 - [n8n workflow](https://n8n.io/workflows/9934-keep-rag-system-updated-with-google-drive-file-changes-to-supabase-vector-db/)
 - [Git Version Control](https://git-scm.com/)
