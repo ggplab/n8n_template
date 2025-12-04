@@ -300,7 +300,7 @@ Google Calendar 등록 / 이메일 읽음 처리
 
 ### 3.4 프롬프트 예시
 
-### OpenAI System Prompt (이메일 분석)
+<details><summary><b>OpenAI System Prompt (이메일 분석)</b></summary>
 
 ```
 너는 이메일 비서야. 아래 이메일을 읽고 JSON 하나를 만들어줘.
@@ -345,10 +345,9 @@ Google Calendar 등록 / 이메일 읽음 처리
   "action_required": "참석 여부 회신",
   "days_until": 19
 }
-
 ```
+</details>
 
----
 
 ## 💰 4. 사용 비용
 
@@ -382,7 +381,7 @@ Google Calendar 등록 / 이메일 읽음 처리
 - 캘린더 입력: 하루 10분 → **0분**
 - **월 20시간 절약** (시급 1만원 기준 = 월 20만원 가치)
 
----
+
 
 ## 📚 5. 참고 문헌
 
@@ -398,7 +397,6 @@ Google Calendar 등록 / 이메일 읽음 처리
 - https://n8n.io/workflows/5678-automate-email-filtering-and-ai-summarization-100percent-free-and-effective-works-724/
 - https://n8n.io/workflows/4807-smart-email-responder-workflow-using-ai/
 
----
 
 ## 🎯 주요 기능 요약
 
@@ -431,7 +429,6 @@ Google Calendar 등록 / 이메일 읽음 처리
     - VIP/화이트/블랙리스트 필터링
     - API 비용 30% 절감
 
----
 
 ## 🚀 시작하기
 
@@ -453,7 +450,7 @@ git clone https://github.com/your-repo/email-automation.git
 
 ```
 
----
+
 
 ## 📊 기대 효과
 
@@ -462,5 +459,3 @@ git clone https://github.com/your-repo/email-automation.git
 - 🎯 **우선순위**: AI 자동 분류로 중요 이메일 즉시 파악
 - 💰 **비용 효율**: 월 500원으로 완전 자동화
 - 📈 **생산성**: 반복 작업 제거, 핵심 업무 집중
-
----
