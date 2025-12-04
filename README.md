@@ -17,7 +17,7 @@
 - [10-workflow-Stock-Portfolio-Report-data](./10-workflow-Stock-Portfolio-Report-data/): 주식종목 데이터 누적 및 주식 리포트 작성 및 발송
 - [11-] <- 소정 3>
 - [12-] <- 효원 3>
-- [13-] <- 동완 4>
+- [13-workflow-google-sheet-manager](./13-workflow-google-sheet-manager/): AI 기반 자동 버전 추적 및 복구 시스템
 - [14-] <- 차병 4>
 
 ## cheatsheets
