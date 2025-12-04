@@ -12,25 +12,25 @@
 - 실제 결과물 화면
 온보딩 0일차 입사 환영 및 첫 출근 안내 이메일 & 노션 온보딩 체크리스트 페이지 생성
 <div align="center">
-  <img src="여기" alt="자동 가계부 화면 1" width="350px"/>
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/01%20%EC%9E%85%EC%82%AC%20%EC%B6%95%ED%95%98%20%EC%9D%B4%EB%A9%94%EC%9D%BC.png" width="350px"/>
   
-  <img src="여기" alt="자동 가계부 화면 2" width="350px"/>
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/02%20%EC%98%A8%EB%B3%B4%EB%94%A9%20%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8%20%EC%83%9D%EC%84%B1.png" width="350px"/>
 </div>
 
 
 온보딩 1일차 입사 환영 슬랙 메세지 전송 & 온보딩 시작 중간 기록
 <div align="center">
-  <img src="여기" alt="자동 가계부 화면 1" width="350px"/>
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/03%20%EC%9E%85%EC%82%AC%20%EC%B2%AB%EB%82%A0%20%ED%99%98%EC%98%81%20%EC%8A%AC%EB%9E%99.png" width="350px"/>
   
-  <img src="여기" alt="자동 가계부 화면 2" width="350px"/>
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/04%20%EC%98%A8%EB%B3%B4%EB%94%A9%20%EC%A7%84%ED%96%89%20%EA%B8%B0%EB%A1%9D.png" width="350px"/>
 </div>
 
 
 온보딩 30일차 후속 관리 이메일 전송 & 온보딩 완료 기록
 <div align="center">
-  <img src="여기" alt="자동 가계부 화면 1" width="350px"/>
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/05%20%EC%98%A8%EB%B3%B4%EB%94%A9%20%EC%99%84%EB%A3%8C%20%ED%9B%84%20%ED%9B%84%EC%86%8D%20%EA%B4%80%EB%A6%AC%20%EC%9D%B4%EB%A9%94%EC%9D%BC.png" width="350px"/>
   
-  <img src="여기" alt="자동 가계부 화면 2" width="350px"/>
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/06%20%EC%98%A8%EB%B3%B4%EB%94%A9%20%EC%99%84%EB%A3%8C%20%EA%B8%B0%EB%A1%9D.png" width="350px"/>
 </div>
 
 
