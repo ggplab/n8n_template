@@ -3,6 +3,12 @@
 > AI 기반 자동 버전 추적 및 복구 시스템
 > 
 
+<img width="1600" height="520" alt="workflow" src="https://github.com/user-attachments/assets/88a17d2d-f9b2-426f-bddf-7672dd24f048" />
+
+
+
+
+
 ## 📋 1. 목차
 
 - 문제 정의
