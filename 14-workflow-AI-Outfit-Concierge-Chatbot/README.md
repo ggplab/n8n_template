@@ -61,11 +61,11 @@ AI 코디봇(AI Outfit Concierge)** 은사용자가 입력한 **도시의 실시
 ### ✔ 4-2. System Prompt
 
 전체 Prompt는 분량이 많기 때문에 **토글 형태**로 숨김 처리 권장:
+<details>
+<summary>여기를 눌러주세요</summary>
+<div markdown="1">       
 
-     <details>
-  <summary>프롬프트</summary> 
-    ```jsx
-    [SYSTEM PROMPT]
+ [SYSTEM PROMPT]
     
     ────────────────────────────────────────
     1. 역할 (Your Role)
@@ -621,10 +621,9 @@ AI 코디봇(AI Outfit Concierge)** 은사용자가 입력한 **도시의 실시
     
     ────────────────────────────────────────
     [END OF SYSTEM PROMPT]
-    
-    ```
-    </details>
 
+</div>
+</details>
 ---
 
 ## 5. 💰 사용 비용 (Optional)
