@@ -12,9 +12,9 @@
 
 - 실제 결과물 화면
 온보딩 0일차 입사 환영 및 첫 출근 안내 이메일
-![image](https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/%EC%98%A8%EB%B3%B4%EB%94%A9%200%EC%9D%BC%EC%B0%A8%20%EA%B0%9C%EC%9D%B8%ED%99%94%20%EC%9D%B4%EB%A9%94%EC%9D%BC.png)
+![image]()
 온보딩 0일차 노션 온보딩 체크리스트 페이지 생성
-![image](https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/%EC%98%A8%EB%B3%B4%EB%94%A9%200%EC%9D%BC%EC%B0%A8%20%EC%98%A8%EB%B3%B4%EB%94%A9%20%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8%20%EC%83%9D%EC%84%B1.png)
+![image]()
 
 온보딩 1일차 입사 환영 슬랙 메세지 전송
 ![image](https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/%EC%98%A8%EB%B3%B4%EB%94%A9%201%EC%9D%BC%EC%B0%A8%20%ED%99%98%EC%98%81%20%EB%A9%94%EC%84%B8%EC%A7%80.png)
@@ -23,7 +23,7 @@
 ![image]()
 
 온보딩 30일차 후속 관리 이메일 전송
-![image](https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/%EC%98%A8%EB%B3%B4%EB%94%A9%2030%EC%9D%BC%EC%B0%A8%20%ED%94%BC%EB%93%9C%EB%B0%B1%20%EC%9A%94%EC%B2%AD%20%EC%9D%B4%EB%A9%94%EC%9D%BC.png)
+![image]()
 온보딩 완료 기록
 ![image]()
 
