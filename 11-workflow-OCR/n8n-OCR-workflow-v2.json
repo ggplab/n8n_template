@@ -1,0 +1,384 @@
+{
+  "name": "OCR 통합 리포트 자동 생성",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const out = [];\nfor (const item of $input.all()) {\n  if (!item.binary || !item.binary.data) { out.push(item); continue; }\n  const b = item.binary.data;\n  item.binary = {\n    data: {\n      data: b.data,\n      mimeType: b.mimeType,\n      fileExtension: b.fileExtension || 'jpg',\n      fileName: b.fileName || 'ocr_image.jpg'\n    }\n  };\n  out.push(item);\n}\nreturn out;"
+      },
+      "id": "a47ca656-b64e-4262-a06b-1a8948fff558",
+      "name": "Binary Normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        2592
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4",
+          "mode": "list",
+          "cachedResultName": "GPT-4"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=당신은 세 개의 OCR 모델(GPT, Solar, Gemini)의 출력 품질을 평가하는 리뷰어입니다.\n\n다음은 세 모델의 OCR 결과입니다.\n\n{\n  \"gpt_text\": \"{{ $json.gpt_text_raw }}\",\n  \"solar_text\": \"{{ $json.solar_text_raw }}\",\n  \"gemini_text\": \"{{ $json.gemini_text_raw }}\"\n}\n\n위 데이터를 기반으로 각 모델에 대해 다음 항목을 JSON으로만 출력하세요:\n\n{\n  \"reviewer\": {\n    \"gpt\": { \"score\": 숫자, \"comment\": \"문장\" },\n    \"solar\": { \"score\": 숫자, \"comment\": \"문장\" },\n    \"gemini\": { \"score\": 숫자, \"comment\": \"문장\" }\n  },\n  \"gpt_text_raw\": \"{{ $json.gpt_text_raw }}\",\n  \"solar_text_raw\": \"{{ $json.solar_text_raw }}\",\n  \"gemini_text_raw\": \"{{ $json.gemini_text_raw }}\"\n}\n\n\n당신은 세 개의 OCR 모델(GPT, Solar, Gemini)의 출력 품질을 평가하는 Reviewer입니다.\n\n입력으로 세 모델의 OCR 원문(GPT, Solar, Gemini)이 제공됩니다.\n각 모델의 OCR 품질을 분석하여 아래 JSON 형식으로만 정확하게 출력하세요.\n\n⚠️ 주의:\n- JSON 외 다른 설명, 자연어 문장 금지\n- 필드명, 계층 구조 변경 금지\n- score는 0~100의 정수\n- comment는 짧고 핵심적인 품질 설명\n\n출력 형식(반드시 동일해야 함):\n\n{\n  \"reviewer\": {\n    \"gpt\": { \"score\": 숫자, \"comment\": \"문장\" },\n    \"solar\": { \"score\": 숫자, \"comment\": \"문장\" },\n    \"gemini\": { \"score\": 숫자, \"comment\": \"문장\" }\n  },\n  \"gpt_text_raw\": \"GPT OCR 원문 그대로\",\n  \"solar_text_raw\": \"Solar OCR 원문 그대로\",\n  \"gemini_text_raw\": \"Gemini OCR 원문 그대로\"\n}\n\n------------------------------------\n[GPT OCR 결과]\n{{ $json.raw.gpt }}\n\n[Solar OCR 결과]\n{{ $json.raw.solar }}\n\n[Gemini OCR 결과]\n{{ $json.raw.gemini }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "89342467-78c7-4c18-ae80-57bcedf73092",
+      "name": "Reviewer LLM (GPT-4o mini)",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        816,
+        2592
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "uwHHJZhUMLfYfbWz",
+          "name": "n8n-소정-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "={{ $json.id }}",
+        "options": {}
+      },
+      "id": "f1a1c3b0-ff59-4faa-9ec9-0bff3dad86c8",
+      "name": "이미지 다운로드3",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -304,
+        2592
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UFtHbVyK4eQX4JKm",
+          "name": "n8n-소정-ocr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const merged = $input.first().json;\n\nlet gpt = \"결과 없음\";\nlet solar = \"결과 없음\";\nlet gemini = \"결과 없음\";\n\n// GPT: merged.gpt.content[0].text\ntry {\n  gpt = merged.gpt?.content?.[0]?.text || \"결과 없음\";\n} catch {}\n\n// Solar: merged.text\ntry {\n  solar = merged.text || \"결과 없음\";\n} catch {}\n\n// Gemini: merged.content.parts[0].text\ntry {\n  gemini = merged.content?.parts?.[0]?.text || \"결과 없음\";\n} catch {}\n\n\nreturn [{\n  json:{\n    raw: {\n      gpt: $input.first().json['0'].content[0].text,\n      solar: $input.first().json.text,\n      gemini: $input.first().json.content.parts[0].text\n    }\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        2592
+      ],
+      "id": "ad75e8a5-0aa4-4f05-8271-90f820290d00",
+      "name": "OCR 스키마 통합"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        368,
+        2576
+      ],
+      "id": "f72532b2-a848-4064-95f5-9b0fb39772d4",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "이미지의 모든 텍스트를 OCR 처리하세요.\n개인정보 제거 규칙에 따라 간단히 요약하세요.",
+        "inputType": "base64",
+        "options": {}
+      },
+      "id": "73d15746-d98c-4cba-b036-650f95529f1c",
+      "name": "gpt",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        144,
+        2400
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "uwHHJZhUMLfYfbWz",
+          "name": "n8n-소정-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "returnMode": "text"
+      },
+      "id": "980418f0-a0b0-4b6d-84af-114ba077f900",
+      "name": "solar",
+      "type": "n8n-nodes-upstage.documentOCRUpstage",
+      "typeVersion": 1,
+      "position": [
+        144,
+        2592
+      ],
+      "credentials": {
+        "upstageApi": {
+          "id": "XIHnWgbNGsc3VZJo",
+          "name": "n8n_소정_OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "value": "models/gemini-2.5-flash",
+          "mode": "list"
+        },
+        "text": "이미지에서 텍스트를 추출하세요.",
+        "inputType": "binary",
+        "options": {}
+      },
+      "id": "3a88485b-a5f3-4a64-b2e1-224253fcf4d6",
+      "name": "gemini",
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        144,
+        2784
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "t4M3rnPeEUBkpn1M",
+          "name": "n8n-소정-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "18VLBJKVaxFtmZblbbChfVOHXWdNoYhBD",
+          "mode": "list",
+          "cachedResultName": "n8n-OCR",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/18VLBJKVaxFtmZblbbChfVOHXWdNoYhBD"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "47d3e9f3-8f05-4d9b-a8c8-c38d6b15a781",
+      "name": "이미지 업로드 감지3",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        2592
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "UFtHbVyK4eQX4JKm",
+          "name": "n8n-소정-ocr"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "sojeongyoon722@gmail.com",
+        "subject": "=[ {{$now.format('yyyy-MM-dd')}} ] OCR 결과",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "fd7a2f0f-d8ab-4f02-b315-e04c1c062dd7",
+      "name": "메일 발송",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        2592
+      ],
+      "webhookId": "96684c83-1d9f-42e3-9314-31e6f2083322",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "2QkeoHXnpErVUQxC",
+          "name": "n8n-소정-OCR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import json\n\n# Python 노드 입력(JSON)\nr = items[0].get('json', {})\n\n# -------------------------\n# 1) reviewer JSON 추출\n# -------------------------\nreviewer = {}\ntry:\n    reviewer_text = (\n        r.get('output', [{}])[0]\n         .get('content', [{}])[0]\n         .get('text', '{}')\n    )\n    reviewer = json.loads(reviewer_text)\nexcept Exception as e:\n    print(\"리뷰어 JSON 파싱 오류:\", e)\n\n# -------------------------\n# 2) OCR 원문 추출\n# (OCR 스키마 통합 노드에서 넣어준 필드)\n# -------------------------\ngpt_text = reviewer.get('gpt_text_raw', '')\nsolar_text = reviewer.get('solar_text_raw', '')\ngemini_text = reviewer.get('gemini_text_raw', '')\n\n# reviewer 객체 내부에서 다시 점수 가져오기\ngpt_score = reviewer.get('reviewer', {}).get('gpt', {}).get('score', 0)\ngpt_comment = reviewer.get('reviewer', {}).get('gpt', {}).get('comment', '')\n\nsolar_score = reviewer.get('reviewer', {}).get('solar', {}).get('score', 0)\nsolar_comment = reviewer.get('reviewer', {}).get('solar', {}).get('comment', '')\n\ngemini_score = reviewer.get('reviewer', {}).get('gemini', {}).get('score', 0)\ngemini_comment = reviewer.get('reviewer', {}).get('gemini', {}).get('comment', '')\n\n# -------------------------\n# 3) HTML 생성\n# -------------------------\nhtml = f\"\"\"\n<html><body style=\"font-family:Arial;padding:20px;\">\n<h1>✨ LLM OCR 성능 비교 리포트</h1>\n<p>GPT-4o / Solar / Gemini</p>\n\n<h2>1. 모델별 점수</h2>\n<ul>\n  <li><b>GPT-4o:</b> {gpt_score}점 — {gpt_comment}</li>\n  <li><b>Solar:</b> {solar_score}점 — {solar_comment}</li>\n  <li><b>Gemini:</b> {gemini_score}점 — {gemini_comment}</li>\n</ul>\n\n<h2>2. OCR 원문</h2>\n\n<h3>GPT-4o</h3>\n<pre>{gpt_text}</pre>\n\n<h3>Solar</h3>\n<pre>{solar_text}</pre>\n\n<h3>Gemini</h3>\n<pre>{gemini_text}</pre>\n\n</body></html>\n\"\"\"\n\nreturn {\n    \"json\": {\"html\": html}\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1168,
+        2592
+      ],
+      "id": "7662e361-3bb5-4bea-96ef-36f58946fd32",
+      "name": "Code in Python (Beta)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Binary Normalize": {
+      "main": [
+        [
+          {
+            "node": "gpt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "solar",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reviewer LLM (GPT-4o mini)": {
+      "main": [
+        [
+          {
+            "node": "Code in Python (Beta)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "이미지 다운로드3": {
+      "main": [
+        [
+          {
+            "node": "Binary Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR 스키마 통합": {
+      "main": [
+        [
+          {
+            "node": "Reviewer LLM (GPT-4o mini)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "OCR 스키마 통합",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "solar": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "gemini": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "이미지 업로드 감지3": {
+      "main": [
+        [
+          {
+            "node": "이미지 다운로드3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python (Beta)": {
+      "main": [
+        [
+          {
+            "node": "메일 발송",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "42b9b246-4aee-4728-8b7d-b99220a96db3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3a2f1e493c58813431ee31e1bf0b0578de9e5243b1ae5b510120463672b15c48"
+  },
+  "id": "JOcFh2FjStUZxq3l",
+  "tags": []
+}
