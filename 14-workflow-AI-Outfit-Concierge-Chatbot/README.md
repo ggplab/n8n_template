@@ -5,13 +5,12 @@ AI 코디봇(AI Outfit Concierge)** 은사용자가 입력한 **도시의 실시
 > 
 - 워크플로우
 
-![image.png](image.png)
+<img width="1207" height="581" alt="워크플로우" src="https://github.com/user-attachments/assets/806eddd3-eb3f-43c8-b965-fe33381b5708" />
+
+<img width="559" height="697" alt="AI Outfit Concierge Chatbot City" src="https://github.com/user-attachments/assets/fa49c6e7-e59c-4015-a784-dd9c2a7b6390" />
 
 - 결과물
-
-![image.png](image%201.png)
-
-![image.png](image%202.png)
+<img width="921" height="955" alt="챗봇화면" src="https://github.com/user-attachments/assets/ffc52fc4-c85d-4bae-850b-51e7c6e57c9e" />
 
 ---
 
