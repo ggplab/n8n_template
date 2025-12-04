@@ -3,12 +3,6 @@
 > AI 기반 자동 버전 추적 및 복구 시스템
 > 
 
-### n8n 워크플로우 구조
-
-### google sheet
-
-### slack 알림
-
 ## 📋 1. 목차
 
 - 문제 정의
@@ -41,6 +35,8 @@ Google Sheets에서 중요한 데이터를 관리하는 과정에서 실수로 �
 - **재무팀**: 예산 및 회계 데이터의 안전한 버전 관리 및 감사 추적
 - **마케팅팀**: 캠페인 성과 데이터와 KPI 시트의 자동 백업
 - **모든 팀**: 협업 시트에서 실수로 인한 데이터 손실 걱정 없이 작업
+
+### google sheet
 
 ## 💬 4. 사용 방법
 
@@ -132,6 +128,8 @@ INSERT INTO sheet_versions (
 <details>
   <summary> 추적 워크플로우 (자동 버전 저장)</summary>
 
+### n8n 워크플로우 구조
+
 **1단계: Import**
 
 ```
@@ -176,6 +174,8 @@ Save (Ctrl+S) → Active 토글 ON
 
 <details>
   <summary> 복구 워크플로우 (버전 복구)</summary>
+
+### n8n 워크플로우 구조
 
 **1단계: Import**
 
@@ -291,6 +291,8 @@ Success Response (성공 응답)
 </details>
 
 ### 실제 사용법
+
+### slack 알림
 
 <details>
   <summary> 자동 추적 (설정 후 자동)</summary>
