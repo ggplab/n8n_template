@@ -15,7 +15,7 @@
 - [08-workflow-automatic-account-book](./08-workflow-automatic-account-book/): 결제 문자 메시지를 자동으로 가계부에 기입 및 세분화
 - [09-workflow-file-organizer](./09-workflow-file-organizer/): 지능형 파일 분류 및 자동 정리 워크플로우
 - [10-workflow-Stock-Portfolio-Report-data](./10-workflow-Stock-Portfolio-Report-data/): 주식종목 데이터 누적 및 주식 리포트 작성 및 발송
-- [11-] <- 소정 3>
+- [11-workflow-OCR](./11-workflow-OCR/): 이미지 형태의 문서(영수증, 처방전, 계약서)에서 텍스트를 추출하여 발송
 - [12-] <- 효원 3>
 - [13-workflow-google-sheet-manager](./13-workflow-google-sheet-manager/): AI 기반 자동 버전 추적 및 복구 시스템
 - [14-workflow-AI-Outfit-Concierge-Chatbot](./14-workflow-AI-Outfit-Concierge-Chatbot/): 날씨 기반 옷차림 추천 챗봇
