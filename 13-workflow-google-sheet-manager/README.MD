@@ -63,7 +63,8 @@ Google Sheets에서 중요한 데이터를 관리하는 과정에서 실수로 �
 - **마케팅팀**: 캠페인 성과 데이터와 KPI 시트의 자동 백업
 - **모든 팀**: 협업 시트에서 실수로 인한 데이터 손실 걱정 없이 작업
 
-<img width="500" height="500" alt="google sheet" src="https://github.com/user-attachments/assets/79cd6836-248a-480d-a8df-a83e51e9c2cb" />
+<img width="600" height="700" alt="google sheet" src="https://github.com/user-attachments/assets/79cd6836-248a-480d-a8df-a83e51e9c2cb" />
+
 ### google sheet
 
 ## 💬 4. 사용 방법
