@@ -95,7 +95,8 @@ Slack App 생성 → Bot Token 발급
 -- ✅ restore_log (복구 로그)
 ```
 
-### v0 초기 데이터 생성 (필수!)
+<details>
+  <summary> v0 초기 데이터 생성 (필수!)</summary>
 
 ```sql
 INSERT INTO sheet_versions (
@@ -120,7 +121,10 @@ INSERT INTO sheet_versions (
 ```
 </details>
 
-### 추적 워크플로우 (자동 버전 저장)
+</details>
+
+<details>
+  <summary> 추적 워크플로우 (자동 버전 저장)</summary>
 
 **1단계: Import**
 
@@ -162,8 +166,10 @@ n8n 메인 화면 → Import from File
 ```
 Save (Ctrl+S) → Active 토글 ON
 ```
+</details>
 
-### 복구 워크플로우 (버전 복구)
+<details>
+  <summary> 복구 워크플로우 (버전 복구)</summary>
 
 **1단계: Import**
 
@@ -203,10 +209,12 @@ Webhook Restore 노드 클릭
 ```
 Save (Ctrl+S) → Active 토글 ON
 ```
+</details>
 
 ### 워크플로우 상세 과정
 
-### 🔄 추적 워크플로우 (Tracking)
+<details>
+  <summary> 🔄 추적 워크플로우 (Tracking)</summary>
 
 ```
 Every 5 Minutes (스케줄 트리거)
@@ -238,8 +246,10 @@ Send Slack Notification (Slack 알림 발송)
 - **AI 분석**: OpenAI가 변경사항을 한글로 자동 요약
 - **중요도 판단**: AI가 중요한 변경사항 자동 감지
 - **실시간 알림**: 중요 변경 시 Slack으로 즉시 알림
+</details>
 
-### 🔄 복구 워크플로우 (Restore)
+<details>
+  <summary>🔄 복구 워크플로우 (Restore)</summary>
 
 ```
 Webhook Restore (HTTP 요청 수신)
@@ -272,10 +282,12 @@ Success Response (성공 응답)
 - **자동 백업**: 복구 전 현재 데이터를 v9999로 자동 백업
 - **안전한 복구**: 실수해도 백업에서 다시 복구 가능
 - **로그 기록**: 모든 복구 작업 이력 저장
+</details>
 
 ### 실제 사용법
 
-### 자동 추적 (설정 후 자동)
+<details>
+  <summary> 자동 추적 (설정 후 자동)</summary>
 
 ```
 워크플로우 Active 상태 유지
@@ -284,8 +296,10 @@ Success Response (성공 응답)
   SELECT * FROM sheet_versions
   ORDER BY id DESC LIMIT 10;
 ```
+</details>
 
-### 수동 복구 (필요 시)
+<details>
+  <summary> 수동 복구 (필요 시)</summary>
 
 **Step 1: 복구할 버전 찾기**
 
@@ -345,10 +359,12 @@ fetch('https://your-n8n.com/webhook/restore-sheet-version', {
 
 Google Sheets 새로고침 (F5) → 데이터 복구 완료!
 ```
+</details>
 
 ### 프롬프트 예시
 
-### OpenAI Prompt: 변경사항 분석
+<details>
+  <summary> OpenAI Prompt: 변경사항 분석</summary>
 
 ```
 System: 당신은 데이터 분석 전문가입니다. 항상 유효한 JSON 형식으로만 응답합니다.
@@ -380,10 +396,12 @@ User: 당신은 Google Sheets 버전 관리 전문가입니다.
 
 중요: 반드시 위 JSON 형식으로만 응답하세요.
 ```
+</details>
 
 ## 🚧 5. Troubleshooting
 
-### 문제 1: "webhook is not registered" 오류
+<details>
+  <summary> 문제 1: "webhook is not registered" 오류</summary>
 
 **증상:**
 
@@ -398,8 +416,10 @@ User: 당신은 Google Sheets 버전 관리 전문가입니다.
 ```
 n8n → 워크플로우 → 우측 상단 토글 ON → Save
 ```
+</details>
 
-### 문제 2: 버전이 계속 1로 고정
+<details>
+  <summary> 문제 2: 버전이 계속 1로 고정</summary>
 
 **원인:** Get Last Version 노드에 정렬 없음
 
@@ -411,8 +431,10 @@ Get Last Version 노드 클릭
 → Field: id
 → Direction: desc
 ```
+</details>
 
-### 문제 3: 복구 시 빈 행만 생성
+<details>
+  <summary>문제 3: 복구 시 빈 행만 생성</summary>
 
 **원인:** row_number 필드가 제거되지 않음
 
@@ -433,8 +455,11 @@ const cleanData = restoreData.map(row => {
 
 return cleanData.map(row => ({ json: row }));
 ```
+</details>
 
-### 문제 4: 복구 후 데이터가 다시 사라짐
+
+<details>
+  <summary>문제 4: 복구 후 데이터가 다시 사라짐</summary>
 
 **원인:** Tracking 워크플로우가 계속 실행 중
 
@@ -445,8 +470,10 @@ return cleanData.map(row => ({ json: row }));
 방법 2: 복구 완료 후 10분 대기
 방법 3: Tracking 간격을 15분으로 늘리기
 ```
+</details>
 
-### 문제 5: OpenAI API 키 오류
+<details>
+  <summary>문제 5: OpenAI API 키 오류</summary>
 
 **원인:** API 키가 하드코딩되어 있거나 잘못됨
 
@@ -460,6 +487,7 @@ return cleanData.map(row => ({ json: row }));
 5. Credential 선택
 ⚠️ 절대 API 키를 직접 입력하지 마세요!
 ```
+</details>
 
 ## 💵 5. 사용 비용
 
