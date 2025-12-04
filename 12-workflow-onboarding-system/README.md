@@ -140,7 +140,7 @@ return [{
 
 |  | **Cost** |
 | --- | --- |
-| **Gemini API (Gemini 2.5 Flash)** | $0.50 |
+| **Gemini 2.5 Flash** | $0.50  |
 | **Notion API** | free |
 | **Slack API** | free |
 | **Google Sheets API** | free |
