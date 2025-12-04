@@ -255,7 +255,7 @@ OpenAI Whisper API는 처리할 수 있는 파일 크기를 **최대 25MB**로 �
 |  | **Cost** |
 | --- | --- |
 | **OPENAI API**  | $0.13 |
-| **Gemini API** | ₩1,700 |
+| **Gemini 2.5 Flash** | $0.50 |
 | **Slack API** | free |
 | **CloudConvert API** | free for 10 times per day |
 
