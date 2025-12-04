@@ -1,0 +1,66 @@
+# n8n Workflow Backups
+*.backup.json
+*_original.json
+*_end_.json
+*_test.json
+
+# Credentials
+credentials/
+*.credentials.json
+.credentials
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# API Keys and Secrets
+secrets/
+*.secret
+*.key
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# OS Specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Personal Notes
+NOTES.md
+TODO.md
+PRIVATE.md
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+
+# Node modules (if any)
+node_modules/
+
+# n8n specific
+.n8n/
