@@ -62,8 +62,8 @@ AI 코디봇(AI Outfit Concierge)** 은사용자가 입력한 **도시의 실시
 
 전체 Prompt는 분량이 많기 때문에 **토글 형태**로 숨김 처리 권장:
 
-- 프롬프트
-    
+     <details>
+  <summary>프롬프트</summary> 
     ```jsx
     [SYSTEM PROMPT]
     
@@ -623,7 +623,7 @@ AI 코디봇(AI Outfit Concierge)** 은사용자가 입력한 **도시의 실시
     [END OF SYSTEM PROMPT]
     
     ```
-    
+    </details>
 
 ---
 
