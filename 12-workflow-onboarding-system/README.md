@@ -7,13 +7,15 @@
 >
 
 - n8n 화면
- <img src="[이미지주소](https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/00%20%EC%98%A8%EB%B3%B4%EB%94%A9%20%EC%9E%90%EB%8F%99%ED%99%94%20%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0.gif).png" width="400" height="200"/>
+ ![image](https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/00%20%EC%98%A8%EB%B3%B4%EB%94%A9%20%EC%9E%90%EB%8F%99%ED%99%94%20%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0.gif)
 
 - 실제 결과물 화면
-온보딩 0일차 입사 환영 및 첫 출근 안내 이메일
-
-온보딩 0일차 노션 온보딩 체크리스트 페이지 생성
-
+온보딩 0일차 입사 환영 및 첫 출근 안내 이메일 & 노션 온보딩 체크리스트 페이지 생성
+<div align="center">
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/01%20%EC%9E%85%EC%82%AC%20%EC%B6%95%ED%95%98%20%EC%9D%B4%EB%A9%94%EC%9D%BC.png" alt="자동 가계부 화면 1" width="350px"/>
+  
+  <img src="https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/02%20%EC%98%A8%EB%B3%B4%EB%94%A9%20%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8%20%EC%83%9D%EC%84%B1.png" alt="자동 가계부 화면 2" width="350px"/>
+</div>
 
 온보딩 1일차 입사 환영 슬랙 메세지 전송
 
