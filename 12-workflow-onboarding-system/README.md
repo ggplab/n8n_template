@@ -7,8 +7,7 @@
 >
 
 - n8n 화면
-![image](https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/%EC%98%A8%EB%B3%B4%EB%94%A9%20%EC%9E%90%EB%8F%99%ED%99%94%20%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0.gif)
-![image](https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/%EC%98%A8%EB%B3%B4%EB%94%A9%20%EC%9E%90%EB%8F%99%ED%99%94%20%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0.png)
+ <img src="[이미지주소](https://github.com/ggplab/n8n-playbook/blob/main/12-workflow-onboarding-system/screenshot/00%20%EC%98%A8%EB%B3%B4%EB%94%A9%20%EC%9E%90%EB%8F%99%ED%99%94%20%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0.gif).png" width="200" height="200"/>
 
 - 실제 결과물 화면
 온보딩 0일차 입사 환영 및 첫 출근 안내 이메일
