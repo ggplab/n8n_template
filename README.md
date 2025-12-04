@@ -18,7 +18,7 @@
 - [11-] <- 소정 3>
 - [12-] <- 효원 3>
 - [13-workflow-google-sheet-manager](./13-workflow-google-sheet-manager/): AI 기반 자동 버전 추적 및 복구 시스템
-- [14-workflow-AI-Outfit-Concierge-Chatbot(./14-workflow-AI-Outfit-Concierge-Chatbot/)]: 날씨 기반 옷차림 추천 챗봇
+- [14-workflow-AI-Outfit-Concierge-Chatbot](./14-workflow-AI-Outfit-Concierge-Chatbot/): 날씨 기반 옷차림 추천 챗봇
 
 ## cheatsheets
 
